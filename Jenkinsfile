@@ -14,18 +14,18 @@ pipeline {
                 stage('Build Docker image (KitCaddy)') {
                         steps {
                                 script {
-                                        docker.build("kvalitetsit/kitcaddy", ".")
+                                        docker.build("kvalitetsit/kitcaddy:dev", ".")
                                 }
                         }
                 }
                 stage('Build Docker image (KitCaddy templates)') {
                         steps {
                                 script {
-                                        docker.build("kvalitetsit/kitcaddy-templates", "-f Dockerfile-caddytemplates .")
+                                        docker.build("kvalitetsit/kitcaddy-templates:dev", "-f Dockerfile-caddytemplates .")
                                 }
                         }
                 }
-	        stage('Build And Test') {
+	        stage('Run integration tests') {
 			steps {
 				script {
 					def maven = docker.image('maven:3-jdk-11')
