@@ -161,7 +161,7 @@ public class AbstractIntegrationTest {
 			echoService.start();
 
 			// Start KitCaddy with OIO iDWS REST WSP (TODO use kitcaddy)
-			GenericContainer<?> wspContainer = getKitCaddyContainer("kvalitetsit/gooioidwsrest:1.1.14", WSP_SERVICE_HOST, WSP_SERVICE_PORT, n, "wsp/wsp.config");
+			GenericContainer<?> wspContainer = getKitCaddyContainer(WSP_SERVICE_HOST, WSP_SERVICE_PORT, n, "wsp/wsp.config");
 			wspContainer.start();
 			//			spServicePort = wspContainer.getMappedPort(WSP_SERVICE_PORT);
 			//		spServiceHost = wspContainer.getContainerIpAddress();
