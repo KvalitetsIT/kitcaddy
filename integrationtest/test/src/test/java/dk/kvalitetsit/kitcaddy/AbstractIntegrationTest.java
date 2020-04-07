@@ -166,7 +166,7 @@ public class AbstractIntegrationTest {
 			//			spServicePort = wspContainer.getMappedPort(WSP_SERVICE_PORT);
 			//		spServiceHost = wspContainer.getContainerIpAddress();
 
-			GenericContainer<?> wscContainer = getKitCaddyContainer("kvalitetsit/gooioidwsrest:1.1.14", WSC_SERVICE_HOST, WSC_SERVICE_PORT, n, "wsc/wsc.config");
+			GenericContainer<?> wscContainer = getKitCaddyContainer(WSC_SERVICE_HOST, WSC_SERVICE_PORT, n, "wsc/wsc.config");
 			wscContainer.start();
 		}
 	}

@@ -7,6 +7,7 @@ import (
 	_ "github.com/caddyserver/caddy/v2/modules/standard"
 	_ "kitcaddy/modules/saml"
 	_ "kitcaddy/modules/prometheus"
+	_ "kitcaddy/modules/oioidwsrest"
 )
 
 func main() {
