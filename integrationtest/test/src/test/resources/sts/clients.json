@@ -1,0 +1,23 @@
+[
+  {
+    "certificate": "/clients/wsc.cer",
+    "itSystem": "testwsc",
+    "subject": "1.2.840.113549.1.9.1=#1613696e666f406b76616c697465747369742e646b,CN=wsc.abc.123,OU=TestAfdelingen,O=KvalitetsIT,L=Aarhus,ST=Some-State,C=DK",
+    "attributes": [
+      {
+        "name": "test:test",
+        "value": "autovalue1"
+      },
+      {
+        "name": "test:test",
+        "value": "autovalue2"
+      }
+    ],
+    "endpoints": [
+      {
+        "name": "testserviceaa",
+        "audience": "urn:kit:test:servicea"
+      }
+    ]
+  }
+]
