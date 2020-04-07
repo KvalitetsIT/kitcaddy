@@ -42,7 +42,7 @@ require (
 	gotest.tools v2.2.0+incompatible
 )
 
-replace github.com/caddyserver/caddy/v2 => github.com/KvalitetsIT/caddy/v2 v2.0.0-20191207064707-edf22def147c
+replace github.com/caddyserver/caddy/v2 => github.com/KvalitetsIT/caddy/v2 v2.0.0-20200308012217-120362a5a8c8
 
 replace github.com/KvalitetsIT/gosamlserviceprovider => github.com/KvalitetsIT/gosamlserviceprovider/samlprovider v0.0.0-20200406073534-7c4a91a7e5fd
 
