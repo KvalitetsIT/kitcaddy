@@ -21,7 +21,7 @@ pipeline {
                 stage('Build Docker image (KitCaddy templates)') {
                         steps {
                                 script {
-                                        docker.build("kvalitetsit/kitcaddy-templates:dev", "-f Dockerfile-caddytemplates .")
+                                        docker.build("kvalitetsit/kitcaddy-templates:dev", "caddytemplates")
                                 }
                         }
                 }

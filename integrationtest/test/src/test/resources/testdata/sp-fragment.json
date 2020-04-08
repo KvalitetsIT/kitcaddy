@@ -1,0 +1,74 @@
+{
+  "logging": {
+    "logs": {
+      "default": {
+        "level": "debug"
+      }
+    }
+  },
+
+  "admin": {
+    "disabled": true
+  },
+  "apps": {
+    "tls": {
+    },
+    "http": {
+      "servers": {
+        "srv9090": {
+          "listen": [
+            ":9090"
+          ],
+          "routes": [
+            {
+              "match": [
+                {
+                  "path": [
+                    "/echo/*"
+                  ]
+                }
+              ],
+              "handle": [
+                {
+                  "handler": "reverse_proxy",
+                  "transport": {
+                    "protocol": "http",
+                    "read_buffer_size": 4096
+                  },
+                  "upstreams": [
+                    {
+                      "dial": "echo:80"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "match": [
+                {
+                  "path": [
+                    "/service/*"
+                  ]
+                }
+              ],
+              "handle": [
+                {
+                  "handler": "reverse_proxy",
+                  "transport": {
+                    "protocol": "http",
+                    "read_buffer_size": 4096
+                  },
+                  "upstreams": [
+                    {
+                      "dial": "wsc:8686"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+}

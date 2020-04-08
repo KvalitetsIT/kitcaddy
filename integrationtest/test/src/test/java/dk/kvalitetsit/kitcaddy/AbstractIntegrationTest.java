@@ -9,10 +9,8 @@ import java.time.Duration;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.remote.RemoteWebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
@@ -38,19 +36,6 @@ public class AbstractIntegrationTest {
 
 	private static Logger keycloakLogger = LoggerFactory.getLogger("keycloak-logger");
 
-	public static final int KITCADDY_PORT = 8787;
-	public static final int KITCADDY_ADMIN_PORT = 2019;
-	public static final int KITCADDY_SSL_PORT = 8443;
-	public static final String UISERVICE_HOST = "uiservice";
-	public static final String UISERVICE_URL = UISERVICE_HOST+":"+KITCADDY_PORT;
-
-	private static final String WSP_SERVICE_HOST = "testserviceaa";
-	private static final int WSP_SERVICE_PORT = 8080;
-
-	private static final String WSC_SERVICE_HOST = "wsc";
-	private static final int WSC_SERVICE_PORT = 8686;
-	public static final String WSC_SERVICE_URL = WSC_SERVICE_HOST+":"+WSC_SERVICE_PORT;
-
 	protected RestTemplate restTemplate = new RestTemplate();
 
 	private static Network n;
@@ -58,16 +43,13 @@ public class AbstractIntegrationTest {
 	public static Integer keycloakPort;
 	private static String keycloackHost;
 
-	private static Integer spServicePort;
-	private static String spServiceHost;
-
-
-	public static String getSpServiceUrl() {
-		return "http://"+spServiceHost+":"+spServicePort;
+	protected static Network getDockerNetwork() {
+		return n;
 	}
 
-	@Rule
-	public BrowserWebDriverContainer chrome = (BrowserWebDriverContainer) new BrowserWebDriverContainer().withCapabilities(new ChromeOptions()).withNetwork(n);
+	protected static BrowserWebDriverContainer<?> createChrome() {
+		return (BrowserWebDriverContainer<?>) new BrowserWebDriverContainer<>().withCapabilities(new ChromeOptions()).withNetwork(n);
+	}
 
 	@BeforeClass
 	public static void setupTestEnvironment() throws UnsupportedOperationException, IOException, InterruptedException {
@@ -87,12 +69,6 @@ public class AbstractIntegrationTest {
 
 			// Start Keycloack service
 			File keycloakCertificate = getKeycloakContainer(n);
-
-			// Start KitCaddy with samlprovider
-			GenericContainer<?> spServiceContainer = getKitCaddyContainer(UISERVICE_HOST, KITCADDY_PORT, n, "samlserviceprovider/saml.config");
-			spServiceContainer.start();
-			spServicePort = spServiceContainer.getMappedPort(KITCADDY_PORT);
-			spServiceHost = spServiceContainer.getContainerIpAddress();
 
 			// Start MySQL for STS
 			MySQLContainer mysql = (MySQLContainer) new MySQLContainer("mysql:5.5")
@@ -160,24 +136,11 @@ public class AbstractIntegrationTest {
 					.withNetworkAliases("echo");
 			echoService.start();
 
-			// Start KitCaddy with OIO iDWS REST WSP (TODO use kitcaddy)
-			GenericContainer<?> wspContainer = getKitCaddyContainer(WSP_SERVICE_HOST, WSP_SERVICE_PORT, n, "wsp/wsp.config");
-			wspContainer.start();
-			//			spServicePort = wspContainer.getMappedPort(WSP_SERVICE_PORT);
-			//		spServiceHost = wspContainer.getContainerIpAddress();
-
-			GenericContainer<?> wscContainer = getKitCaddyContainer(WSC_SERVICE_HOST, WSC_SERVICE_PORT, n, "wsc/wsc.config");
-			wscContainer.start();
 		}
 	}
 
-	public RemoteWebDriver getRemoteWebDriver() {
 
-		RemoteWebDriver driver = chrome.getWebDriver();
-		return driver;
-	}
-
-	private static GenericContainer<?> getKitCaddyContainer(String alias, int port, Network n, String config) {
+	public static GenericContainer<?> getKitCaddyContainer(String alias, int port, Network n, String config) {
 		return getKitCaddyContainer("kvalitetsit/kitcaddy:dev", alias, port, n, config);
 	}
 
@@ -245,7 +208,7 @@ public class AbstractIntegrationTest {
 	}
 
 
-	public String addUser(String userName, String password/*, String pid, String cpr*/) throws JSONException  {
+	public String addUserToKeycloak(String userName, String password/*, String pid, String cpr*/) throws JSONException  {
 
 		// Auth
 		String accessToken = getAccessToken();
@@ -302,7 +265,7 @@ public class AbstractIntegrationTest {
 		return "http://"+keycloackHost+":"+keycloakPort+url;
 	}
 
-	private static void logContainerOutput(GenericContainer<?> container, Logger logger) {
+	protected static void logContainerOutput(GenericContainer<?> container, Logger logger) {
 		logger.info("Attaching logger to container: " + container.getContainerInfo().getName());
 		Slf4jLogConsumer logConsumer = new Slf4jLogConsumer(logger);
 		container.followOutput(logConsumer);

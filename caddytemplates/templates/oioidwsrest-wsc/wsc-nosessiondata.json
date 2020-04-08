@@ -1,0 +1,69 @@
+{
+  "logging": {
+    "logs": {
+      "default": {
+         "level": "${WSC_CLIENT_LOGLEVEL}"
+       }
+   }
+  },
+
+   "apps":{
+      "tls": {
+      },
+      "http":{
+         "servers":{
+            "srv${LISTEN_PORT}":{
+               "automatic_https":{
+                  "disable": true
+	       },
+               "logs" : {
+		},
+               "listen":[
+                  ":${LISTEN_PORT}"
+               ],
+               "routes":[
+                    {
+		         "handle": [
+				    {
+                                       "handler": "oioidwsrestwsc",
+				       "mongo_host": "${MONGO_HOST}",
+				       "mongo_db": "${MONGO_DATABASE}",
+				       "sts_url": "${WSC_STS_URL}",
+                                       "client_cert_file": "${WSC_CLIENT_CERTIFICATE_FILE}",
+                                       "client_key_file": "${WSC_CLIENT_KEY_FILE}",
+                                       "trust_cert_files": [ ${WSC_TRUST_CERT_FILES} ],
+                                       "service_endpoint": "https://${WSC_SERVICE_ENDPOINT_HOST}:${WSC_SERVICE_ENDPOINT_PORT}${WSC_SERVICE_ENDPOINT_CONTEXT}",
+                                       "service_audience": "${WSC_SERVICE_AUDIENCE}"
+                                    },
+                                    {
+                                       "handler":"reverse_proxy",
+                                       "transport":{
+                                          "protocol":"http",
+					  "tls": {
+					        "insecure_skip_verify": true,
+						"client_certificate_file": "${WSC_CLIENT_CERTIFICATE_FILE}",
+						"client_certificate_key_file": "${WSC_CLIENT_KEY_FILE}"
+					   },
+                                          "read_buffer_size":4096
+                                       },
+                                       "upstreams":[
+                                          {
+                                             "dial":"${WSC_SERVICE_ENDPOINT_HOST}:443"
+                                          }
+                                       ]
+                                    }
+                          ],
+                          "match":[
+                                {
+                                    "path":[
+                                       "/*"
+                                     ]
+                                }
+                          ]
+                     }
+               ]
+            }
+         }
+      }
+   }
+}
