@@ -156,7 +156,7 @@ public class AbstractIntegrationTest {
 			GenericContainer<?> echoService = new GenericContainer<>("mendhak/http-https-echo")
 					.withExposedPorts(80)
 					.withNetwork(n)
-					.waitingFor(Wait.forListeningPort())
+					.waitingFor(Wait.forListeningPort())	
 					.withNetworkAliases("echo");
 			echoService.start();
 
@@ -199,7 +199,7 @@ public class AbstractIntegrationTest {
 
 				.withClasspathResourceMapping(config, "/configs/config.json", BindMode.READ_ONLY)
 				.withCommand("-config", "/configs/config.json")
-				.waitingFor(Wait.forLogMessage(".*Caddy 2 serving initial configuration.*\\n", 1))
+				.waitingFor(Wait.forLogMessage(".*serving initial configuration.*\\n", 1))
 				.withNetworkAliases(alias);
 		return kitCaddyContainer;						
 	}

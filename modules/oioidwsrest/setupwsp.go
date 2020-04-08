@@ -61,7 +61,7 @@ func init() {
 // CaddyModule returns the Caddy module information.
 func (CaddyOioIdwsRestWsp) CaddyModule() caddy.ModuleInfo {
 	return caddy.ModuleInfo{
-		Name: "http.handlers.oioidwsrestwsp",
+		ID: "http.handlers.oioidwsrestwsp",
 		New:  func() caddy.Module { return new(CaddyOioIdwsRestWsp) },
 	}
 }
