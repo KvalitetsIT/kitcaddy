@@ -1,20 +1,21 @@
 package dk.kvalitetsit.kitcaddy.test;
 
-import java.io.File;
 import java.io.IOException;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.output.OutputFrame.OutputType;
+import org.testcontainers.containers.output.ToStringConsumer;
 import org.testcontainers.containers.startupcheck.OneShotStartupCheckStrategy;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import dk.kvalitetsit.kitcaddy.AbstractIntegrationTest;
+import dk.kvalitetsit.kitcaddy.TestConstants;
 
 /**
  * Tests the configuration file generator - ie the individual templates
@@ -22,21 +23,14 @@ import dk.kvalitetsit.kitcaddy.AbstractIntegrationTest;
  */
 public class TemplateIntegrationTest extends AbstractIntegrationTest {
 
-
-	private File configOutputFile;
-	
 	private GenericContainer<?> templateContainer; 
 	
 	@Before
 	public void setupTest() throws IOException {
-		TemporaryFolder folder= new TemporaryFolder(); 
-		folder.create();
-		configOutputFile = folder.newFile();
 		templateContainer = new GenericContainer<>("kvalitetsit/kitcaddy-templates:dev")
 				.withEnv("CADDYFILE", "/configs/myoutput")
 				.withNetwork(getDockerNetwork())
-				.withStartupCheckStrategy(new OneShotStartupCheckStrategy())
-				.withFileSystemBind(configOutputFile.getAbsolutePath(), "/configs/myoutput", BindMode.READ_WRITE);
+				.withStartupCheckStrategy(new OneShotStartupCheckStrategy());
 	}
 	
 	
@@ -56,7 +50,9 @@ public class TemplateIntegrationTest extends AbstractIntegrationTest {
 		templateContainer.start();
 		
 		// Then
-		JsonNode jsonConfig = om.readValue(configOutputFile, JsonNode.class);
+		String output = templateContainer.getLogs(OutputType.STDOUT);
+		Assert.assertNotNull("Expected output from template container", output);
+		JsonNode jsonConfig = om.readValue(output, JsonNode.class);
 		Assert.assertNotNull(jsonConfig);
 		Assert.assertEquals(jsonConfigToCompareWith, jsonConfig);
 	}
@@ -65,7 +61,7 @@ public class TemplateIntegrationTest extends AbstractIntegrationTest {
 		templateContainer.withEnv("SAML_CLIENT_LOGLEVEL", "debug");
 		templateContainer.withEnv("LISTEN_PORT", "8787");
 		templateContainer.withEnv("METRICS_PATH", "/metrics");
-		templateContainer.withEnv("SAML_SESSION_HEADER", "MYSESSIONHEADER");
+		templateContainer.withEnv("SAML_SESSION_HEADER", TestConstants.SESSION_HEADER_NAME);
 		templateContainer.withEnv("SAML_SESSION_EXPIRY_HOURS", "6");
 		templateContainer.withEnv("MONGO_HOST", "mongo");
 		templateContainer.withEnv("MONGO_DATABASE", "samlsp");

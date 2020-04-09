@@ -11,4 +11,4 @@ else
    jq -s '.[0] * .[1]' ${CADDYFILE_APPEND_TO} /tmp/output > ${CADDYFILE}
 fi
 
-
+cat ${CADDYFILE}

@@ -1,5 +1,7 @@
 package dk.kvalitetsit.kitcaddy.test;
 
+import java.util.Base64;
+
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -10,8 +12,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.jna.platform.win32.WinDef.WPARAM;
 
 import dk.kvalitetsit.kitcaddy.AbstractIntegrationTest;
+import dk.kvalitetsit.kitcaddy.TestConstants;
 
 /**
  * 
@@ -55,9 +59,21 @@ public class OioIdwsRestWscIntegrationTest extends AbstractIntegrationTest {
 		ResponseEntity<String> echoResponse = restTemplate.getForEntity(echoUrl, String.class);
 
 		// Then
+		ObjectMapper om = new ObjectMapper();
 		Assert.assertNotNull(echoResponse);
-		JsonNode responseParsed = new ObjectMapper().readValue(echoResponse.getBody(), JsonNode.class);
+		JsonNode responseParsed = om.readValue(echoResponse.getBody(), JsonNode.class);
 		Assert.assertNotNull(responseParsed);
+
+		JsonNode httpHeadersNode = responseParsed.get(TestConstants.ECHO_SERVICE_HTTP_HEADER_KEY);
+		Assert.assertNotNull(httpHeadersNode);
+		JsonNode wspSessionDataHeaderNode = httpHeadersNode.get(TestConstants.WSP_SESSIONDATA_HEADERNAME);
+		Assert.assertNotNull(wspSessionDataHeaderNode);
+		
+		String base64EncodedSessionData = wspSessionDataHeaderNode.asText();
+		Assert.assertNotNull(base64EncodedSessionData);
+		String decodedSessionData = new String(Base64.getDecoder().decode(base64EncodedSessionData));
+		JsonNode sessionDataNode = om.readValue(decodedSessionData, JsonNode.class);
+		Assert.assertNotNull(sessionDataNode);
 	}
 
 	public String getWscServiceUrl() {
