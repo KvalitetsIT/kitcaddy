@@ -1,17 +1,14 @@
-package dk.kvalitetsit.kitcaddy.test;
+package dk.kvalitetsit.kitcaddy;
 
-import org.json.JSONException;
-import org.junit.Assert;
 import org.junit.Rule;
-import org.junit.Test;
-import org.openqa.selenium.remote.RemoteWebDriver;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.testcontainers.containers.BrowserWebDriverContainer;
 import org.testcontainers.containers.GenericContainer;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import dk.kvalitetsit.kitcaddy.test.configuration.AllInOneTestConfiguration;
 
 /**
  * 
@@ -20,8 +17,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *    | Webbrowser |    ->    | SAML-SP |   ->   | wsc | ->   | wsp | -> | echoservice | 
  *
  */
-
-public class AllInOneIntegrationTest extends AbstractBrowserBasedIntegrationTest {
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes=AllInOneTestConfiguration.class, loader=AnnotationConfigContextLoader.class)
+public class AbstractAllInOneIT extends AbstractBrowserBasedIntegrationTest {
 
 	public static final String 	SAML_SP_HOST 	= "uiservice";
 	public static final int 	SAML_SP_PORT 	= 8787;
@@ -57,26 +55,6 @@ public class AllInOneIntegrationTest extends AbstractBrowserBasedIntegrationTest
 
 	public static GenericContainer<?> createSamlSp() {
 		return 	getKitCaddyContainer(SAML_SP_HOST, SAML_SP_PORT, getDockerNetwork(), "samlserviceprovider/saml.config");
-	}
-	
-	@Test
-	public void testAccessProtectedRessouceCorrectUsernamePassword() throws JSONException, JsonMappingException, JsonProcessingException {
-		
-		// Given
-		String username = "test123";
-		String password = "secret1234";
-		addUserToKeycloak(username, password);
-		RemoteWebDriver webdriver = chrome.getWebDriver();
-		
-		// When
-		String result = doLoginFlow(webdriver, "http://"+SAML_SP_URL+"/service/test", username, password);
-		
-		// Then
-		Assert.assertTrue("Expected to find the start of JSON data", result.indexOf("{") >= 0 );
-		Assert.assertTrue("Expected to find the end of JSON data", result.lastIndexOf("}") >= 0 );
-		String jsonReturned = result.substring(result.indexOf("{"), result.lastIndexOf("}") + 1);
-		JsonNode responseParsed = new ObjectMapper().readValue(jsonReturned, JsonNode.class);
-		Assert.assertNotNull(responseParsed);
 	}
 
 	public String getSpServiceUrl() {

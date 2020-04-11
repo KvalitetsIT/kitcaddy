@@ -1,8 +1,6 @@
-package dk.kvalitetsit.kitcaddy.test;
+package dk.kvalitetsit.kitcaddy;
 
 import org.openqa.selenium.remote.RemoteWebDriver;
-
-import dk.kvalitetsit.kitcaddy.AbstractIntegrationTest;
 
 public class AbstractBrowserBasedIntegrationTest extends AbstractIntegrationTest {
 

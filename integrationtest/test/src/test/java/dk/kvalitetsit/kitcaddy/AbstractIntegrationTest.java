@@ -43,6 +43,9 @@ public class AbstractIntegrationTest {
 	public static Integer keycloakPort;
 	private static String keycloackHost;
 
+	public static Integer mongoPort;
+	public static String mongoHost;
+
 	protected static Network getDockerNetwork() {
 		return n;
 	}
@@ -66,6 +69,8 @@ public class AbstractIntegrationTest {
 					.waitingFor(Wait.forListeningPort())
 					.withNetworkAliases(mongoAlias);
 			mongoContainer.start();
+			mongoPort = mongoContainer.getMappedPort(27017);
+			mongoHost = mongoContainer.getContainerIpAddress();
 
 			// Start Keycloack service
 			File keycloakCertificate = getKeycloakContainer(n);
@@ -87,7 +92,7 @@ public class AbstractIntegrationTest {
 
 					.withEnv("STS_ISSUER", "sts")
 					.withEnv("STS_TOKEN_LIFETIME", "2800")
-					.withEnv("STS_SUPPORTED_CLAIMS", "claim-a,claim-b")
+					.withEnv("STS_SUPPORTED_CLAIMS", TestConstants.STS_ALLOWED_CLAIM_A+","+TestConstants.STS_ALLOWED_CLAIM_B)
 					.withEnv("STS_COPY_ATTRIBUTES", "claim-a")
 
 					// STS keys

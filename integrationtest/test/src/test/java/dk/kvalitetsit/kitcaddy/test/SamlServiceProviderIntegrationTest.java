@@ -16,6 +16,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import dk.kvalitetsit.kitcaddy.AbstractBrowserBasedIntegrationTest;
+
 /**
  * 
  *    This testsetup
