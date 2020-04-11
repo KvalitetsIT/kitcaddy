@@ -33,6 +33,9 @@ pipeline {
 					maven.inside() {
 						sh 'cd integrationtest; mvn clean install'
 					}
+
+                                        junit '**/target/surefire-reports/*.xml,**/target/failsafe-reports/*.xml'
+
 				}
 			}
 		}
