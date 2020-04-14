@@ -63,7 +63,7 @@ public class AbstractIntegrationTest {
 
 			// Start the Mongo container
 			String mongoAlias = "mongo";
-			GenericContainer<?> mongoContainer = new GenericContainer<>("mongo:3.3")
+			GenericContainer<?> mongoContainer = new GenericContainer<>("mongo:3.7")
 					.withExposedPorts(27017)
 					.withNetwork(n)
 					.waitingFor(Wait.forListeningPort())

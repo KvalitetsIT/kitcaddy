@@ -55,12 +55,79 @@ func (m CaddyOioIdwsRestWsc) ServeHTTP(w http.ResponseWriter, r *http.Request, n
 	nextService := new(CaddyService)
 	nextService.Handler = next
 
-	httpCode, err := m.ClientProtocol.HandleService(w, r, nextService)
-	if httpCode != http.StatusOK {
-		return caddyhttp.Error(httpCode, err)
+	var maxIter = 2
+	var iter = 0
+	for (true) {
+		wscResponseWriter := NewWscResponseWriter(w)
+		if (iter < maxIter) {
+			_, err, callback := m.ClientProtocol.HandleServiceWithCallback(&wscResponseWriter, r, nextService)
+			m.Logger.Debug(fmt.Sprintf("httpCode %d", wscResponseWriter.MyStatusCode))
+			if (wscResponseWriter.MyStatusCode == http.StatusUnauthorized && callback != nil) {
+				m.Logger.Debug("Status unautorized - using callback")
+				(*callback)()
+			} else if (wscResponseWriter.MyStatusCode == http.StatusUnauthorized) {
+				m.Logger.Debug("Status unautorized - no callback")
+				iter = maxIter;
+			} else {
+				return err
+			}
+			iter += 1
+		} else {
+			_, err := m.ClientProtocol.HandleService(w, r, nextService)
+			return err
+		}
 	}
-	return err
+
+	return nil
 }
+
+type WscResponseWriter struct {
+	http.ResponseWriter
+	MyStatusCode int
+	MyHeaders http.Header
+}
+
+func (r *WscResponseWriter) WriteHeader(statusCode int) {
+	r.MyStatusCode = statusCode
+	if (statusCode != http.StatusUnauthorized) {
+		r.ResponseWriter.WriteHeader(statusCode)
+		r.flush()
+	}
+}
+
+func (r *WscResponseWriter) Write(b []byte) (int, error) {
+	if (r.MyStatusCode == 0) {
+                r.WriteHeader(http.StatusOK)
+        }
+	if (r.MyStatusCode != http.StatusUnauthorized) {
+		return r.ResponseWriter.Write(b)
+	}
+	return len(b), nil
+
+}
+
+func (r *WscResponseWriter) Header() http.Header {
+	if (r.MyStatusCode == 0) {
+		return r.MyHeaders
+	}
+	return r.ResponseWriter.Header()
+}
+
+func (r *WscResponseWriter) flush() {
+	for k, vs := range r.MyHeaders {
+		for _, v := range vs {
+			r.ResponseWriter.Header().Add(k, v)
+		}
+	}
+}
+
+
+func NewWscResponseWriter(w http.ResponseWriter) WscResponseWriter {
+	wsc := WscResponseWriter{ResponseWriter: w}
+	wsc.MyHeaders = make(map[string][]string)
+	return wsc
+}
+
 
 func init() {
 	caddy.RegisterModule(CaddyOioIdwsRestWsc{})
@@ -109,7 +176,7 @@ func (m *CaddyOioIdwsRestWsc) Provision(ctx caddy.Context) error {
 
 	// Create sessiondatafetcher if configured
 	if len(m.SessionDataUrl) > 0 {
-		m.Logger.Debugf("Setting up sessing data fetcher using URL: %v")
+		m.Logger.Debugf("Setting up sessing data fetcher using URL: %s", m.SessionDataUrl)
 		caCertPool := gooioidwsrest.CreateCaCertPool(m.TrustCertFiles)
 		tlsConfig := &tls.Config{
 			RootCAs: caCertPool,

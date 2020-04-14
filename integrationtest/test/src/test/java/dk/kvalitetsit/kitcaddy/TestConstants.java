@@ -18,6 +18,8 @@ public class TestConstants {
 	public static final String WSC_CLAIMS_HEADERNAME = "X-Claims";
 
 	
+	public static final String WSP_MONGO_DATABASE = "wsptest";
+	public static final String WSP_MONGO_SESSION_COLLECTION = "sessions";
 	public final static String WSP_SESSIONDATA_HEADERNAME = "sessiondataheader";
 	public final static String WSP_AUTHORIZATION_HEADERNAME = "authorization";
 

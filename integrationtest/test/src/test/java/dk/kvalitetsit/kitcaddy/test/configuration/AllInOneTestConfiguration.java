@@ -35,4 +35,8 @@ public class AllInOneTestConfiguration extends AbstractMongoClientConfiguration 
 		return new MongoTemplate(new SimpleMongoClientDbFactory(mongoClient(), TestConstants.WSC_MONGO_DATABASE), mappingMongoConverter());
 	}
 
+	@Bean
+	protected MongoTemplate wspMongoTemplate() throws Exception {
+		return new MongoTemplate(new SimpleMongoClientDbFactory(mongoClient(), TestConstants.WSP_MONGO_DATABASE), mappingMongoConverter());
+	}
 }

@@ -23,7 +23,6 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
-import com.sun.jna.platform.win32.WinDef.WPARAM;
 
 import dk.kvalitetsit.kitcaddy.AbstractIntegrationTest;
 import dk.kvalitetsit.kitcaddy.TestConstants;
