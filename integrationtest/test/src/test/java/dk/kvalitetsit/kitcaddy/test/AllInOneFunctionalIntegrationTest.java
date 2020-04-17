@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dk.kvalitetsit.kitcaddy.AbstractAllInOneIT;
 
 
-public class AllInOneFunctionalIT extends AbstractAllInOneIT {
+public class AllInOneFunctionalIntegrationTest extends AbstractAllInOneIT {
 
 	
 	@Test

@@ -1,9 +1,11 @@
 package dk.kvalitetsit.kitcaddy;
 
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.Duration;
 
 import org.json.JSONException;
@@ -46,6 +48,9 @@ public class AbstractIntegrationTest {
 	public static Integer mongoPort;
 	public static String mongoHost;
 
+	
+	protected static GenericContainer<?> mongoContainer;
+	
 	protected static Network getDockerNetwork() {
 		return n;
 	}
@@ -63,9 +68,11 @@ public class AbstractIntegrationTest {
 
 			// Start the Mongo container
 			String mongoAlias = "mongo";
-			GenericContainer<?> mongoContainer = new GenericContainer<>("mongo:3.7")
+			mongoContainer = new GenericContainer<>("mongo:3.7")
 					.withExposedPorts(27017)
 					.withNetwork(n)
+					.withReuse(false)
+					.withClasspathResourceMapping("mongo/killallconnections.js", "/scripts/killallconnections.js", BindMode.READ_ONLY)
 					.waitingFor(Wait.forListeningPort())
 					.withNetworkAliases(mongoAlias);
 			mongoContainer.start();
@@ -143,7 +150,6 @@ public class AbstractIntegrationTest {
 
 		}
 	}
-
 
 	public static GenericContainer<?> getKitCaddyContainer(String alias, int port, Network n, String config) {
 		return getKitCaddyContainer("kvalitetsit/kitcaddy:dev", alias, port, n, config);
@@ -275,4 +281,22 @@ public class AbstractIntegrationTest {
 		Slf4jLogConsumer logConsumer = new Slf4jLogConsumer(logger);
 		container.followOutput(logConsumer);
 	}
+	
+
+	public static String getResourceAsString(InputStream inputStream) throws IOException {
+		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+	    int nRead;
+	    byte[] data = new byte[1024];
+	    while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
+	        buffer.write(data, 0, nRead);
+	    }
+	 
+	    buffer.flush();
+	    byte[] byteArray = buffer.toByteArray();
+	         
+	    String text = new String(byteArray);
+	    return text;
+	}
+
+
 }

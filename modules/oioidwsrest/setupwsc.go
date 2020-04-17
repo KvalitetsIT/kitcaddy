@@ -17,6 +17,7 @@ import (
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
 
 	"go.uber.org/zap"
+	"time"
 )
 
 const DEFAULT_VALUE_SESSION_HEADER_NAME = "SESSION"
@@ -159,9 +160,14 @@ func (m *CaddyOioIdwsRestWsc) Provision(ctx caddy.Context) error {
 	m.Logger.Debugf("Using MongoDB:%s", mongo_url)
 	tokenCache, err := securityprotocol.NewMongoTokenCache(mongo_url, m.MongoDb, "wscsessions")
 	if err != nil {
-		m.Logger.Warnf("Can't setup tokenCache: %v", err)
+		m.Logger.Errorf("Can't setup tokenCache: %s", err.Error())
 		return err
 	}
+        // maintain the tokencache regularly
+        go func() {
+                securityprotocol.StartMaintenance(tokenCache, 10 * time.Minute, m.Logger)
+        }()
+
 
 	// Maps to wsc config
 	wscConfig := new(gooioidwsrest.OioIdwsRestHttpProtocolClientConfig)

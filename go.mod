@@ -2,21 +2,20 @@ module kitcaddy
 
 go 1.14
 
-replace github.com/KvalitetsIT/gooioidwsrest => github.com/KvalitetsIT/gooioidwsrest v0.0.0-20200414064919-1f12e3ba1dbe
+replace github.com/KvalitetsIT/gooioidwsrest => github.com/KvalitetsIT/gooioidwsrest v0.0.0-20200416190525-93b345a78e07
 
-replace github.com/KvalitetsIT/gosecurityprotocol => github.com/KvalitetsIT/gosecurityprotocol v0.0.0-20200412142609-cde0857b28f4
+replace github.com/KvalitetsIT/gosecurityprotocol => github.com/KvalitetsIT/gosecurityprotocol v0.0.0-20200416184625-51822bff6698
                                                                                            
-replace github.com/KvalitetsIT/gosamlserviceprovider => github.com/KvalitetsIT/gosamlserviceprovider/samlprovider v0.0.0-20200408075308-8138d454b274
-
+replace github.com/KvalitetsIT/gosamlserviceprovider => github.com/KvalitetsIT/gosamlserviceprovider/samlprovider v0.0.0-20200417085137-cc5fb58d6ffc
 require (
 
-        github.com/KvalitetsIT/gooioidwsrest v0.0.0-20200414064919-1f12e3ba1dbe
+        github.com/KvalitetsIT/gooioidwsrest v0.0.0-20200416190525-93b345a78e07
 
-	github.com/KvalitetsIT/gosecurityprotocol v0.0.0-20200412142609-cde0857b28f4
+	github.com/KvalitetsIT/gosecurityprotocol v0.0.0-20200416184625-51822bff6698
 
-        github.com/KvalitetsIT/gosamlserviceprovider v0.0.0-00010101000000-000000000000
+        github.com/KvalitetsIT/gosamlserviceprovider v0.0.0-20200417085137-cc5fb58d6ffc
 
-	github.com/caddyserver/caddy/v2 v2.0.0-rc.1
+	github.com/caddyserver/caddy/v2 v2.0.0-rc.3
 
 	github.com/Masterminds/sprig/v3 v3.0.2
 	github.com/alecthomas/chroma v0.7.2-0.20200305040604-4f3623dce67a

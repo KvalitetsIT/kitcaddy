@@ -12,6 +12,7 @@ import (
 	"github.com/caddyserver/caddy/v2/caddyconfig/httpcaddyfile"
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
 
+	"time"
 	"go.uber.org/zap"
 )
 
@@ -83,9 +84,14 @@ func (m *CaddyOioIdwsRestWsp) Provision(ctx caddy.Context) error {
 	m.Logger.Debugf("Using MongoDB: %s", mongo_url)
 	sessionCache, err := securityprotocol.NewMongoSessionCache(mongo_url, m.MongoDb, "sessions")
 	if (err != nil) {
-	    m.Logger.Warnf("Can't setup tokenCache: %v", err)
+	    m.Logger.Errorf("Can't setup tokenCache: %s", err.Error())
 		return err
 	}
+        // maintain the sessioncache regularly
+        go func() {
+                securityprotocol.StartMaintenance(sessionCache, 10 * time.Minute, m.Logger)
+        }()
+
 
 	// Maps to wsp config
         wspConfig := new(gooioidwsrest.OioIdwsRestHttpProtocolServerConfig)

@@ -7,6 +7,7 @@ import (
 	gosamlserviceprovider "github.com/KvalitetsIT/gosamlserviceprovider"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/caddyserver/caddy/v2"
 	"github.com/caddyserver/caddy/v2/caddyconfig/caddyfile"
@@ -43,6 +44,7 @@ type SamlProviderModule struct {
 	LogoutPath   string `json:"logout_path,omitempty"`
 	SLOPath      string `json:"slo_path,omitempty"`
 	SSOPath      string `json:"sso_path,omitempty"`
+	LogoutLandingPage string `json:"logout_landing_page,omitempty"`
 	CookieDomain string `json:"cookie_domain,omitempty"`
 	CookiePath   string `json:"cookie_path,omitempty"`
 
@@ -81,6 +83,7 @@ func (SamlProviderModule) CaddyModule() caddy.ModuleInfo {
 func (m *SamlProviderModule) Provision(ctx caddy.Context) error {
 	m.Logger = ctx.Logger(m).Sugar()
 	m.Logger.Info("Provisioning SamlProvidermodule")
+
 	// Create Mongo Session Cache
 	mongo_port := "27017"
 	if len(m.MongoPort) != 0 {
@@ -94,16 +97,21 @@ func (m *SamlProviderModule) Provision(ctx caddy.Context) error {
 	m.Logger.Debugf("Using MongoDB:%s", mongo_url)
 	sessionCache, err := securityprotocol.NewMongoSessionCache(mongo_url, m.MongoDb, "samlsessions")
 	if err != nil {
-		m.Logger.Warnf("Can't setup sessionCache: %v", err)
+		m.Logger.Errorf("Can't setup sessionCache: %s", err.Error())
 		return err
 	}
+	// maintain the sessioncache regularly
+	go func() {
+		securityprotocol.StartMaintenance(sessionCache, 10 * time.Minute, m.Logger)
+	}()
 
 	samlProviderConfig := new(gosamlserviceprovider.SamlServiceProviderConfig)
 	samlProviderConfig.SignAuthnRequest, _ = strconv.ParseBool(m.SignAuthnRequest)
 	m.Logger.Info("Loading keystore")
 	keystore, err := tls.LoadX509KeyPair(m.SignCertFile, m.SignKeyFile)
 	if err != nil {
-		m.Logger.Errorf("Cannot load Keystore: %v", err)
+		m.Logger.Errorf("Cannot load Keystore: %s", err.Error())
+		return err
 	}
 	samlProviderConfig.ServiceProviderKeystore = &keystore
 	samlProviderConfig.EntityId = m.EntityId
@@ -119,6 +127,7 @@ func (m *SamlProviderModule) Provision(ctx caddy.Context) error {
 	samlProviderConfig.SamlSSOPath = m.SSOPath
 	samlProviderConfig.SessionExpiryHours = m.SessionExpiryHours
 	samlProviderConfig.Logger = m.Logger
+	samlProviderConfig.LogoutLandingPage = m.LogoutLandingPage
 	m.Logger.Infof("Starting SAML provider with config: %v", samlProviderConfig)
 	m.SamlProvider, _ = gosamlserviceprovider.NewSamlServiceProviderFromConfig(samlProviderConfig, sessionCache)
 	return nil

@@ -19,7 +19,7 @@ import dk.kvalitetsit.kitcaddy.test.configuration.AllInOneTestConfiguration;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes=AllInOneTestConfiguration.class, loader=AnnotationConfigContextLoader.class)
-public class AbstractAllInOneIT extends AbstractBrowserBasedIntegrationTest {
+public abstract class AbstractAllInOneIT extends AbstractBrowserBasedIntegrationTest {
 
 	public static final String 	SAML_SP_HOST 	= "uiservice";
 	public static final int 	SAML_SP_PORT 	= 8787;

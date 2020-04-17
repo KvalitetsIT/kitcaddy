@@ -51,6 +51,7 @@
                   "logout_path": "${SAML_LOGOUT_PATH}",
                   "slo_path": "${SAML_SLO_PATH}",
                   "sso_path": "${SAML_SSO_PATH}",
+		  "logout_landing_page": "${SAML_LOGOUT_LANDING_PAGE}",
 
                   "cookie_domain": "${SAML_COOKIE_DOMAIN}",
                   "cookie_path": "${SAML_COOKIE_PATH}"

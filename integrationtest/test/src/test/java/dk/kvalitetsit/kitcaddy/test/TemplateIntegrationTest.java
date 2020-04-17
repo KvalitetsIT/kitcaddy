@@ -8,7 +8,6 @@ import org.junit.Test;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.output.OutputFrame.OutputType;
-import org.testcontainers.containers.output.ToStringConsumer;
 import org.testcontainers.containers.startupcheck.OneShotStartupCheckStrategy;
 
 import com.fasterxml.jackson.databind.JsonNode;
