@@ -77,7 +77,7 @@ public class TemplateIntegrationTest extends AbstractIntegrationTest {
 		templateContainer.withEnv("SAML_SSO_PATH", "/saml/SSO");
 		templateContainer.withEnv("SAML_COOKIE_DOMAIN", "");
 		templateContainer.withEnv("SAML_COOKIE_PATH", "/");
-		templateContainer.withEnv("SAML_BACKEND_HOST", "localhost");
+		templateContainer.withEnv("SAML_BACKEND_HOST", "uiservice");
 		templateContainer.withEnv("SAML_BACKEND_PORT", "9090");
 	}
 }
