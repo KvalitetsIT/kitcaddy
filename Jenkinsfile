@@ -39,6 +39,26 @@ pipeline {
 				}
 			}
 		}
+	       stage('Tag Docker Images And Push') {
+        	    steps {
+        	        script {
+				image = docker.image("kvalitetsit/kitcaddy:dev")
+				image.push("latest")
+				if(env.TAG_NAME != null && env.TAG_NAME.matches("^v[0-9]*\\.[0-9]*\\.[0-9]*")) {
+					echo "Tagging version"
+					image.push(env.TAG_NAME.substring(1))
+				}
+
+				timage = docker.image("kvalitetsit/kitcaddy-templates:dev")
+				timage.push("latest")
+				if(env.TAG_NAME != null && env.TAG_NAME.matches("^v[0-9]*\\.[0-9]*\\.[0-9]*")) {
+					echo "Tagging version"
+                        		timage.push(env.TAG_NAME.substring(1))
+                    		}
+                	}
+            	    }
+        	}
+
 	}
 }
 
