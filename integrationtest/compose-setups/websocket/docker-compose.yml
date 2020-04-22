@@ -1,0 +1,12 @@
+version: '2'
+services:
+   websocket:
+     image: kvalitetsit/kitcaddy:1.0.0
+     volumes:
+       - ./samlsp/sp.cer:/sp/sp.cer
+       - ./samlsp/sp.pem:/sp/sp.pem
+       - ./samlsp/config.json:/config/config.json
+       - ./samlsp/websocket.html:/htmls/websocket.html
+     command: -config /config/config.json
+     ports:
+      - "80:8585"

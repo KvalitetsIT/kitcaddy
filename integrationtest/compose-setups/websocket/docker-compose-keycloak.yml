@@ -1,0 +1,14 @@
+version: '2'
+services:
+   mongo:
+     image: mongo:3.7
+   keycloak:
+     image: jboss/keycloak:8.0.1
+     environment:
+      - KEYCLOAK_USER=keycloak
+      - KEYCLOAK_PASSWORD=keycloak
+      - KEYCLOAK_IMPORT=/importrealms/realm-test.json
+     volumes:
+       - ./keycloak/realm-test.json:/importrealms/realm-test.json
+     ports:
+      - "8080:8080"
