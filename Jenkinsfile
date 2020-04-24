@@ -25,7 +25,7 @@ pipeline {
                                 }
                         }
                 }
-		 stage('Run integration tests') {
+		 /*stage('Run integration tests') {
 			steps {
 				script {
 					def maven = docker.image('maven:3-jdk-11')
@@ -38,7 +38,7 @@ pipeline {
 
 				}
 			}
-		}
+		}*/
 		stage('Tag Docker Images And Push') {
 		    steps {
 		        script {

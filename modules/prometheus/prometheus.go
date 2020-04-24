@@ -33,27 +33,27 @@ var (
 
 func (m PrometheusModule) ServeHTTP(w http.ResponseWriter, r *http.Request, next caddyhttp.Handler) error {
 	start := time.Now()
-	writer := NewPrometheusResponseWriter(w)
+	recorder := caddyhttp.NewResponseRecorder(w,nil,nil)
 	var result error = nil
 	if r.URL.Path == m.MetricsPath {
 		m.Logger.Debugf("Returning metrics on path %v", r.URL.Path)
-		m.MetricsHandler.ServeHTTP(writer, r)
+		m.MetricsHandler.ServeHTTP(recorder, r)
 	} else {
 		m.Logger.Debugf("Forwarding path %v to next handler", r.URL.Path)
-		result = next.ServeHTTP(writer, r)
+		result = next.ServeHTTP(recorder, r)
 	}
 	duration := time.Since(start)
-	requestCount.WithLabelValues(m.labelValues(writer, r)...).Inc()
-	responseLatency.WithLabelValues(m.labelValues(writer, r)...).Observe(duration.Seconds())
+	requestCount.WithLabelValues(m.labelValues(recorder, r)...).Inc()
+	responseLatency.WithLabelValues(m.labelValues(recorder, r)...).Observe(duration.Seconds())
 	return result
 }
 
-func (m PrometheusModule) labelValues(w *PrometheusResponseWriter, r *http.Request) []string {
+func (m PrometheusModule) labelValues(w caddyhttp.ResponseRecorder, r *http.Request) []string {
 	proto := r.Proto
 	host := r.Host
 	path := r.URL.Path
 	method := r.Method
-	status := strconv.Itoa(w.statusCode)
+	status := strconv.Itoa(w.Status())
 	return []string{host, proto, method, path, status}
 }
 
