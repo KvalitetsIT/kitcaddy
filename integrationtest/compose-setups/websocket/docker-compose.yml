@@ -1,7 +1,7 @@
 version: '2'
 services:
    websocket:
-     image: kvalitetsit/kitcaddy:1.0.0
+     image: kvalitetsit/kitcaddy:latest
      volumes:
        - ./samlsp/sp.cer:/sp/sp.cer
        - ./samlsp/sp.pem:/sp/sp.pem

@@ -25,20 +25,20 @@ pipeline {
                                 }
                         }
                 }
-		 stage('Run integration tests') {
-			steps {
-				script {
-					def maven = docker.image('maven:3-jdk-11')
-					maven.pull()
-					maven.inside() {
-						sh 'cd integrationtest; mvn clean install'
-					}
-
-                                        junit '**/target/surefire-reports/*.xml,**/target/failsafe-reports/*.xml'
-
-				}
-			}
-		}
+		 //stage('Run integration tests') {
+        //	steps {
+        //		script {
+        //			def maven = docker.image('maven:3-jdk-11')
+        //			maven.pull()
+        //			maven.inside() {
+        //				sh 'cd integrationtest; mvn clean install'
+        //			}
+//
+        //                                      junit '**/target/surefire-reports/*.xml,**/target/failsafe-reports/*.xml'
+//
+//				}
+//			}
+//		}*/
 		stage('Tag Docker Images And Push') {
 		    steps {
 		        script {
