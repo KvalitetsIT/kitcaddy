@@ -2,6 +2,9 @@ package dk.kvalitetsit.kitcaddy.test;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Base64;
 import java.util.UUID;
 
 import org.json.JSONException;
@@ -9,8 +12,15 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
+import org.openqa.selenium.Cookie;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.BrowserWebDriverContainer;
 import org.testcontainers.containers.GenericContainer;
@@ -19,8 +29,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.TextNode;
 
 import dk.kvalitetsit.kitcaddy.AbstractBrowserBasedIntegrationTest;
+import dk.kvalitetsit.kitcaddy.TestConstants;
 
 /**
  * 
@@ -85,6 +97,37 @@ public class SamlServiceProviderIntegrationTest extends AbstractBrowserBasedInte
 	}
 
 	@Test
+	public void testGetSessionDataOnUrlRessouceCorrectUsernamePassword() throws JSONException, JsonMappingException, JsonProcessingException, RestClientException, URISyntaxException {
+
+		// Given
+		samlContainer = getKitCaddyContainer(SAML_SP_HOST, SAML_SP_PORT, getDockerNetwork(), "samlserviceprovider/saml.config");
+		samlContainer.start();
+		String username = "testabc";
+		String password = "secret1234";
+		addUserToKeycloak(username, password);
+		RemoteWebDriver webdriver = chrome.getWebDriver();
+		String result = doLoginFlow(webdriver, "http://"+SAML_SP_URL+"/echo/test", username, password);
+		Cookie cookie = webdriver.manage().getCookieNamed(TestConstants.SESSION_HEADER_NAME);
+		String sessionId = cookie.getValue();
+
+		// When
+		HttpHeaders headers = new HttpHeaders();
+		headers.add(TestConstants.SESSION_HEADER_NAME, sessionId);
+		RestTemplate rt = new RestTemplate();
+		HttpEntity<Void> requestEntity = new HttpEntity<Void>(headers);
+		ResponseEntity<String> response = rt.exchange(new URI(getSpServiceUrl(samlContainer)+"/getsessiondata"), HttpMethod.GET, requestEntity, String.class);
+		
+		// Then
+		Assert.assertNotNull(response);
+		JsonNode responseParsed = new ObjectMapper().readValue(response.getBody(), JsonNode.class);
+		Assert.assertNotNull(responseParsed);
+		String authenticationTokenValue = ((TextNode) responseParsed.get(TestConstants.SESSION_DATA_KEY_AUTHENTICATION_TOKEN)).textValue();
+		Assert.assertNotNull(authenticationTokenValue);
+		String decodedAuthenticationToken = new String(Base64.getDecoder().decode(authenticationTokenValue.getBytes()));
+		Assert.assertNotNull(decodedAuthenticationToken);
+	}
+
+	@Test
 	public void testLogout() throws JSONException, JsonMappingException, JsonProcessingException {
 
 		// Given
@@ -108,6 +151,7 @@ public class SamlServiceProviderIntegrationTest extends AbstractBrowserBasedInte
 		JsonNode responseParsed = new ObjectMapper().readValue(jsonReturned, JsonNode.class);
 		Assert.assertNotNull(responseParsed);
 		Assert.assertEquals("Expected to be returned to the external url of the service...which again should redirect us to the login page", "Log in to test", afterLogoutResultTitle);
+
 	}
 
 	@Test

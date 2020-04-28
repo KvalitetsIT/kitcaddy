@@ -35,4 +35,7 @@ public class TestConstants {
 
 
 	public static final String KEYCLOAK_ACCOUNT_URL = "http://keycloak:8080/auth/realms/test/account";
+	
+	
+	public static final String SESSION_DATA_KEY_AUTHENTICATION_TOKEN = "Authenticationtoken";
 }
