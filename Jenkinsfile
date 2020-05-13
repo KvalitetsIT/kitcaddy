@@ -46,7 +46,7 @@ podTemplate(
                         timage.push("latest")
                         if (env.TAG_NAME != null && env.TAG_NAME.matches("^v[0-9]*\\.[0-9]*\\.[0-9]*")) {
                             echo "Tagging version"
-                            //timage.push(env.TAG_NAME.substring(1))
+                            timage.push(env.TAG_NAME.substring(1))
                         }
                     }
                 }
