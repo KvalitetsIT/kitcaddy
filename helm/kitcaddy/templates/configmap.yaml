@@ -1,0 +1,132 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "kitcaddy.fullname" . }}-config
+  namespace: {{ .Values.namespace | default "default" }}
+data:
+  config.json: |
+    {
+      "logging": {
+        "logs": {
+          "default": {
+            "level": "INFO"
+          }
+        }
+      },
+      "admin": {
+        "disabled": true
+      },
+      "apps": {
+        "tls": {
+        },
+        "http": {
+          "servers": {
+            {{- range .Values.kitcaddy.servers }}
+            "{{.name}}": {
+                "listen": [
+                  ":{{.listenPort}}"
+              ],
+              "routes": [
+                {
+                  "match": [
+                    {
+                      "path": [
+
+                        {{- range $index, $path := .paths }}
+                            {{- if $index}},{{- end}}
+                        {{$path | quote }}
+                        {{- end }}
+                      ]
+                    }
+                  ],
+
+                  "handle": [
+                    {{- if .prometheus.enable}}
+                    {
+                      "handler": "prometheus",
+                      "metrics_path": {{ .prometheus.path | quote }}
+                    },
+                    {{- end }}
+                    {{- if (.wsp) }}
+                    {
+                      "handler": "oioidwsrestwsp",
+                      "mongo_host": {{ .wsp.mongoHost | quote }},
+                      "mongo_db": {{ .wsp.mongoDb | quote }},
+                      "trust_cert_files": [
+                              {{- range $index, $trust := .trusts }}
+                                  {{- if $index}},{{- end}}
+                              {{$trust | quote }}
+                              {{- end }}
+                      ],
+                      "audience_restriction": {{ .wsp.audience_restriction | quote }},
+                      "sessiondata_headername": {{ .wsp.sessiondata_headername | quote }},
+                      "hok": {{ .wsp.hok | quote }}
+                    },
+                    {{- end }}
+                    {{- if (.wsc) }}
+                    {
+                      "handler": "oioidwsrestwsc",
+                      "mongo_host": "${MONGO_HOST}",
+                      "mongo_db": "${MONGO_DATABASE}",
+                      "sts_url": "${WSC_STS_URL}",
+                      "client_cert_file": "${WSC_CLIENT_CERTIFICATE_FILE}",
+                      "client_key_file": "${WSC_CLIENT_KEY_FILE}",
+                      "trust_cert_files": [ ${WSC_TRUST_CERT_FILES} ],
+                      "service_endpoint": "https://${WSC_SERVICE_ENDPOINT_HOST}:${WSC_SERVICE_ENDPOINT_PORT}${WSC_SERVICE_ENDPOINT_CONTEXT}",
+                      "service_audience": "${WSC_SERVICE_AUDIENCE}",
+                      "session_data_url": "${WSC_SESSION_DATA_URL}"
+                    },
+                    {{- end }}
+                    {{- if (.saml) }}
+                    {
+                      "handler": "samlprovider",
+                      "session_header_name": "sessionid",
+                      "session_expiry_hours": "1",
+                      "mongo_host": "mongodb.mongo",
+                      "mongo_db": "m-sp",
+                      "audience_restriction": "urn:m:vdxapi:dk",
+                      "idp_metadata_url": "https://login.vdxapi.dk/auth/realms/broker/protocol/saml/descriptor",
+                      "entityId": "urn:m:vdxapi:dk",
+                      "sign_authn_req": "true",
+                      "sign_cert_file": "/certificate/tls.crt",
+                      "sign_key_file": "/certificate/tls.key",
+
+                      "external_url": "https://m.vdxapi.dk",
+                      "metadata_path": "/host/saml/metadata",
+                      "logout_path": "/host/saml/logout",
+                      "slo_path": "/host/saml/slo",
+                      "sso_path": "/host/saml/sso",
+                      "logout_landing_page": "https://m.vdxapi.dk/meet",
+
+                      "cookie_domain": "m.vdxapi.dk",
+                      "cookie_path": "/"
+                    },
+                    {{- end }}
+                    {
+                      "handler": "reverse_proxy",
+                      "transport": {
+                        "protocol": "http",
+                        {{- if (.upstream.clientTls) }}
+                        "tls": {
+                            "insecure_skip_verify": {{ .upstream.clientTls.insecure_skip_verify }},
+                            "client_certificate_file": {{ .upstream.clientTls.client_certificate_file | quote }},
+                            "client_certificate_key_file": {{ .upstream.clientTls.client_certificate_key_file | quote }}
+    					},
+                        {{- end }}
+                        "read_buffer_size": 4096
+                    },
+                      "upstreams": [
+                        {
+                          "dial": "{{ .upstream.host }}:{{ .upstream.port }}"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+        {{- end }}
+          }
+        }
+      }
+    }

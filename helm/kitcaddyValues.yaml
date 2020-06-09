@@ -1,0 +1,108 @@
+fullnameOverride: pexip-history
+namespace: pexip
+
+image:
+  repository: kvalitetsit/medcom-vdx-pexip-history
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "1.1.1"
+
+kitcaddy:
+  secretName: sts-public-cert
+  extraVolumeMounts: |
+    - mountPath: /trust
+      name: sts-public-cert
+  extraVolumes: |
+    - name: sts-public-cert
+      secret:
+        secretName: sts-public-cert
+
+  servers:
+    - listenPort: 80
+      name: pexip-wsp
+      paths:
+        - /*
+      prometheus:
+        enable: true
+        path: /metrics
+      wsp:
+        mongoHost: mongodb.mongo
+        mongoDb: pexip-history-wsp
+        audience_restriction: urn:pexip-history:vconf:dk
+        sessiondata_headername: sessiondataheader
+        hok: true
+        trusts:
+          - /trust/sts.cer
+      upstream:
+        host: localhost
+        port: 8080
+#        clientTls:
+#          insecure_skip_verify: true
+#          client_certificate_file: WSC_CLIENT_CERTIFICATE_FILE
+#          client_certificate_key_file: WSC_CLIENT_KEY_FILE
+
+
+deployment:
+  containerPort: 8080
+  env:
+    - name: nats.url
+      value: nats://nats:4222
+    - name: nats.subject
+      value: PexipEvent
+    - name: nats.clusterId
+      value: nats-stream
+    - name: nats.clientId
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.name
+    - name: nats.queue.group
+      value: PexipEvent
+    - name: nats.queue.durableName
+      value: "04062020_1430"
+    - name: mongodb.uri
+      value: mongodb://mongodb.mongo:27017/?readPreference=secondaryPreferred&replicaSet=rs0
+    - name: mongodb.database
+      value: PexipEvent
+    - name: usercontext.header.name
+      value: X-Test-Auth
+    - name: userattributes.role.key
+      value: UserRoles
+    - name: userrole.admin.values
+      value: admin
+    - name: userrole.user.values
+      value: justuser,user
+    - name: userattributes.org.key
+      value: Org
+    - name: userrole.monitor.values
+      value: monitor
+    - name: userrole.provisioner.values
+      value: provisioner
+    - name: logging.level.dk.medcom.vdx.pexip
+      value: DEBUG
+
+  readinessProbe:
+    httpGet:
+      path: /history/actuator/health
+      port: 8080
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    successThreshold: 1
+    timeoutSeconds: 1
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  hosts:
+    - host: pexip-sink.vdxapi.dk
+      paths:
+        - /history
+  tls:
+    - hosts:
+        - vdxapi.dk
+      secretName: star.vdxapi.dk
+
+service:
+  #  type: ClusterIP
+  port: 8080
+  targetPort: proxy-port
