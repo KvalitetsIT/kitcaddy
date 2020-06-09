@@ -7,79 +7,79 @@ metadata:
     {{- include "kitcaddy.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
-replicas: {{ .Values.replicaCount }}
-  {{- end }}
-selector:
-  matchLabels:
-    {{- include "kitcaddy.selectorLabels" . | nindent 6 }}
-template:
-  metadata:
-  {{- with .Values.podAnnotations }}
-  annotations:
-    {{- toYaml . | nindent 8 }}
-  {{- end }}
-  labels:
-    {{- include "kitcaddy.selectorLabels" . | nindent 8 }}
-  spec:
-    {{- with .Values.imagePullSecrets }}
-    imagePullSecrets:
+  replicas: {{ .Values.replicaCount }}
+    {{- end }}
+  selector:
+    matchLabels:
+      {{- include "kitcaddy.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+    {{- with .Values.podAnnotations }}
+    annotations:
       {{- toYaml . | nindent 8 }}
     {{- end }}
-    serviceAccountName: {{ include "kitcaddy.serviceAccountName" . }}
-    securityContext:
-      {{- toYaml .Values.podSecurityContext | nindent 8 }}
-    containers:
-      - name: kitcaddy
-        args:
-          - -config
-          - /config/config.json
-        env: []
-        image: "{{ .Values.kitcaddy.image.repository }}:{{ .Values.kitcaddy.image.tag | default .Chart.AppVersion }}"
-        ports:
-          - containerPort: 80
-            name: proxy-port
-        volumeMounts:
-          - mountPath: /config
-            name: caddy-config
-          {{- with .Values.kitcaddy.extraVolumeMounts }}
-          {{- tpl . $ | nindent 10 }}
-          {{- end }}
-      - name: {{ .Chart.Name }}
-        securityContext:
-          {{- toYaml .Values.securityContext | nindent 12 }}
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
-        env:
-          {{- toYaml .Values.deployment.env | nindent 12 }}
-        ports:
-          - name: container-port
-            containerPort: {{ .Values.deployment.containerPort }}
-        {{- if (.Values.deployment.livenessProbe) }}
-        livenessProbe:
-          {{- toYaml .Values.deployment.readinessProbe | nindent 12 }}
-        {{- end }}
-        {{- if (.Values.deployment.readinessProbe) }}
-        readinessProbe:
-          {{- toYaml .Values.deployment.readinessProbe | nindent 12 }}
-        {{- end }}
-        resources:
-          {{- toYaml .Values.resources | nindent 12 }}
-    volumes:
-      - configMap:
-          name: {{ include "kitcaddy.fullname" . }}-config
-        name: caddy-config
-      {{- with .Values.kitcaddy.extraVolumes }}
-      {{- tpl . $ | nindent 6 }}
+    labels:
+      {{- include "kitcaddy.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
       {{- end }}
-    {{- with .Values.nodeSelector }}
-    nodeSelector:
-      {{- toYaml . | nindent 8 }}
-    {{- end }}
-    {{- with .Values.affinity }}
-    affinity:
-      {{- toYaml . | nindent 8 }}
-    {{- end }}
-    {{- with .Values.tolerations }}
-    tolerations:
-      {{- toYaml . | nindent 8 }}
-    {{- end }}
+      serviceAccountName: {{ include "kitcaddy.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: kitcaddy
+          args:
+            - -config
+            - /config/config.json
+          env: []
+          image: "{{ .Values.kitcaddy.image.repository }}:{{ .Values.kitcaddy.image.tag | default .Chart.AppVersion }}"
+          ports:
+            - containerPort: 80
+              name: proxy-port
+          volumeMounts:
+            - mountPath: /config
+              name: caddy-config
+            {{- with .Values.kitcaddy.extraVolumeMounts }}
+            {{- tpl . $ | nindent 12 }}
+            {{- end }}
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            {{- toYaml .Values.deployment.env | nindent 12 }}
+          ports:
+            - name: container-port
+              containerPort: {{ .Values.deployment.containerPort }}
+          {{- if (.Values.deployment.livenessProbe) }}
+          livenessProbe:
+            {{- toYaml .Values.deployment.readinessProbe | nindent 12 }}
+          {{- end }}
+          {{- if (.Values.deployment.readinessProbe) }}
+          readinessProbe:
+            {{- toYaml .Values.deployment.readinessProbe | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - configMap:
+            name: {{ include "kitcaddy.fullname" . }}-config
+          name: caddy-config
+        {{- with .Values.kitcaddy.extraVolumes }}
+        {{- tpl . $ | nindent 8 }}
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
