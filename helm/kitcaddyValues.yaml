@@ -1,5 +1,7 @@
 fullnameOverride: pexiphistory
 namespace: pexip
+imagePullSecrets:
+  - name: kit4medcom
 
 image:
   repository: kvalitetsit/medcom-vdx-pexip-history
