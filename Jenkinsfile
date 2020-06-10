@@ -75,7 +75,7 @@ podTemplate(
                                   $class: 'SparseCheckoutPaths',
                                   sparseCheckoutPaths: [[path: '/helmRepo']]
                                 ]
-                             ]
+                             ],
                          userRemoteConfigs: [[credentialsId: 'github', url: 'git@github.com:KvalitetsIT/KvalitetsIT.github.io.git']
                          ]])
 
