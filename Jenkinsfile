@@ -60,6 +60,10 @@ podTemplate(
                        dir('helm'){
                             env.TAG_NAME = "v0.0.1"
                             sh 'helm package kitcaddy --app-version ' + env.TAG_NAME.substring(1) + " --version " + env.TAG_NAME.substring(1)
+                            sh 'ls'
+                            sh 'ls ..'
+                            sh 'ls ../..'
+                            sh 'pwd'
                        }
                     }
 
@@ -71,7 +75,10 @@ podTemplate(
 
                     container('helm') {
                         sh """
+                        pwd
+                        ls
                         ls ..
+                        ls ../..
                         mv ../helm/kitcaddy-* helm-chart/kitcaddy
                         cd helm-chart
                         helm repo index . --url https://kvalitetsit.github.io/helm-chart
