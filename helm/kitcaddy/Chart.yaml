@@ -1,6 +1,7 @@
 apiVersion: v2
 name: kitcaddy
 description: A Helm chart for deplaying a web-service with kitcaddy
+home: https://github.com/KvalitetsIT/kitcaddy
 
 # A chart can be either an 'application' or a 'library' chart.
 #

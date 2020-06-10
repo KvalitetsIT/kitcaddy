@@ -1,13 +1,20 @@
-fullnameOverride: pexiphistory
+fullnameOverride: pexip-history
 namespace: pexip
+
+podAnnotations:
+  prometheus.io/path: /history/actuator/prometheus
+  prometheus.io/port: "8080"
+  prometheus.io/scrape: "true"
+
 imagePullSecrets:
   - name: kit4medcom
-
 image:
   repository: kvalitetsit/medcom-vdx-pexip-history
   pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
   tag: "1.1.1"
+
+serviceAccount:
+  create: false
 
 kitcaddy:
   secretName: sts-public-cert
@@ -35,6 +42,37 @@ kitcaddy:
         hok: true
         trusts:
           - /trust/sts.cer
+      wsc:
+        mongoHost: mongodb.mongo
+        mongoDb: pexip-history-wsc
+        stsUrl: mysts.host/sts
+        clientCertFile: /trust/client.cer
+        clientKeyFile: /trust/client.key
+        trustCertFiles:
+          - /trust/cert.cer
+        serviceEndpoint: https://host:port/endpoint
+        serviceAudience: serviceAudience
+        sessionDataUrl: session_data_url
+      saml:
+        mongoHost: mongodb.mongo
+        mongoDb: m-sp
+        sessionHeaderName: sessionid
+        sessionExpiryHours: 1
+        audienceRestriction: urn:m:vdxapi:dk
+        idpMetadataUrl: https://login.vdxapi.dk/auth/realms/broker/protocol/saml/descriptor
+        entityId: urn:m:vdxapi:dk
+        signAuthnReq: true
+        signCertFile: /certificate/tls.crt
+        signKeyFile: /certificate/tls.key
+        externalUrl: https://m.vdxapi.dk
+        metadataPath: /host/saml/metadata
+        logoutPath: /host/saml/logout
+        sloPath: /host/saml/slo
+        ssoPath: /host/saml/sso
+        logoutLandingPage: https://m.vdxapi.dk/meet
+        cookieDomain: m.vdxapi.dk
+        cookiePath: /
+
       upstream:
         host: localhost
         port: 8080
@@ -105,6 +143,5 @@ ingress:
       secretName: star.vdxapi.dk
 
 service:
-  #  type: ClusterIP
   port: 8080
   targetPort: proxy-port
