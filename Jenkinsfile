@@ -65,6 +65,8 @@ podTemplate(
                     container('helm') {
                        dir('helm'){
                             env.TAG_NAME = "v0.0.1"
+                            sh 'ls'
+                            sh 'ls ..'
                             sh 'helm package kitcaddy --app-version ' + env.TAG_NAME.substring(1) + " --version " + env.TAG_NAME.substring(1)
                             sh """
                             mv kitcaddy-* ../KvalitetsIT.github.io/helm-chart/kitcaddy
