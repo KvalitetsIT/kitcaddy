@@ -1,5 +1,6 @@
 podTemplate(
         containers: [containerTemplate(image: 'docker', name: 'docker', command: 'cat', ttyEnabled: true)],
+        containers: [containerTemplate(image: 'alpine/helm:3.2.3', name: 'helm', command: 'cat', ttyEnabled: true)],
         volumes: [hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock')],
 ) {
     node(POD_LABEL) {
@@ -50,6 +51,36 @@ podTemplate(
                         }
                     }
                 }
+            }
+
+            stage('Build Helm'){
+                //if (env.TAG_NAME != null && env.TAG_NAME.matches("^v[0-9]*\\.[0-9]*\\.[0-9]*")) {
+
+                    checkout(
+                        [$class: 'GitSCM',
+                         branches: [[name: '*/master']],
+                         userRemoteConfigs: [[credentialsId: 'github', url: 'https://github.com/KvalitetsIT/KvalitetsIT.github.io.git']
+                         ]])
+
+                    container('helm') {
+                       dir('helm'){
+                            env.TAG_NAME = "v0.0.1"
+                            sh 'helm package kitcaddy --app-version ' + env.TAG_NAME.substring(1) + " --version " + env.TAG_NAME.substring(1)
+                            sh """
+                            mv kitcaddy-* ../KvalitetsIT.github.io/helm-chart/kitcaddy
+                            cd ../KvalitetsIT.github.io/helm-chart
+                            helm repo index . --url https://kvalitetsit.github.io/helm-chart
+                            """
+                       }
+                    }
+                    dir('KvalitetsIT.github.io'){
+                        sh """
+                        git add .
+                        git commit -m"New kitcaddy helm"
+                        git push
+                        """
+                    }
+                //}
             }
 
         } finally {
