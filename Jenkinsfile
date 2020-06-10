@@ -59,7 +59,7 @@ podTemplate(
                     checkout(
                         [$class: 'GitSCM',
                          branches: [[name: '*/master']],
-                         userRemoteConfigs: [[credentialsId: 'github', url: 'https://github.com/KvalitetsIT/KvalitetsIT.github.io.git']
+                         userRemoteConfigs: [[credentialsId: 'github', url: 'git@github.com:KvalitetsIT/KvalitetsIT.github.io.git']
                          ]])
 
                     container('helm') {
@@ -74,11 +74,13 @@ podTemplate(
                        }
                     }
                     dir('KvalitetsIT.github.io'){
-                        sh """
-                        git add .
-                        git commit -m"New kitcaddy helm"
-                        git push
-                        """
+                        sshagent (credentials: ['github']) {
+                            sh """
+                            git add .
+                            git commit -m"New kitcaddy helm"
+                            git push
+                            """
+                        }
                     }
                 //}
             }
