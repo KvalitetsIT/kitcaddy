@@ -1,6 +1,6 @@
 podTemplate(
-        containers: [containerTemplate(image: 'docker', name: 'docker', command: 'cat', ttyEnabled: true)],
-        containers: [containerTemplate(image: 'alpine/helm:3.2.3', name: 'helm', command: 'cat', ttyEnabled: true)],
+        containers: [containerTemplate(image: 'docker', name: 'docker', command: 'cat', ttyEnabled: true),
+                     containerTemplate(image: 'alpine/helm:3.2.3', name: 'helm', command: 'cat', ttyEnabled: true)],
         volumes: [hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock')],
 ) {
     node(POD_LABEL) {
