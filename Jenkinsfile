@@ -70,6 +70,12 @@ podTemplate(
                     checkout(
                         [$class: 'GitSCM',
                          branches: [[name: '*/master']],
+                         extensions: [
+                                [
+                                  $class: 'SparseCheckoutPaths',
+                                  sparseCheckoutPaths: [[path: '/helmRepo']]
+                                ]
+                             ]
                          userRemoteConfigs: [[credentialsId: 'github', url: 'git@github.com:KvalitetsIT/KvalitetsIT.github.io.git']
                          ]])
 
@@ -79,7 +85,7 @@ podTemplate(
                         ls
                         ls ..
                         ls ../..
-                        mv ../helm/kitcaddy-* helm-chart/kitcaddy
+                        mv ../kitcaddy/helm/kitcaddy-* helm-chart/kitcaddy
                         cd helm-chart
                         helm repo index . --url https://kvalitetsit.github.io/helm-chart
                         """
