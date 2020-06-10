@@ -58,8 +58,8 @@ data:
                               {{ $trust | quote }}
                               {{- end }}
                       ],
-                      "audience_restriction": {{ .wsp.audience_restriction | quote }},
-                      "sessiondata_headername": {{ .wsp.sessiondata_headername | quote }},
+                      "audience_restriction": {{ .wsp.audienceRestriction | quote }},
+                      "sessiondata_headername": {{ .wsp.sessiondataHeadername | quote }},
                       "hok": {{ .wsp.hok | quote }}
                     },
                     {{- end }}
@@ -113,9 +113,9 @@ data:
                         "protocol": "http",
                         {{- if (.upstream.clientTls) }}
                         "tls": {
-                            "insecure_skip_verify": {{ .upstream.clientTls.insecure_skip_verify }},
-                            "client_certificate_file": {{ .upstream.clientTls.client_certificate_file | quote }},
-                            "client_certificate_key_file": {{ .upstream.clientTls.client_certificate_key_file | quote }}
+                            "insecure_skip_verify": {{ .upstream.clientTls.insecureSkipVerify }},
+                            "client_certificate_file": {{ .upstream.clientTls.clientCertificateFile | quote }},
+                            "client_certificate_key_file": {{ .upstream.clientTls.clientCertificateKeyFile | quote }}
     					},
                         {{- end }}
                         "read_buffer_size": 4096

@@ -37,8 +37,8 @@ kitcaddy:
       wsp:
         mongoHost: mongodb.mongo
         mongoDb: pexip-history-wsp
-        audience_restriction: urn:pexip-history:vconf:dk
-        sessiondata_headername: sessiondataheader
+        audienceRestriction: urn:pexip-history:vconf:dk
+        sessiondataHeadername: sessiondataheader
         hok: true
         trusts:
           - /trust/sts.cer
@@ -77,9 +77,9 @@ kitcaddy:
         host: localhost
         port: 8080
 #        clientTls:
-#          insecure_skip_verify: true
-#          client_certificate_file: WSC_CLIENT_CERTIFICATE_FILE
-#          client_certificate_key_file: WSC_CLIENT_KEY_FILE
+#          insecureSkipVerify: true
+#          clientCertificateFile: WSC_CLIENT_CERTIFICATE_FILE
+#          clientCertificateKeyFile: WSC_CLIENT_KEY_FILE
 
 
 deployment:
