@@ -56,6 +56,13 @@ podTemplate(
             stage('Build Helm'){
                 //if (env.TAG_NAME != null && env.TAG_NAME.matches("^v[0-9]*\\.[0-9]*\\.[0-9]*")) {
 
+                    container('helm') {
+                       dir('helm'){
+                            env.TAG_NAME = "v0.0.1"
+                            sh 'helm package kitcaddy --app-version ' + env.TAG_NAME.substring(1) + " --version " + env.TAG_NAME.substring(1)
+                       }
+                    }
+
                     checkout(
                         [$class: 'GitSCM',
                          branches: [[name: '*/master']],
@@ -63,27 +70,23 @@ podTemplate(
                          ]])
 
                     container('helm') {
-                       dir('helm'){
-                            env.TAG_NAME = "v0.0.1"
-                            sh 'ls'
-                            sh 'ls ..'
-                            sh 'helm package kitcaddy --app-version ' + env.TAG_NAME.substring(1) + " --version " + env.TAG_NAME.substring(1)
-                            sh """
-                            mv kitcaddy-* ../KvalitetsIT.github.io/helm-chart/kitcaddy
-                            cd ../KvalitetsIT.github.io/helm-chart
-                            helm repo index . --url https://kvalitetsit.github.io/helm-chart
-                            """
-                       }
+                        sh """
+                        ls ..
+                        mv ../helm/kitcaddy-* helm-chart/kitcaddy
+                        cd helm-chart
+                        helm repo index . --url https://kvalitetsit.github.io/helm-chart
+                        """
                     }
-                    dir('KvalitetsIT.github.io'){
-                        sshagent (credentials: ['github']) {
-                            sh """
-                            git add .
-                            git commit -m"New kitcaddy helm"
-                            git push
-                            """
-                        }
+
+
+                    sshagent (credentials: ['github']) {
+                        sh """
+                        git add .
+                        git commit -m"New kitcaddy helm"
+                        git push
+                        """
                     }
+
                 //}
             }
 
