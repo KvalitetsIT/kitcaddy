@@ -33,24 +33,25 @@ podTemplate(
 //
 //			}
 //		}*/
-            stage('Tag Docker Images And Push') {
-                container('docker') {
-                    docker.withRegistry('', 'dockerhub') {
-                        image = docker.image("kvalitetsit/kitcaddy:dev")
-                        image.push("latest")
-                        if (env.TAG_NAME != null && env.TAG_NAME.matches("^v[0-9]*\\.[0-9]*\\.[0-9]*")) {
-                            echo "Tagging version"
-                            image.push(env.TAG_NAME.substring(1))
-                        }
 
-                        timage = docker.image("kvalitetsit/kitcaddy-templates:dev")
-                        timage.push("latest")
-                        if (env.TAG_NAME != null && env.TAG_NAME.matches("^v[0-9]*\\.[0-9]*\\.[0-9]*")) {
-                            echo "Tagging version"
-                            timage.push(env.TAG_NAME.substring(1))
-                        }
-                    }
-                }
+            stage('Tag Docker Images And Push') {
+//                 container('docker') {
+//                     docker.withRegistry('', 'dockerhub') {
+//                         image = docker.image("kvalitetsit/kitcaddy:dev")
+//                         image.push("latest")
+//                         if (env.TAG_NAME != null && env.TAG_NAME.matches("^v[0-9]*\\.[0-9]*\\.[0-9]*")) {
+//                             echo "Tagging version"
+//                             image.push(env.TAG_NAME.substring(1))
+//                         }
+//
+//                         timage = docker.image("kvalitetsit/kitcaddy-templates:dev")
+//                         timage.push("latest")
+//                         if (env.TAG_NAME != null && env.TAG_NAME.matches("^v[0-9]*\\.[0-9]*\\.[0-9]*")) {
+//                             echo "Tagging version"
+//                             timage.push(env.TAG_NAME.substring(1))
+//                         }
+//                     }
+//                 }
             }
 
             stage('Build Helm'){
@@ -80,12 +81,17 @@ podTemplate(
                         }
                     }
 
-                    sh """
-                    pwd
-                    git add .
-                    git commit -m"New kitcaddy helm"
-                    git push
-                    """
+                    dir('helm-repo'){
+                         sshagent(['github'])
+                         {
+                            sh """
+                            pwd
+                            git add .
+                            git commit -m"New kitcaddy helm"
+                            git push
+                            """
+                         }
+                    }
 
                 //}
             }
