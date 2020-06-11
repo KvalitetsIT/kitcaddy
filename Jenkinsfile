@@ -35,27 +35,27 @@ podTemplate(
 //		}*/
 
             stage('Tag Docker Images And Push') {
-//                 container('docker') {
-//                     docker.withRegistry('', 'dockerhub') {
-//                         image = docker.image("kvalitetsit/kitcaddy:dev")
-//                         image.push("latest")
-//                         if (env.TAG_NAME != null && env.TAG_NAME.matches("^v[0-9]*\\.[0-9]*\\.[0-9]*")) {
-//                             echo "Tagging version"
-//                             image.push(env.TAG_NAME.substring(1))
-//                         }
-//
-//                         timage = docker.image("kvalitetsit/kitcaddy-templates:dev")
-//                         timage.push("latest")
-//                         if (env.TAG_NAME != null && env.TAG_NAME.matches("^v[0-9]*\\.[0-9]*\\.[0-9]*")) {
-//                             echo "Tagging version"
-//                             timage.push(env.TAG_NAME.substring(1))
-//                         }
-//                     }
-//                 }
+                container('docker') {
+                    docker.withRegistry('', 'dockerhub') {
+                        image = docker.image("kvalitetsit/kitcaddy:dev")
+                        image.push("latest")
+                        if (env.TAG_NAME != null && env.TAG_NAME.matches("^v[0-9]*\\.[0-9]*\\.[0-9]*")) {
+                            echo "Tagging version"
+                            image.push(env.TAG_NAME.substring(1))
+                        }
+
+                        timage = docker.image("kvalitetsit/kitcaddy-templates:dev")
+                        timage.push("latest")
+                        if (env.TAG_NAME != null && env.TAG_NAME.matches("^v[0-9]*\\.[0-9]*\\.[0-9]*")) {
+                            echo "Tagging version"
+                            timage.push(env.TAG_NAME.substring(1))
+                        }
+                    }
+                }
             }
 
             stage('Build Helm'){
-                //if (env.TAG_NAME != null && env.TAG_NAME.matches("^v[0-9]*\\.[0-9]*\\.[0-9]*")) {
+                if (env.TAG_NAME != null && env.TAG_NAME.matches("^v[0-9]*\\.[0-9]*\\.[0-9]*")) {
 
                     container('helm') {
                        dir('helm'){
@@ -71,16 +71,6 @@ podTemplate(
                     submoduleCfg: [],
                     userRemoteConfigs: [[credentialsId: 'github', url: 'git@github.com:KvalitetsIT/helm-repo.git']]])
 
-
-//                      sshagent(['github'])
-//                      {
-//                         sh """
-//                         pwd
-//                         git clone git@github.com:KvalitetsIT/helm-repo.git
-//                         """
-//                      }
-
-
                     container('helm') {
                         dir('helm-repo'){
                             sh """
@@ -91,7 +81,6 @@ podTemplate(
                             """
                         }
                     }
-
 
                      sshagent(['github'])
                      {
@@ -107,9 +96,7 @@ podTemplate(
                         git push origin HEAD:master
                         """
                      }
-
-
-                //}
+                }
             }
 
         } finally {
