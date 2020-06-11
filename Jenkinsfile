@@ -71,6 +71,7 @@ podTemplate(
 //                     submoduleCfg: [],
 //                     userRemoteConfigs: [[credentialsId: 'github', url: 'git@github.com:KvalitetsIT/helm-repo.git']]])
 
+                    sh 'mkdir -p ${WORKSPACE}/helm-repo'
                     dir('helm-repo'){
                          sshagent(['github'])
                          {
