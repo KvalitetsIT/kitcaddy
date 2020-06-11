@@ -89,7 +89,7 @@ podTemplate(
                             git config --global user.name "Jenkins"
                             git add .
                             git commit -m"New KitCaddy Helm chart"
-                            git push
+                            git push origin master
                             """
                          }
                     }
