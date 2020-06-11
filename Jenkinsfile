@@ -86,8 +86,10 @@ podTemplate(
                          {
                             sh """
                             pwd
+                            git config --global user.email "developer@kvalitetsit.dk"
+                            git config --global user.name "Jenkins"
                             git add .
-                            git commit -m"New kitcaddy helm"
+                            git commit
                             git push
                             """
                          }
