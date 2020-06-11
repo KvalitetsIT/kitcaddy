@@ -71,7 +71,16 @@ podTemplate(
 //                     submoduleCfg: [],
 //                     userRemoteConfigs: [[credentialsId: 'github', url: 'git@github.com:KvalitetsIT/helm-repo.git']]])
 
-                    dir('helm-repo'){
+
+
+                    sh """
+                    cd ..
+                    mkdir helm-repo
+                    """
+                    def helm-repo-path = sh 'pwd'
+                    sh 'cd ${WORKSPACE}'
+
+                    dir(helm-repo-path){
                          sshagent(['github'])
                          {
                             sh """
@@ -82,16 +91,16 @@ podTemplate(
                     }
 
                     container('helm') {
-                        dir('helm-repo'){
+                        dir(helm-repo-path){
                             sh """
-                            mkdir -p ${WORKSPACE}/helm-repo/kitcaddy/
-                            mv ${WORKSPACE}/helm/kitcaddy-* ${WORKSPACE}/helm-repo/kitcaddy/
+                            mkdir -p kitcaddy
+                            mv ${WORKSPACE}/helm/kitcaddy-* ./kitcaddy/
                             helm repo index . --url https://raw.githubusercontent.com/KvalitetsIT/helm-repo/master/
                             """
                         }
                     }
 
-                    dir('helm-repo'){
+                    dir(helm-repo-path){
                          sshagent(['github'])
                          {
                             sh """
