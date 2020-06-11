@@ -78,7 +78,7 @@ podTemplate(
                         dir('helm-charts'){
                         }
                         sh """
-                        mv ${WORKSPACE}/helm/kitcaddy-* ${WORKSPACE}github-io/helm-chart/kitcaddy/
+                        mv ${WORKSPACE}/helm/kitcaddy-* ${WORKSPACE}/github-io/helm-chart/kitcaddy/
                         helm repo index . --url https://kvalitetsit.github.io/helm-chart
                         """
                     }
