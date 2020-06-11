@@ -77,10 +77,10 @@ podTemplate(
                     cd ..
                     mkdir helm-repo
                     """
-                    def helm-repo-path = sh 'pwd'
+                    def helmRepoPath = sh 'pwd'
                     sh 'cd ${WORKSPACE}'
 
-                    dir(helm-repo-path){
+                    dir(helmRepoPath){
                          sshagent(['github'])
                          {
                             sh """
@@ -91,7 +91,7 @@ podTemplate(
                     }
 
                     container('helm') {
-                        dir(helm-repo-path){
+                        dir(helmRepoPath){
                             sh """
                             mkdir -p kitcaddy
                             mv ${WORKSPACE}/helm/kitcaddy-* ./kitcaddy/
@@ -100,7 +100,7 @@ podTemplate(
                         }
                     }
 
-                    dir(helm-repo-path){
+                    dir(helmRepoPath){
                          sshagent(['github'])
                          {
                             sh """
