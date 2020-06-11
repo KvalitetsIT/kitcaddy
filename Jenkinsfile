@@ -64,60 +64,50 @@ podTemplate(
                        }
                     }
 
-//                     checkout([$class: 'GitSCM',
-//                     branches: [[name: '*/master']],
-//                     doGenerateSubmoduleConfigurations: false,
-//                     extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'helm-repo']],
-//                     submoduleCfg: [],
-//                     userRemoteConfigs: [[credentialsId: 'github', url: 'git@github.com:KvalitetsIT/helm-repo.git']]])
+                    checkout([$class: 'GitSCM',
+                    branches: [[name: '*/master']],
+                    doGenerateSubmoduleConfigurations: false,
+                    extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'helm-repo']],
+                    submoduleCfg: [],
+                    userRemoteConfigs: [[credentialsId: 'github', url: 'git@github.com:KvalitetsIT/helm-repo.git']]])
 
 
+//                      sshagent(['github'])
+//                      {
+//                         sh """
+//                         pwd
+//                         git clone git@github.com:KvalitetsIT/helm-repo.git
+//                         """
+//                      }
 
-                    sh """
-                    pwd
-                    cd ..
-                    pwd
-                    cd ..
-                    pwd
-                    mkdir helm-repo
-                    """
-                    def helmRepoPath = sh 'pwd'
-                    sh 'cd ${WORKSPACE}'
-
-                    dir(helmRepoPath){
-                         sshagent(['github'])
-                         {
-                            sh """
-                            pwd
-                            git clone git@github.com:KvalitetsIT/helm-repo.git
-                            """
-                         }
-                    }
 
                     container('helm') {
-                        dir(helmRepoPath){
+                        dir('helm-repo'){
                             sh """
-                            mkdir -p kitcaddy
-                            mv ${WORKSPACE}/helm/kitcaddy-* ./kitcaddy/
+                            mkdir -p ${WORKSPACE}/helm-repo/kitcaddy/
+                            mv ${WORKSPACE}/helm/kitcaddy-* ${WORKSPACE}/helm-repo/kitcaddy/
                             helm repo index . --url https://raw.githubusercontent.com/KvalitetsIT/helm-repo/master/
+                            ls -l
                             """
                         }
                     }
 
-                    dir(helmRepoPath){
-                         sshagent(['github'])
-                         {
-                            sh """
-                            pwd
-                            git config --global user.email "developer@kvalitetsit.dk"
-                            git config --global user.name "Jenkins"
-                            git status
-                            git add .
-                            git commit -m "New KitCaddy Helm chart"
-                            git push origin master
-                            """
-                         }
-                    }
+
+                     sshagent(['github'])
+                     {
+                        sh """
+                        pwd
+                        cd ${WORKSPACE}/helm-repo/
+                        pwd
+                        git config --global user.email "developer@kvalitetsit.dk"
+                        git config --global user.name "Jenkins"
+                        git status
+                        git add .
+                        git commit -m "New KitCaddy Helm chart"
+                        git push
+                        """
+                     }
+
 
                 //}
             }
