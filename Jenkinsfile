@@ -60,10 +60,6 @@ podTemplate(
                        dir('helm'){
                             env.TAG_NAME = "v0.0.1"
                             sh 'helm package kitcaddy --app-version ' + env.TAG_NAME.substring(1) + " --version " + env.TAG_NAME.substring(1)
-                            sh 'ls'
-                            sh 'ls ..'
-                            sh 'ls ../..'
-                            sh 'pwd'
                        }
                     }
 
@@ -84,13 +80,12 @@ podTemplate(
                         }
                     }
 
-                    sshagent (credentials: ['github']) {
-                        sh """
-                        git add .
-                        git commit -m"New kitcaddy helm"
-                        git push
-                        """
-                    }
+                    sh """
+                    pwd
+                    git add .
+                    git commit -m"New kitcaddy helm"
+                    git push
+                    """
 
                 //}
             }
