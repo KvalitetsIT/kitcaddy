@@ -64,12 +64,22 @@ podTemplate(
                        }
                     }
 
-                    checkout([$class: 'GitSCM',
-                    branches: [[name: '*/master']],
-                    doGenerateSubmoduleConfigurations: false,
-                    extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'helm-repo']],
-                    submoduleCfg: [],
-                    userRemoteConfigs: [[credentialsId: 'github', url: 'git@github.com:KvalitetsIT/helm-repo.git']]])
+//                     checkout([$class: 'GitSCM',
+//                     branches: [[name: '*/master']],
+//                     doGenerateSubmoduleConfigurations: false,
+//                     extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'helm-repo']],
+//                     submoduleCfg: [],
+//                     userRemoteConfigs: [[credentialsId: 'github', url: 'git@github.com:KvalitetsIT/helm-repo.git']]])
+
+                    dir('helm-repo'){
+                         sshagent(['github'])
+                         {
+                            sh """
+                            pwd
+                            git clone git@github.com:KvalitetsIT/helm-repo.git
+                            """
+                         }
+                    }
 
                     container('helm') {
                         dir('helm-repo'){
@@ -86,12 +96,10 @@ podTemplate(
                          {
                             sh """
                             pwd
-                            git checkout origin master
                             git config --global user.email "developer@kvalitetsit.dk"
                             git config --global user.name "Jenkins"
                             git add .
                             git commit -m "New KitCaddy Helm chart"
-                            git pull
                             git push
                             """
                          }
