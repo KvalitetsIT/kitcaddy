@@ -60,7 +60,7 @@ podTemplate(
                     container('helm') {
                        dir('helm'){
                             env.TAG_NAME = "v0.0.1"
-                            sh 'helm package kitcaddy --app-version ' + env.TAG_NAME.substring(1) + " --version " + env.TAG_NAME.substring(1)
+                            sh 'helm package kitcaddy --app-version ' + env.TAG_NAME.substring(1) + ' --version ' + env.TAG_NAME.substring(1)
                        }
                     }
 
@@ -85,11 +85,10 @@ podTemplate(
                          sshagent(['github'])
                          {
                             sh """
-                            pwd
                             git config --global user.email "developer@kvalitetsit.dk"
                             git config --global user.name "Jenkins"
                             git add .
-                            git commit
+                            git commit -m"New KitCaddy Helm chart"
                             git push
                             """
                          }
