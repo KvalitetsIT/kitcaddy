@@ -85,11 +85,14 @@ podTemplate(
                          sshagent(['github'])
                          {
                             sh """
+                            pwd
+                            git checkout origin master
                             git config --global user.email "developer@kvalitetsit.dk"
                             git config --global user.name "Jenkins"
                             git add .
-                            git commit -m"New KitCaddy Helm chart"
-                            git push origin master
+                            git commit -m "New KitCaddy Helm chart"
+                            git pull
+                            git push
                             """
                          }
                     }
