@@ -71,7 +71,6 @@ podTemplate(
 //                     submoduleCfg: [],
 //                     userRemoteConfigs: [[credentialsId: 'github', url: 'git@github.com:KvalitetsIT/helm-repo.git']]])
 
-                    sh 'mkdir -p ${WORKSPACE}/helm-repo'
                     dir('helm-repo'){
                          sshagent(['github'])
                          {
@@ -99,9 +98,10 @@ podTemplate(
                             pwd
                             git config --global user.email "developer@kvalitetsit.dk"
                             git config --global user.name "Jenkins"
+                            git status
                             git add .
                             git commit -m "New KitCaddy Helm chart"
-                            git push
+                            git push origin master
                             """
                          }
                     }
