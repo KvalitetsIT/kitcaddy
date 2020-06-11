@@ -74,7 +74,11 @@ podTemplate(
 
 
                     sh """
+                    pwd
                     cd ..
+                    pwd
+                    cd ..
+                    pwd
                     mkdir helm-repo
                     """
                     def helmRepoPath = sh 'pwd'
