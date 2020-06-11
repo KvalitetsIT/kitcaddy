@@ -82,24 +82,15 @@ podTemplate(
                     }
 
                     dir('helm-repo'){
-                        git{
-                            remote {
-                                github('KvalitetsIT/helm-repo', 'ssh')
-                                credentials('github')
-                            }
-                            pushOnlyIfSuccess()
-                            branch('origin', 'master')
-
-                        }
-//                          sshagent(['github'])
-//                          {
-//                             sh """
-//                             pwd
-//                             git add .
-//                             git commit -m"New kitcaddy helm"
-//                             git push
-//                             """
-//                          }
+                         sshagent(['github'])
+                         {
+                            sh """
+                            pwd
+                            git add .
+                            git commit -m"New kitcaddy helm"
+                            git push
+                            """
+                         }
                     }
 
                 //}
