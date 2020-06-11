@@ -70,7 +70,7 @@ podTemplate(
                     checkout([$class: 'GitSCM',
                     branches: [[name: '*/master']],
                     doGenerateSubmoduleConfigurations: false,
-                    extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'helm-charts']],
+                    extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'github-io']],
                     submoduleCfg: [],
                     userRemoteConfigs: [[credentialsId: 'github', url: 'git@github.com:KvalitetsIT/KvalitetsIT.github.io.git']]])
 
@@ -78,7 +78,7 @@ podTemplate(
                         dir('helm-charts'){
                         }
                         sh """
-                        mv ${WORKSPACE}/helm/kitcaddy-* helm-chart/kitcaddy
+                        mv ${WORKSPACE}/helm/kitcaddy-* ${WORKSPACE}github-io/helm-chart/kitcaddy/
                         helm repo index . --url https://kvalitetsit.github.io/helm-chart
                         """
                     }
