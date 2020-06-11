@@ -70,19 +70,19 @@ podTemplate(
                     checkout([$class: 'GitSCM',
                     branches: [[name: '*/master']],
                     doGenerateSubmoduleConfigurations: false,
-                    extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'github-io']],
+                    extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'helm-repo']],
                     submoduleCfg: [],
-                    userRemoteConfigs: [[credentialsId: 'github', url: 'git@github.com:KvalitetsIT/KvalitetsIT.github.io.git']]])
+                    userRemoteConfigs: [[credentialsId: 'github', url: 'git@github.com:KvalitetsIT/helm-repo.git']]])
 
                     container('helm') {
-                        dir('helm-charts'){
+                        dir('helm-repo'){
+                            sh """
+                            mkdir -p ${WORKSPACE}/helm-repo/kitcaddy/
+                            mv ${WORKSPACE}/helm/kitcaddy-* ${WORKSPACE}/helm-repo/kitcaddy/
+                            helm repo index . --url https://raw.githubusercontent.com/KvalitetsIT/helm-repo/master/
+                            """
                         }
-                        sh """
-                        mv ${WORKSPACE}/helm/kitcaddy-* ${WORKSPACE}/github-io/helm-chart/kitcaddy/
-                        helm repo index . --url https://kvalitetsit.github.io/helm-chart
-                        """
                     }
-
 
                     sshagent (credentials: ['github']) {
                         sh """
