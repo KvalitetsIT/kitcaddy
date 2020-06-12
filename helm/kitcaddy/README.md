@@ -1,13 +1,11 @@
-# KitCaddy
-Caddy 2 packaged with security modules
-
-## Introduction
-This chart deploys a web-service with a KitCaddy on a Kubernetes cluster.
+# KitCaddy Helm Chart
+Caddy 2 packages with security modules  
+This chart deploys a web-service together with a KitCaddy on a Kubernetes cluster.
 
 ## Installing
 First add KvalitetsIT Helm repo to Helm
 ```console
-$ helm repo add KvalitetsIT https://kvalitetsit.github.io/helm-chart
+$ helm repo add KvalitetsIT https://raw.githubusercontent.com/KvalitetsIT/helm-repo/master/
 $ helm repo update
 ```
 
@@ -19,14 +17,18 @@ Run Helm command:
 $ helm install web-service KvalitetsIT/kitcaddy -f myValues.yaml --version 1.0.3
 ```
 
+Example of a value file see: [kitcaddyExampleValues.yaml](https://github.com/KvalitetsIT/kitcaddy/blob/master/helm/kitcaddyExampleValues.yaml)
 
 ## Configuration
 The following table lists the configurable parameters of the KitCaddy and the web-service.
 
 Parameter | Description | Example
 --- | --- | ---
+`fullnameOverride` | Name of the service
+`namespace` | Namespace to deploy into
 `image.repository` | Name of the web-service image 
 `imgae.tag` | Web-service image tag 
+`podAnnotations` | Annotations for the pod fx prometheus | `prometheus.io/path: actuator/prometheus` <br> `prometheus.io/scrape: "true"` <br> 
 **KitCaddy** |
 `kitcaddy.secretName` |  
 `kitcaddy.extraVolumeMounts` | Array of extra volume mounts 
@@ -87,12 +89,13 @@ Parameter | Description | Example
 **Deployment** | 
 `deployment.containerPort` | Port on web-service | `8080` 
 `deployment.env` | Array of environment variables 
+`deplyment.readinessProbe` | Set values under this to config readiness probe
+`deplyment.livenessProbe` | Set values under this to config liveness probe
+**Ingress** |
+`ingress.enabled` | Set to true to enable ingress | `true`
+`ingress.annotations` | Annotations for ingress | `kubernetes.io/ingress.class: nginx`
+`ingress.hosts` | Hosts served by the ingress | `- host: domain.dk`
+`ingress.tls` | TLS config 
 **Service** |
 `service.port` | Port on the service | `8080`
 `service.targetPort` | Target port | `proxy-port`
-
-
-
-
-
-
