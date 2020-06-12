@@ -29,57 +29,63 @@ kitcaddy:
   servers:
     - listenPort: 80
       name: pexip-wsp
-      paths:
-        - /*
-      prometheus:
-        enable: true
-        path: /metrics
-      wsp:
-        mongoHost: mongodb.mongo
-        mongoDb: pexip-history-wsp
-        audienceRestriction: urn:pexip-history:vconf:dk
-        sessiondataHeadername: sessiondataheader
-        hok: true
-        trusts:
-          - /trust/sts.cer
-      wsc:
-        mongoHost: mongodb.mongo
-        mongoDb: pexip-history-wsc
-        stsUrl: mysts.host/sts
-        clientCertFile: /trust/client.cer
-        clientKeyFile: /trust/client.key
-        trustCertFiles:
-          - /trust/cert.cer
-        serviceEndpoint: https://host:port/endpoint
-        serviceAudience: serviceAudience
-        sessionDataUrl: session_data_url
-      saml:
-        mongoHost: mongodb.mongo
-        mongoDb: m-sp
-        sessionHeaderName: sessionid
-        sessionExpiryHours: 1
-        audienceRestriction: urn:m:vdxapi:dk
-        idpMetadataUrl: https://login.vdxapi.dk/auth/realms/broker/protocol/saml/descriptor
-        entityId: urn:m:vdxapi:dk
-        signAuthnReq: true
-        signCertFile: /certificate/tls.crt
-        signKeyFile: /certificate/tls.key
-        externalUrl: https://m.vdxapi.dk
-        metadataPath: /host/saml/metadata
-        logoutPath: /host/saml/logout
-        sloPath: /host/saml/slo
-        ssoPath: /host/saml/sso
-        logoutLandingPage: https://m.vdxapi.dk/meet
-        cookieDomain: m.vdxapi.dk
-        cookiePath: /
+      routes:
+        - paths:
+            - /meet/*
+          upstream:
+            host: localhost
+            port: 8080
+        - paths:
+            - /host/*
+          prometheus:
+            path: /metrics
+#          wsp:
+#            mongoHost: mongodb.mongo
+#            mongoDb: pexip-history-wsp
+#            audienceRestriction: urn:pexip-history:vconf:dk
+#            sessiondataHeadername: sessiondataheader
+#            hok: true
+#            trusts:
+#              - /trust/sts.cer
+#          wsc:
+#            mongoHost: mongodb.mongo
+#            mongoDb: pexip-history-wsc
+#            stsUrl: mysts.host/sts
+#            clientCertFile: /trust/client.cer
+#            clientKeyFile: /trust/client.key
+#            trustCertFiles:
+#              - /trust/cert.cer
+#            serviceEndpoint: https://host:port/endpoint
+#            serviceAudience: serviceAudience
+#            sessionDataUrl: session_data_url
+          saml:
+            mongoHost: mongodb.mongo
+            mongoDb: m-sp
+            sessionHeaderName: sessionid
+            sessionExpiryHours: 1
+            audienceRestriction: urn:m:vdxapi:dk
+            idpMetadataUrl: https://login.vdxapi.dk/auth/realms/broker/protocol/saml/descriptor
+            entityId: urn:m:vdxapi:dk
+            signAuthnReq: true
+            signCertFile: /certificate/tls.crt
+            signKeyFile: /certificate/tls.key
+            externalUrl: https://m.vdxapi.dk
+            metadataPath: /host/saml/metadata
+            logoutPath: /host/saml/logout
+            sloPath: /host/saml/slo
+            ssoPath: /host/saml/sso
+            logoutLandingPage: https://m.vdxapi.dk/meet
+            cookieDomain: m.vdxapi.dk
+            cookiePath: /
 
-      upstream:
-        host: localhost
-        port: 8080
-#        clientTls:
-#          insecureSkipVerify: true
-#          clientCertificateFile: WSC_CLIENT_CERTIFICATE_FILE
-#          clientCertificateKeyFile: WSC_CLIENT_KEY_FILE
+          upstream:
+            host: localhost
+            port: 8080
+    #        clientTls:
+    #          insecureSkipVerify: true
+    #          clientCertificateFile: WSC_CLIENT_CERTIFICATE_FILE
+    #          clientCertificateKeyFile: WSC_CLIENT_KEY_FILE
+
 
 
 deployment:

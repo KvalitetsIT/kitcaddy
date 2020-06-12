@@ -36,56 +36,56 @@ Parameter | Description | Example
 `kitcaddy.servers` | Array of servers
 `kitcaddy.servers.name` | Name of the server
 `kitcaddy.servers.listenPort` | Port for incoming traffic | `80`
-`kitcaddy.servers.paths` | Array of paths for KitCaddy to listen on
-`kitcaddy.servers.prometheus.enable` | Set true or false for Prometheus on KitCaddy | `true`
-`kitcaddy.servers.prometheus.path` | Prometheus path on KitCaddy | `/metrics`
+`kitcaddy.servers.routes` | Array if routs 
+`kitcaddy.servers.routes.paths` | Array of paths for KitCaddy to listen on
+`kitcaddy.servers.routes.prometheus.path` | Prometheus path on KitCaddy. If not set Prometheus is disabled| `/metrics`
 **KitCaddy - WSP** |
-`kitcaddy.servers.wsp` | Set values under this to enable WSP
-`kitcaddy.servers.wsp.mongoHost` | URL of the MongoDB | `mongodb.mongo`
-`kitcaddy.servers.wsp.mongoDb` | Database in Mongo to be used by the WSP | `web-service-wsp`
-`kitcaddy.servers.wsp.audienceRestriction` | | `urn:web-service:domain:dk`
-`kitcaddy.servers.wsp.sessiondataHeadername` | Header name for session data | `sessiondataheader`
-`kitcaddy.servers.wsp.hok` | Hold on key | `true`
-`kitcaddy.servers.wsp.trusts` | Array of path to trusted certificates | `- /trust/sts.cer`
+`kitcaddy.servers.routes.wsp` | Set values under this to enable WSP
+`kitcaddy.servers.routes.wsp.mongoHost` | URL of the MongoDB | `mongodb.mongo`
+`kitcaddy.servers.routes.wsp.mongoDb` | Database in Mongo to be used by the WSP | `web-service-wsp`
+`kitcaddy.servers.routes.wsp.audienceRestriction` | | `urn:web-service:domain:dk`
+`kitcaddy.servers.routes.wsp.sessiondataHeadername` | Header name for session data | `sessiondataheader`
+`kitcaddy.servers.routes.wsp.hok` | Hold on key | `true`
+`kitcaddy.servers.routes.wsp.trusts` | Array of path to trusted certificates | `- /trust/sts.cer`
 **KitCaddy - WSC** |
-`kitcaddy.servers.wsc` | Set values under this to enable WSC
-`kitcaddy.servers.wsc.mongoHost` | URL of the MongoDB | `mongodb.mongo`
-`kitcaddy.servers.wsc.mongoDb` | Database in Mongo to be used by th WSP | `web-service-wsc`
-`kitcaddy.servers.wsc.stsUrl` | URL to the STS server
-`kitcaddy.servers.wsc.clientCertFile` | Path to the client certificate file
-`kitcaddy.servers.wsc.clientKeyFile` | Path to the client certificate key file
-`kitcaddy.servers.wsc.trustCertFiles` | Array of path to trusted certificates | `- /trust/sts.cer`
-`kitcaddy.servers.wsc.serviceEndpoint` | Path to the service endpoint
-`kitcaddy.servers.wsc.serviceAudience` | 
-`kitcaddy.servers.wsc.sessionDataUrl` | 
+`kitcaddy.servers.routes.wsc` | Set values under this to enable WSC
+`kitcaddy.servers.routes.wsc.mongoHost` | URL of the MongoDB | `mongodb.mongo`
+`kitcaddy.servers.routes.wsc.mongoDb` | Database in Mongo to be used by th WSP | `web-service-wsc`
+`kitcaddy.servers.routes.wsc.stsUrl` | URL to the STS server
+`kitcaddy.servers.routes.wsc.clientCertFile` | Path to the client certificate file
+`kitcaddy.servers.routes.wsc.clientKeyFile` | Path to the client certificate key file
+`kitcaddy.servers.routes.wsc.trustCertFiles` | Array of path to trusted certificates | `- /trust/sts.cer`
+`kitcaddy.servers.routes.wsc.serviceEndpoint` | Path to the service endpoint
+`kitcaddy.servers.routes.wsc.serviceAudience` | 
+`kitcaddy.servers.routes.wsc.sessionDataUrl` | 
 **KitCaddy - SAML** |
-`kitcaddy.servers.saml` | Set values under this to enable SAML
-`kitcaddy.servers.saml.mongoHost` | URL of the MongoDB | `mongodb.mongo`
-`kitcaddy.servers.saml.mongoDb` | Database in Mongo to be used by the SAML | `web-service-saml`
-`kitcaddy.servers.saml.sessionHeaderName` | Header name for session data | `sessiondataheader` 
-`kitcaddy.servers.saml.sessionExpiryHours` | Expiry time for the session in hours | `1` 
-`kitcaddy.servers.saml.audienceRestriction` | | `urn:web-service:domain:dk`
-`kitcaddy.servers.saml.idpMetadataUrl` | IDP metadata URL | `https://login.domain.dk/auth`
-`kitcaddy.servers.saml.entityId` | Entity ID | `urn:m:domain:dk`
-`kitcaddy.servers.saml.signAuthnReq` | Is sign required | `true`
-`kitcaddy.servers.saml.signCertFile` | Path to certificate file for sign | `/certificate/tls.crt`
-`kitcaddy.servers.saml.signKeyFile` | Path to certificate key file for sign | `/certificate/tls.key`
-`kitcaddy.servers.saml.externalUrl` |  | `https://domain.dk`
-`kitcaddy.servers.saml.metadataPath` | Path to metadata | `/host/saml/metadata`
-`kitcaddy.servers.saml.logoutPath` | Log out path | `/host/saml/logout`
-`kitcaddy.servers.saml.sloPath` | | `/host/saml/slo`
-`kitcaddy.servers.saml.ssoPath` | | `/host/saml/sso`
-`kitcaddy.servers.saml.logoutLandingPage` | Landing page after logout | `https://domain.dk/`
-`kitcaddy.servers.saml.cookieDomain` | Cookie domain | `domain.dk`
-`kitcaddy.servers.saml.cookiePath` | Cookie path | `/`
+`kitcaddy.servers.routes.saml` | Set values under this to enable SAML
+`kitcaddy.servers.routes.saml.mongoHost` | URL of the MongoDB | `mongodb.mongo`
+`kitcaddy.servers.routes.saml.mongoDb` | Database in Mongo to be used by the SAML | `web-service-saml`
+`kitcaddy.servers.routes.saml.sessionHeaderName` | Header name for session data | `sessiondataheader` 
+`kitcaddy.servers.routes.saml.sessionExpiryHours` | Expiry time for the session in hours | `1` 
+`kitcaddy.servers.routes.saml.audienceRestriction` | | `urn:web-service:domain:dk`
+`kitcaddy.servers.routes.saml.idpMetadataUrl` | IDP metadata URL | `https://login.domain.dk/auth`
+`kitcaddy.servers.routes.saml.entityId` | Entity ID | `urn:m:domain:dk`
+`kitcaddy.servers.routes.saml.signAuthnReq` | Is sign required | `true`
+`kitcaddy.servers.routes.saml.signCertFile` | Path to certificate file for sign | `/certificate/tls.crt`
+`kitcaddy.servers.routes.saml.signKeyFile` | Path to certificate key file for sign | `/certificate/tls.key`
+`kitcaddy.servers.routes.saml.externalUrl` |  | `https://domain.dk`
+`kitcaddy.servers.routes.saml.metadataPath` | Path to metadata | `/host/saml/metadata`
+`kitcaddy.servers.routes.saml.logoutPath` | Log out path | `/host/saml/logout`
+`kitcaddy.servers.routes.saml.sloPath` | | `/host/saml/slo`
+`kitcaddy.servers.routes.saml.ssoPath` | | `/host/saml/sso`
+`kitcaddy.servers.routes.saml.logoutLandingPage` | Landing page after logout | `https://domain.dk/`
+`kitcaddy.servers.routes.saml.cookieDomain` | Cookie domain | `domain.dk`
+`kitcaddy.servers.routes.saml.cookiePath` | Cookie path | `/`
 **KitCaddy - Upstream** |
-`kitcaddy.servers.upstream` | Set values under this to config upstream
-`kitcaddy.servers.upstream.host` | Upstream host | `localhost`
-`kitcaddy.servers.upstream.port` | Upstream port | `8080`
-`kitcaddy.servers.upstream.clientTls` | Set values under this to enable client TLS
-`kitcaddy.servers.upstream.clientTls.insecureSkipVerify` | Skip verity client TLS if insecure | `false`
-`kitcaddy.servers.upstream.clientTls.clientCertificateFile` | Path to client certificate file | `/certificate/client.crt`
-`kitcaddy.servers.upstream.clientTls.clientCertificateKeyFile` | Path to client certificate key file | `/certificate/client.key`
+`kitcaddy.servers.routes.upstream` | Set values under this to config upstream
+`kitcaddy.servers.routes.upstream.host` | Upstream host | `localhost`
+`kitcaddy.servers.routes.upstream.port` | Upstream port | `8080`
+`kitcaddy.servers.routes.upstream.clientTls` | Set values under this to enable client TLS
+`kitcaddy.servers.routes.upstream.clientTls.insecureSkipVerify` | Skip verity client TLS if insecure | `false`
+`kitcaddy.servers.routes.upstream.clientTls.clientCertificateFile` | Path to client certificate file | `/certificate/client.crt`
+`kitcaddy.servers.routes.upstream.clientTls.clientCertificateKeyFile` | Path to client certificate key file | `/certificate/client.key`
 **Deployment** | 
 `deployment.containerPort` | Port on web-service | `8080` 
 `deployment.env` | Array of environment variables 

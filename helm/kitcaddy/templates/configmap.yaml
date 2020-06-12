@@ -26,100 +26,103 @@ data:
                 "listen": [
                   ":{{.listenPort}}"
               ],
+
               "routes": [
-                {
-                  "match": [
-                    {
-                      "path": [
+                {{- range $index, $route := .routes }}
+                  {{- if $index}},{{- end}}
+                  {
+                    "match": [
+                      {
+                        "path": [
 
-                        {{- range $index, $path := .paths }}
-                            {{- if $index}},{{- end}}
-                        {{$path | quote }}
-                        {{- end }}
-                      ]
-                    }
-                  ],
+                          {{- range $index, $path := .paths }}
+                              {{- if $index}},{{- end}}
+                          {{$path | quote }}
+                          {{- end }}
+                        ]
+                      }
+                    ],
 
-                  "handle": [
-                    {{- if .prometheus.enable}}
-                    {
-                      "handler": "prometheus",
-                      "metrics_path": {{ .prometheus.path | quote }}
-                    },
-                    {{- end }}
-                    {{- if (.wsp) }}
-                    {
-                      "handler": "oioidwsrestwsp",
-                      "mongo_host": {{ .wsp.mongoHost | quote }},
-                      "mongo_db": {{ .wsp.mongoDb | quote }},
-                      "trust_cert_files": [
-                              {{- range $index, $trust := .wsp.trusts }}
-                                  {{- if $index}},{{- end}}
-                              {{ $trust | quote }}
-                              {{- end }}
-                      ],
-                      "audience_restriction": {{ .wsp.audienceRestriction | quote }},
-                      "sessiondata_headername": {{ .wsp.sessiondataHeadername | quote }},
-                      "hok": {{ .wsp.hok | quote }}
-                    },
-                    {{- end }}
-                    {{- if (.wsc) }}
-                    {
-                      "handler": "oioidwsrestwsc",
-                      "mongo_host": {{ .wsc.mongoHost | quote }},
-                      "mongo_db": {{ .wsc.mongoDb | quote }},
-                      "sts_url": {{ .wsc.stsUrl | quote }},
-                      "client_cert_file": {{ .wsc.clientCertFile | quote }},
-                      "client_key_file": {{ .wsc.clientKeyFile | quote }},
-                      "trust_cert_files": [
-                                  {{- range $index, $trust := .wsc.trustCertFiles }}
-                                      {{- if $index}},{{- end}}
-                                  {{ $trust | quote }}
-                                  {{- end }}
-                      ],
-                      "service_endpoint": {{ .wsc.serviceEndpoint | quote }},
-                      "service_audience": {{ .wsc.serviceAudience | quote }},
-                      "session_data_url": {{ .wsc.sessionDataUrl | quote }}
-                    },
-                    {{- end }}
-                    {{- if (.saml) }}
-                    {
-                      "handler": "samlprovider",
-                      "session_header_name": {{ .saml.sessionHeaderName | quote }},
-                      "session_expiry_hours": {{ .saml.sessionExpiryHours | quote }},
-                      "mongo_host": {{ .saml.mongoHost | quote }},
-                      "mongo_db": {{ .saml.mongoDb | quote }},
-                      "audience_restriction": {{ .saml.audienceRestriction | quote }},
-                      "idp_metadata_url": {{ .saml.idpMetadataUrl | quote }},
-                      "entityId": {{ .saml.entityId | quote }},
-                      "sign_authn_req": {{ .saml.signAuthnReq | quote }},
-                      "sign_cert_file": {{ .saml.signCertFile | quote }},
-                      "sign_key_file": {{ .saml.signKeyFile | quote }},
+                    "handle": [
+                      {{- if (.prometheus)}}
+                      {
+                        "handler": "prometheus",
+                        "metrics_path": {{ .prometheus.path | quote }}
+                      },
+                      {{- end }}
+                      {{- if (.wsp) }}
+                      {
+                        "handler": "oioidwsrestwsp",
+                        "mongo_host": {{ .wsp.mongoHost | quote }},
+                        "mongo_db": {{ .wsp.mongoDb | quote }},
+                        "trust_cert_files": [
+                                {{- range $index, $trust := .wsp.trusts }}
+                                    {{- if $index}},{{- end}}
+                                {{ $trust | quote }}
+                                {{- end }}
+                        ],
+                        "audience_restriction": {{ .wsp.audienceRestriction | quote }},
+                        "sessiondata_headername": {{ .wsp.sessiondataHeadername | quote }},
+                        "hok": {{ .wsp.hok | quote }}
+                      },
+                      {{- end }}
+                      {{- if (.wsc) }}
+                      {
+                        "handler": "oioidwsrestwsc",
+                        "mongo_host": {{ .wsc.mongoHost | quote }},
+                        "mongo_db": {{ .wsc.mongoDb | quote }},
+                        "sts_url": {{ .wsc.stsUrl | quote }},
+                        "client_cert_file": {{ .wsc.clientCertFile | quote }},
+                        "client_key_file": {{ .wsc.clientKeyFile | quote }},
+                        "trust_cert_files": [
+                                    {{- range $index, $trust := .wsc.trustCertFiles }}
+                                        {{- if $index}},{{- end}}
+                                    {{ $trust | quote }}
+                                    {{- end }}
+                        ],
+                        "service_endpoint": {{ .wsc.serviceEndpoint | quote }},
+                        "service_audience": {{ .wsc.serviceAudience | quote }},
+                        "session_data_url": {{ .wsc.sessionDataUrl | quote }}
+                      },
+                      {{- end }}
+                      {{- if (.saml) }}
+                      {
+                        "handler": "samlprovider",
+                        "session_header_name": {{ .saml.sessionHeaderName | quote }},
+                        "session_expiry_hours": {{ .saml.sessionExpiryHours | quote }},
+                        "mongo_host": {{ .saml.mongoHost | quote }},
+                        "mongo_db": {{ .saml.mongoDb | quote }},
+                        "audience_restriction": {{ .saml.audienceRestriction | quote }},
+                        "idp_metadata_url": {{ .saml.idpMetadataUrl | quote }},
+                        "entityId": {{ .saml.entityId | quote }},
+                        "sign_authn_req": {{ .saml.signAuthnReq | quote }},
+                        "sign_cert_file": {{ .saml.signCertFile | quote }},
+                        "sign_key_file": {{ .saml.signKeyFile | quote }},
 
-                      "external_url": {{ .saml.externalUrl | quote }},
-                      "metadata_path": {{ .saml.metadataPath | quote }},
-                      "logout_path": {{ .saml.logoutPath | quote }},
-                      "slo_path": {{ .saml.sloPath | quote }},
-                      "sso_path": {{ .saml.ssoPath | quote }},
-                      "logout_landing_page": {{ .saml.logoutLandingPage | quote }},
+                        "external_url": {{ .saml.externalUrl | quote }},
+                        "metadata_path": {{ .saml.metadataPath | quote }},
+                        "logout_path": {{ .saml.logoutPath | quote }},
+                        "slo_path": {{ .saml.sloPath | quote }},
+                        "sso_path": {{ .saml.ssoPath | quote }},
+                        "logout_landing_page": {{ .saml.logoutLandingPage | quote }},
 
-                      "cookie_domain": {{ .saml.cookieDomain | quote }},
-                      "cookie_path": {{ .saml.cookiePath | quote }}
-                    },
-                    {{- end }}
-                    {
-                      "handler": "reverse_proxy",
-                      "transport": {
-                        "protocol": "http",
-                        {{- if (.upstream.clientTls) }}
-                        "tls": {
-                            "insecure_skip_verify": {{ .upstream.clientTls.insecureSkipVerify }},
-                            "client_certificate_file": {{ .upstream.clientTls.clientCertificateFile | quote }},
-                            "client_certificate_key_file": {{ .upstream.clientTls.clientCertificateKeyFile | quote }}
-    					},
-                        {{- end }}
-                        "read_buffer_size": 4096
-                    },
+                        "cookie_domain": {{ .saml.cookieDomain | quote }},
+                        "cookie_path": {{ .saml.cookiePath | quote }}
+                      },
+                      {{- end }}
+                      {
+                        "handler": "reverse_proxy",
+                        "transport": {
+                          "protocol": "http",
+                          {{- if (.upstream.clientTls) }}
+                          "tls": {
+                              "insecure_skip_verify": {{ .upstream.clientTls.insecureSkipVerify }},
+                              "client_certificate_file": {{ .upstream.clientTls.clientCertificateFile | quote }},
+                              "client_certificate_key_file": {{ .upstream.clientTls.clientCertificateKeyFile | quote }}
+                          },
+                          {{- end }}
+                          "read_buffer_size": 4096
+                      },
                       "upstreams": [
                         {
                           "dial": "{{ .upstream.host }}:{{ .upstream.port }}"
@@ -128,6 +131,7 @@ data:
                     }
                   ]
                 }
+                {{- end }}
               ]
             }
         {{- end }}
