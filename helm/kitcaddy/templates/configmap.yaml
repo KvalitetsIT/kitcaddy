@@ -45,7 +45,8 @@ data:
         },
         "http": {
           "servers": {
-            {{- range .Values.kitcaddy.servers }}
+            {{- range $index := .Values.kitcaddy.servers }}
+            {{- if $index}},{{- end}}
             {{ .name | quote}}: {
                 "listen": [
                   ":{{.listenPort}}"
