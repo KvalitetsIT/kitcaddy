@@ -43,6 +43,9 @@ Parameter | Description | Example
 `kitcaddy.servers` | Array of servers
 `kitcaddy.servers.name` | Name of the server
 `kitcaddy.servers.listenPort` | Port for incoming traffic | `80`
+`kitcaddy.servers.strictSniHost.value` | Value for Strict SNI host. true or false | `false`
+`kitcaddy.servers.tlsConnectionPolicies.clientAuthentication.require` | Value for client authentication. true or false | `true`
+`kitcaddy.servers.automaticHttps.disableRedirects` | Value for disable HTTPS redirects. true or false | `true`
 `kitcaddy.servers.routes` | Array if routs 
 `kitcaddy.servers.routes.paths` | Array of paths for KitCaddy to listen on
 `kitcaddy.servers.routes.prometheus.path` | Prometheus path on KitCaddy. If not set Prometheus is disabled| `/metrics`

@@ -44,6 +44,14 @@ kitcaddy:
   servers:
     - listenPort: 80
       name: pexip-wsp
+      strictSniHost:
+        value: false
+      tlsConnectionPolicies:
+        clientAuthentication:
+          require: true
+      automaticHttps:
+        disableRedirects: true
+
       routes:
         - paths:
             - /meet/*

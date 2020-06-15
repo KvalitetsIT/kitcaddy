@@ -46,10 +46,37 @@ data:
         "http": {
           "servers": {
             {{- range .Values.kitcaddy.servers }}
-            "{{.name}}": {
+            {{ .name | quote}}: {
                 "listen": [
                   ":{{.listenPort}}"
               ],
+            {{- if (.strictSniHost) }}
+            "strict_sni_host": {{ .strictSniHost.value }},
+            {{- end }}
+
+            {{- if (.tlsConnectionPolicies) }}
+            "tls_connection_policies": [
+              {
+                {{- if (.tlsConnectionPolicies.clientAuthentication) }}
+                {{- with .tlsConnectionPolicies.clientAuthentication }}
+                  "client_authentication": {
+                      {{- if (.require) }}
+                      "require": {{.require}}
+                      {{- end }}
+                  }
+                {{- end }}
+                {{- end }}
+              }
+            ],
+            {{- end }}
+
+            {{- if (.automaticHttps) }}
+            "automatic_https": {
+                {{- if (.automaticHttps.disableRedirects) }}
+                "disable_redirects": {{.automaticHttps.disableRedirects}}
+                {{- end }}
+            },
+            {{- end }}
 
               "routes": [
                 {{- range $index, $route := .routes }}
@@ -86,7 +113,9 @@ data:
                                 {{- end }}
                         ],
                         "audience_restriction": {{ .wsp.audienceRestriction | quote }},
+                        {{- if (.wsp.sessiondataHeadername) }}
                         "sessiondata_headername": {{ .wsp.sessiondataHeadername | quote }},
+                        {{- end }}
                         "hok": {{ .wsp.hok | quote }}
                       },
                       {{- end }}
