@@ -45,21 +45,21 @@ data:
         },
         "http": {
           "servers": {
-            {{- range $index := .Values.kitcaddy.servers }}
-            {{- if $index}},{{- end}}
-            {{ .name | quote}}: {
+            {{- range $index, $server := .Values.kitcaddy.servers }}
+            {{- if $index }},{{- end}}
+            {{ $server.name | quote}}: {
                 "listen": [
                   ":{{.listenPort}}"
               ],
-            {{- if (.strictSniHost) }}
-            "strict_sni_host": {{ .strictSniHost.value }},
+            {{- if ($server.strictSniHost) }}
+            "strict_sni_host": {{ $server.strictSniHost.value }},
             {{- end }}
 
-            {{- if (.tlsConnectionPolicies) }}
+            {{- if ($server.tlsConnectionPolicies) }}
             "tls_connection_policies": [
               {
-                {{- if (.tlsConnectionPolicies.clientAuthentication) }}
-                {{- with .tlsConnectionPolicies.clientAuthentication }}
+                {{- if ($server.tlsConnectionPolicies.clientAuthentication) }}
+                {{- with $server.tlsConnectionPolicies.clientAuthentication }}
                   "client_authentication": {
                       {{- if (.require) }}
                       "require": {{.require}}
@@ -71,23 +71,23 @@ data:
             ],
             {{- end }}
 
-            {{- if (.automaticHttps) }}
+            {{- if ($server.automaticHttps) }}
             "automatic_https": {
-                {{- if (.automaticHttps.disableRedirects) }}
-                "disable_redirects": {{.automaticHttps.disableRedirects}}
+                {{- if ($server.automaticHttps.disableRedirects) }}
+                "disable_redirects": {{$server.automaticHttps.disableRedirects}}
                 {{- end }}
             },
             {{- end }}
 
               "routes": [
-                {{- range $index, $route := .routes }}
+                {{- range $index, $route := $server.routes }}
                   {{- if $index}},{{- end}}
                   {
                     "match": [
                       {
                         "path": [
 
-                          {{- range $index, $path := .paths }}
+                          {{- range $index, $path := $route.paths }}
                               {{- if $index}},{{- end}}
                           {{$path | quote }}
                           {{- end }}
@@ -96,90 +96,98 @@ data:
                     ],
 
                     "handle": [
-                      {{- if (.prometheus)}}
+                      {{- if ($route.prometheus)}}
                       {
                         "handler": "prometheus",
-                        "metrics_path": {{ .prometheus.path | quote }}
+                        "metrics_path": {{ $route.prometheus.path | quote }}
                       },
                       {{- end }}
-                      {{- if (.wsp) }}
+                      {{- if ($route.wsp) }}
+                      {{- with $route.wsp }}
                       {
                         "handler": "oioidwsrestwsp",
-                        "mongo_host": {{ .wsp.mongoHost | quote }},
-                        "mongo_db": {{ .wsp.mongoDb | quote }},
+                        "mongo_host": {{ .mongoHost | quote }},
+                        "mongo_db": {{ .mongoDb | quote }},
                         "trust_cert_files": [
-                                {{- range $index, $trust := .wsp.trusts }}
+                                {{- range $index, $trust := .trusts }}
                                     {{- if $index}},{{- end}}
                                 {{ $trust | quote }}
                                 {{- end }}
                         ],
-                        "audience_restriction": {{ .wsp.audienceRestriction | quote }},
-                        {{- if (.wsp.sessiondataHeadername) }}
-                        "sessiondata_headername": {{ .wsp.sessiondataHeadername | quote }},
+                        "audience_restriction": {{ .audienceRestriction | quote }},
+                        {{- if (.sessiondataHeadername) }}
+                        "sessiondata_headername": {{ .sessiondataHeadername | quote }},
                         {{- end }}
-                        "hok": {{ .wsp.hok | quote }}
+                        "hok": {{ .hok | quote }}
                       },
                       {{- end }}
-                      {{- if (.wsc) }}
+                      {{- end }}
+                      {{- if ($route.wsc) }}
+                      {{- with $route.wsc }}
                       {
                         "handler": "oioidwsrestwsc",
-                        "mongo_host": {{ .wsc.mongoHost | quote }},
-                        "mongo_db": {{ .wsc.mongoDb | quote }},
-                        "sts_url": {{ .wsc.stsUrl | quote }},
-                        "client_cert_file": {{ .wsc.clientCertFile | quote }},
-                        "client_key_file": {{ .wsc.clientKeyFile | quote }},
+                        "mongo_host": {{ .mongoHost | quote }},
+                        "mongo_db": {{ .mongoDb | quote }},
+                        "sts_url": {{ .stsUrl | quote }},
+                        "client_cert_file": {{ .clientCertFile | quote }},
+                        "client_key_file": {{ .clientKeyFile | quote }},
                         "trust_cert_files": [
-                                    {{- range $index, $trust := .wsc.trustCertFiles }}
+                                    {{- range $index, $trust := .trustCertFiles }}
                                         {{- if $index}},{{- end}}
                                     {{ $trust | quote }}
                                     {{- end }}
                         ],
-                        "service_endpoint": {{ .wsc.serviceEndpoint | quote }},
-                        "service_audience": {{ .wsc.serviceAudience | quote }},
-                        "session_data_url": {{ .wsc.sessionDataUrl | quote }}
+                        "service_endpoint": {{ .serviceEndpoint | quote }},
+                        "service_audience": {{ .serviceAudience | quote }},
+                        "session_data_url": {{ .sessionDataUrl | quote }}
                       },
                       {{- end }}
-                      {{- if (.saml) }}
+                      {{- end }}
+                      {{- if ($route.saml) }}
+                      {{- with $route.saml }}
                       {
                         "handler": "samlprovider",
-                        "session_header_name": {{ .saml.sessionHeaderName | quote }},
-                        "session_expiry_hours": {{ .saml.sessionExpiryHours | quote }},
-                        "mongo_host": {{ .saml.mongoHost | quote }},
-                        "mongo_db": {{ .saml.mongoDb | quote }},
-                        "audience_restriction": {{ .saml.audienceRestriction | quote }},
-                        "idp_metadata_url": {{ .saml.idpMetadataUrl | quote }},
-                        "entityId": {{ .saml.entityId | quote }},
-                        "sign_authn_req": {{ .saml.signAuthnReq | quote }},
-                        "sign_cert_file": {{ .saml.signCertFile | quote }},
-                        "sign_key_file": {{ .saml.signKeyFile | quote }},
+                        "session_header_name": {{ .sessionHeaderName | quote }},
+                        "session_expiry_hours": {{ .sessionExpiryHours | quote }},
+                        "mongo_host": {{ .mongoHost | quote }},
+                        "mongo_db": {{ .mongoDb | quote }},
+                        "audience_restriction": {{ .audienceRestriction | quote }},
+                        "idp_metadata_url": {{ .idpMetadataUrl | quote }},
+                        "entityId": {{ .entityId | quote }},
+                        "sign_authn_req": {{ .signAuthnReq | quote }},
+                        "sign_cert_file": {{ .signCertFile | quote }},
+                        "sign_key_file": {{ .signKeyFile | quote }},
 
-                        "external_url": {{ .saml.externalUrl | quote }},
-                        "metadata_path": {{ .saml.metadataPath | quote }},
-                        "logout_path": {{ .saml.logoutPath | quote }},
-                        "slo_path": {{ .saml.sloPath | quote }},
-                        "sso_path": {{ .saml.ssoPath | quote }},
-                        "logout_landing_page": {{ .saml.logoutLandingPage | quote }},
+                        "external_url": {{ .externalUrl | quote }},
+                        "metadata_path": {{ .metadataPath | quote }},
+                        "logout_path": {{ .logoutPath | quote }},
+                        "slo_path": {{ .sloPath | quote }},
+                        "sso_path": {{ .ssoPath | quote }},
+                        "logout_landing_page": {{ .logoutLandingPage | quote }},
 
-                        "cookie_domain": {{ .saml.cookieDomain | quote }},
-                        "cookie_path": {{ .saml.cookiePath | quote }}
+                        "cookie_domain": {{ .cookieDomain | quote }},
+                        "cookie_path": {{ .cookiePath | quote }}
                       },
+                      {{- end }}
                       {{- end }}
                       {
                         "handler": "reverse_proxy",
                         "transport": {
                           "protocol": "http",
-                          {{- if (.upstream.clientTls) }}
+                          {{- if ($route.upstream.clientTls) }}
+                          {{- with $route.upstream.clientTls }}
                           "tls": {
-                              "insecure_skip_verify": {{ .upstream.clientTls.insecureSkipVerify }},
-                              "client_certificate_file": {{ .upstream.clientTls.clientCertificateFile | quote }},
-                              "client_certificate_key_file": {{ .upstream.clientTls.clientCertificateKeyFile | quote }}
+                              "insecure_skip_verify": {{ .insecureSkipVerify }},
+                              "client_certificate_file": {{ .clientCertificateFile | quote }},
+                              "client_certificate_key_file": {{ .clientCertificateKeyFile | quote }}
                           },
+                          {{- end }}
                           {{- end }}
                           "read_buffer_size": 4096
                       },
                       "upstreams": [
                         {
-                          "dial": "{{ .upstream.host }}:{{ .upstream.port }}"
+                          "dial": "{{ $route.upstream.host }}:{{ $route.upstream.port }}"
                         }
                       ]
                     }

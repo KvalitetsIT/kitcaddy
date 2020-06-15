@@ -62,25 +62,25 @@ kitcaddy:
             - /host/*
           prometheus:
             path: /metrics
-#          wsp:
-#            mongoHost: mongodb.mongo
-#            mongoDb: pexip-history-wsp
-#            audienceRestriction: urn:pexip-history:vconf:dk
-#            sessiondataHeadername: sessiondataheader
-#            hok: true
-#            trusts:
-#              - /trust/sts.cer
-#          wsc:
-#            mongoHost: mongodb.mongo
-#            mongoDb: pexip-history-wsc
-#            stsUrl: mysts.host/sts
-#            clientCertFile: /trust/client.cer
-#            clientKeyFile: /trust/client.key
-#            trustCertFiles:
-#              - /trust/cert.cer
-#            serviceEndpoint: https://host:port/endpoint
-#            serviceAudience: serviceAudience
-#            sessionDataUrl: session_data_url
+          wsp:
+            mongoHost: mongodb.mongo
+            mongoDb: pexip-history-wsp
+            audienceRestriction: urn:pexip-history:vconf:dk
+            sessiondataHeadername: sessiondataheader
+            hok: true
+            trusts:
+              - /trust/sts.cer
+          wsc:
+            mongoHost: mongodb.mongo
+            mongoDb: pexip-history-wsc
+            stsUrl: mysts.host/sts
+            clientCertFile: /trust/client.cer
+            clientKeyFile: /trust/client.key
+            trustCertFiles:
+              - /trust/cert.cer
+            serviceEndpoint: https://host:port/endpoint
+            serviceAudience: serviceAudience
+            sessionDataUrl: session_data_url
           saml:
             mongoHost: mongodb.mongo
             mongoDb: m-sp
@@ -108,6 +108,25 @@ kitcaddy:
     #          insecureSkipVerify: true
     #          clientCertificateFile: WSC_CLIENT_CERTIFICATE_FILE
     #          clientCertificateKeyFile: WSC_CLIENT_KEY_FILE
+    - listenPort: 80443
+      name: pexip-wsp2
+      routes:
+        - paths:
+            - /h
+          prometheus:
+            path: /metrics
+          wsp:
+            mongoHost: mongodb.mongo123
+            mongoDb: pexip-history-wsp123
+            audienceRestriction: urn:pexip-history:vconf:dk123
+            sessiondataHeadername: sessiondataheader123
+            hok: true132
+            trusts:
+              - /trust/sts.cer132
+          upstream:
+            host: localhost123
+            port: 8080132
+
 
 
 
