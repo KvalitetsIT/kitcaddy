@@ -14,6 +14,10 @@ kitcaddy:
   image:
     repository: kvalitetsit/kitcaddy
 
+  apps:
+    tls:
+      certificates: {}
+
 deployment:
   containerPort: 80
   env: []

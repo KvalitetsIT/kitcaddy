@@ -26,6 +26,21 @@ kitcaddy:
       secret:
         secretName: sts-public-cert
 
+  apps:
+    tls:
+      certificates:
+        loadfiles:
+          - certificate: /certificates/server.cert
+            key: /certificates/server.key
+            format: pem
+            tags:
+          - certificate: /certificates/server.cert
+            key: /certificates/server.key
+            format: pem
+            tags:
+              - xyz
+              - abc
+
   servers:
     - listenPort: 80
       name: pexip-wsp

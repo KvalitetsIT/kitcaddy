@@ -33,6 +33,11 @@ Parameter | Description | Example
 `kitcaddy.secretName` |  
 `kitcaddy.extraVolumeMounts` | Array of extra volume mounts 
 `kitcaddy.extraVolumes` | Array of extra volumes 
+`kitcaddy.apps.tls.certificates.loadfiles` | Array of certificates to load from files
+`kitcaddy.apps.tls.certificates.loadfiles.certificate` | Path to certificate file | `/certificates/server.cert`
+`kitcaddy.apps.tls.certificates.loadfiles.key` | Path to certificate key file | `/certificates/server.key`
+`kitcaddy.apps.tls.certificates.loadfiles.format` | Format of the certificate | `pem`
+`kitcaddy.apps.tls.certificates.loadfiles.tags` | Array of tags
 `kitcaddy.servers` | Array of servers
 `kitcaddy.servers.name` | Name of the server
 `kitcaddy.servers.listenPort` | Port for incoming traffic | `80`

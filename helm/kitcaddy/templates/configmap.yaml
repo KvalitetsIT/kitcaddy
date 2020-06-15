@@ -18,6 +18,30 @@ data:
       },
       "apps": {
         "tls": {
+          {{- if (.Values.kitcaddy.apps.tls.certificates) }}
+          "certificates": {
+            {{- with .Values.kitcaddy.apps.tls.certificates }}
+            {{- if (.loadfiles) }}
+            "load_files": [
+              {{- range $index, $file := .loadfiles }}
+              {{- if $index }},{{- end }}
+              {
+                "certificate": {{ $file.certificate | quote }},
+                "key": {{ $file.key | quote }},
+                "format": {{ $file.format | quote }},
+                "tags": [
+                  {{- range $index, $tag := $file.tags }}
+                    {{- if $index }},{{- end }}
+                    {{ $tag | quote }}
+                  {{- end }}
+                ]
+              }
+              {{- end }}
+            ]
+            {{- end }}
+          }
+          {{- end }}
+          {{- end }}
         },
         "http": {
           "servers": {
