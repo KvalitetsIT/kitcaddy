@@ -34,6 +34,7 @@ Parameter | Description | Example
 `kitcaddy.extraVolumeMounts` | Array of extra volume mounts 
 `kitcaddy.extraVolumes` | Array of extra volumes 
 `kitcaddy.logLevel` | Set default log level. Default values 'INFO' | `DEBUG`
+`kitcaddy.admin.disabled` | Set admin disabled. Default values 'true' | `true`
 `kitcaddy.apps.tls.certificates.loadfiles` | Array of certificates to load from files
 `kitcaddy.apps.tls.certificates.loadfiles.certificate` | Path to certificate file | `/certificates/server.cert`
 `kitcaddy.apps.tls.certificates.loadfiles.key` | Path to certificate key file | `/certificates/server.key`

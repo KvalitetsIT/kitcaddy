@@ -14,7 +14,7 @@ data:
         }
       },
       "admin": {
-        "disabled": true
+        "disabled": {{ .Values.kitcaddy.admin.disabled }}
       },
       "apps": {
         "tls": {

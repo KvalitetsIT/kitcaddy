@@ -12,6 +12,8 @@ image:
 
 kitcaddy:
   logLevel: INFO
+  admin:
+    disabled: true
   image:
     repository: kvalitetsit/kitcaddy
 
