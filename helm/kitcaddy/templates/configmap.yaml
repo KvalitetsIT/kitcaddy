@@ -9,7 +9,7 @@ data:
       "logging": {
         "logs": {
           "default": {
-            "level": "INFO"
+            "level": {{ .Values.kitcaddy.logLevel | quote }}
           }
         }
       },
