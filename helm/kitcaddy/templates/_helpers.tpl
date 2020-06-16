@@ -44,11 +44,31 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
 {{/*
+Common labels documentation
+*/}}
+{{- define "documentation.labels" -}}
+helm.sh/chart: {{ include "kitcaddy.chart" . }}
+{{ include "documentation.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{/*
 Selector labels
 */}}
 {{- define "kitcaddy.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "kitcaddy.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{/*
+Selector labels documentation
+*/}}
+{{- define "documentation.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "kitcaddy.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}-documentation
 {{- end }}
 
 {{/*

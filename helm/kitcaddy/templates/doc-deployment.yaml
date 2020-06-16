@@ -1,0 +1,50 @@
+{{- if .Values.docDeployment.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "kitcaddy.fullname" . }}-documentation
+  namespace: {{ .Values.namespace | default "default" }}
+  labels:
+    {{- include "documentation.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.docReplicaCount }}
+    {{- end }}
+  selector:
+    matchLabels:
+      {{- include "documentation.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+    {{- with .Values.docPodAnnotations }}
+    annotations:
+      {{- toYaml . | nindent 8 }}
+    {{- end }}
+    labels:
+      {{- include "documentation.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ include "kitcaddy.fullname" . }}-documentation
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}-documentation:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            {{- toYaml .Values.docDeployment.env | nindent 12 }}
+          ports:
+            - name: container-port
+              containerPort: {{ .Values.docDeployment.containerPort }}
+          {{- if (.Values.docDeployment.livenessProbe) }}
+          livenessProbe:
+            {{- toYaml .Values.docDeployment.readinessProbe | nindent 12 }}
+          {{- end }}
+          {{- if (.Values.docDeployment.readinessProbe) }}
+          readinessProbe:
+            {{- toYaml .Values.docDeployment.readinessProbe | nindent 12 }}
+          {{- end }}
+{{- end -}}

@@ -95,6 +95,12 @@ podTemplate(
                         git push origin HEAD:master
                         """
                      }
+                }else{
+                    container('helm') {
+                       dir('helm'){
+                            sh 'helm package kitcaddy'
+                       }
+                    }
                 }
             }
 

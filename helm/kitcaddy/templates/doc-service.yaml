@@ -1,0 +1,18 @@
+{{- if .Values.docService.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "kitcaddy.fullname" . }}-documentation
+  namespace: {{ .Values.namespace | default "default" }}
+  labels:
+    {{- include "documentation.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.docService.type }}
+  ports:
+    - port: {{ .Values.docService.port }}
+      targetPort: {{ .Values.docService.targetPort }}
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "documentation.selectorLabels" . | nindent 4 }}
+{{- end -}}

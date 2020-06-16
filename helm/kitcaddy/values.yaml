@@ -3,6 +3,7 @@
 # Declare variables to be passed into your templates.
 
 replicaCount: 1
+docReplicaCount: 1
 
 image:
   repository: nginx
@@ -23,6 +24,11 @@ kitcaddy:
 
 deployment:
   containerPort: 80
+  env: []
+
+docDeployment:
+  enabled: false
+  containerPort: 8080
   env: []
 
 imagePullSecrets: []
@@ -56,6 +62,12 @@ service:
   port: 80
   targetPort: proxy-port
 
+docService:
+  enabled: false
+  type: ClusterIP
+  port: 80
+  targetPort: container-port
+
 ingress:
   enabled: true
   annotations: {}
@@ -68,6 +80,9 @@ ingress:
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
+
+docIngress:
+  enabled: false
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
