@@ -1,5 +1,5 @@
 {{- if .Values.docIngress.enabled -}}
-{{- $fullName := include "kitcaddy.fullname" . -}}-documentation
+{{- $fullName := include "kitcaddy.fullname" . -}}
 {{- $svcPort := .Values.docService.port -}}
 {{- if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
 apiVersion: networking.k8s.io/v1beta1
@@ -8,7 +8,7 @@ apiVersion: extensions/v1beta1
 {{- end }}
 kind: Ingress
 metadata:
-  name: {{ $fullName }}
+  name: {{ $fullName }}-documentation
   namespace: {{ .Values.namespace | default "default" }}
   labels:
     {{- include "documentation.labels" . | nindent 4 }}
@@ -35,7 +35,7 @@ spec:
           {{- range .paths }}
           - path: {{ . }}
             backend:
-              serviceName: {{ $fullName }}
+              serviceName: {{ $fullName }}-documentation
               servicePort: {{ $svcPort }}
           {{- end }}
     {{- end }}
