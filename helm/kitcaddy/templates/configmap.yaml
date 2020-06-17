@@ -137,9 +137,12 @@ data:
                                     {{ $trust | quote }}
                                     {{- end }}
                         ],
+                        {{- if (.sessionDataUrl) }}
+                        "session_data_url": {{ .sessionDataUrl | quote }},
+                        {{- end }}
                         "service_endpoint": {{ .serviceEndpoint | quote }},
-                        "service_audience": {{ .serviceAudience | quote }},
-                        "session_data_url": {{ .sessionDataUrl | quote }}
+                        "service_audience": {{ .serviceAudience | quote }}
+
                       },
                       {{- end }}
                       {{- end }}
