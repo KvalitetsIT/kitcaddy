@@ -193,6 +193,18 @@ data:
                           "dial": "{{ $route.upstream.host }}:{{ $route.upstream.port }}"
                         }
                       ]
+                      {{- if ($route.wsc) }}
+                      {{- with $route.wsc }}
+                      ,
+                      "headers": {
+                        "request": {
+                          "set": {
+                            "Host": "[{{ $route.upstream.host }}:{{ $route.upstream.port }}]" 
+                          }
+                        }
+                      }
+                      {{- end }}
+                      {{- end }}
                     }
                   ]
                 }
