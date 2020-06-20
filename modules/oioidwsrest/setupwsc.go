@@ -59,14 +59,14 @@ func (m CaddyOioIdwsRestWsc) ServeHTTP(w http.ResponseWriter, r *http.Request, n
 	var maxIter = 2
 	var iter = 0
 	for (true) {
-		wscResponseWriter := NewWscResponseWriter(w)
+		wscResponseRecorder := caddyhttp.NewResponseRecorder(w, nil, nil)
 		if (iter < maxIter) {
-			_, err, callback := m.ClientProtocol.HandleServiceWithCallback(&wscResponseWriter, r, nextService)
-			m.Logger.Debug(fmt.Sprintf("httpCode %d", wscResponseWriter.MyStatusCode))
-			if (wscResponseWriter.MyStatusCode == http.StatusUnauthorized && callback != nil) {
+			_, err, callback := m.ClientProtocol.HandleServiceWithCallback(wscResponseRecorder, r, nextService)
+			m.Logger.Debug(fmt.Sprintf("httpCode %d", wscResponseRecorder.Status()))
+			if (wscResponseRecorder.Status() == http.StatusUnauthorized && callback != nil) {
 				m.Logger.Debug("Status unautorized - using callback")
 				(*callback)()
-			} else if (wscResponseWriter.MyStatusCode == http.StatusUnauthorized) {
+			} else if (wscResponseRecorder.Status() == http.StatusUnauthorized) {
 				m.Logger.Debug("Status unautorized - no callback")
 				iter = maxIter;
 			} else {
@@ -81,54 +81,6 @@ func (m CaddyOioIdwsRestWsc) ServeHTTP(w http.ResponseWriter, r *http.Request, n
 
 	return nil
 }
-
-type WscResponseWriter struct {
-	http.ResponseWriter
-	MyStatusCode int
-	MyHeaders http.Header
-}
-
-func (r *WscResponseWriter) WriteHeader(statusCode int) {
-	r.MyStatusCode = statusCode
-	if (statusCode != http.StatusUnauthorized) {
-		r.ResponseWriter.WriteHeader(statusCode)
-		r.flush()
-	}
-}
-
-func (r *WscResponseWriter) Write(b []byte) (int, error) {
-	if (r.MyStatusCode == 0) {
-                r.WriteHeader(http.StatusOK)
-        }
-	if (r.MyStatusCode != http.StatusUnauthorized) {
-		return r.ResponseWriter.Write(b)
-	}
-	return len(b), nil
-
-}
-
-func (r *WscResponseWriter) Header() http.Header {
-	if (r.MyStatusCode == 0) {
-		return r.MyHeaders
-	}
-	return r.ResponseWriter.Header()
-}
-
-func (r *WscResponseWriter) flush() {
-	for k, vs := range r.MyHeaders {
-		for _, v := range vs {
-			r.ResponseWriter.Header().Add(k, v)
-		}
-	}
-}
-
-
-func NewWscResponseWriter(w http.ResponseWriter) WscResponseWriter {
-	wsc := WscResponseWriter{ResponseWriter: w}
-	wsc.MyHeaders = make(map[string][]string)
-	return wsc
-}
-
 
 func init() {
 	caddy.RegisterModule(CaddyOioIdwsRestWsc{})

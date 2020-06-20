@@ -3,6 +3,7 @@ package dk.kvalitetsit.kitcaddy.test;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Base64;
+import java.util.List;
 import java.util.UUID;
 
 import org.junit.Assert;
@@ -129,6 +130,7 @@ public class OioIdwsRestWscIntegrationTest extends AbstractIntegrationTest {
 	public void testGetServiceResponseThroughWscWithClaims() throws JsonMappingException, JsonProcessingException, URISyntaxException {
 
 		// Given
+		String headerNameContentType = "Content-Type";
 		ObjectMapper om = new ObjectMapper();
 		String echoUrl = getWscServiceUrl()+"/echo";
 		JsonNodeFactory nf = JsonNodeFactory.instance;
@@ -171,6 +173,12 @@ public class OioIdwsRestWscIntegrationTest extends AbstractIntegrationTest {
 		Assert.assertEquals(1, claimAs.size());
 		Assert.assertTrue(userAttributeClaimANode.get(0).isValueNode());
 		Assert.assertEquals(claimaValue, ((ValueNode)userAttributeClaimANode.get(0)).asText());
+		HttpHeaders responseHeaders = echoResponse.getHeaders();
+		Assert.assertNotNull(responseHeaders);
+		List<String> responseContentTypes = responseHeaders.get(headerNameContentType);
+		Assert.assertNotNull(responseContentTypes);
+		Assert.assertEquals(1, responseContentTypes.size());
+		Assert.assertEquals("application/json; charset=utf-8", responseContentTypes.get(0));
 	}
 
 	public String getWscServiceUrl() {

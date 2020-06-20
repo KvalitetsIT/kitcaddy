@@ -80,7 +80,7 @@ public class SamlServiceProviderIntegrationTest extends AbstractBrowserBasedInte
 		// Given
 		samlContainer = getKitCaddyContainer(SAML_SP_HOST, SAML_SP_PORT, getDockerNetwork(), "samlserviceprovider/saml.config");
 		samlContainer.start();
-		String username = "testabc";
+		String username = "testabc"+UUID.randomUUID().toString();
 		String password = "secret1234";
 		addUserToKeycloak(username, password);
 		RemoteWebDriver webdriver = chrome.getWebDriver();
@@ -102,7 +102,7 @@ public class SamlServiceProviderIntegrationTest extends AbstractBrowserBasedInte
 		// Given
 		samlContainer = getKitCaddyContainer(SAML_SP_HOST, SAML_SP_PORT, getDockerNetwork(), "samlserviceprovider/saml.config");
 		samlContainer.start();
-		String username = "testabc";
+		String username = "testabc"+UUID.randomUUID().toString();
 		String password = "secret1234";
 		addUserToKeycloak(username, password);
 		RemoteWebDriver webdriver = chrome.getWebDriver();

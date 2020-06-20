@@ -94,7 +94,7 @@ public class AbstractIntegrationTest {
 			mysql.start();
 
 			// Start STS
-			GenericContainer<?> stsBackend = new GenericContainer<>("kitdocker.kvalitetsit.dk/kvalitetsit/sts:543492665993a4323f1d4fc94d266278d58764fb")
+			GenericContainer<?> stsBackend = new GenericContainer<>("kvalitetsit/sts:1.0.0")
 					.withEnv("LOG_lEVEL", "INFO")
 
 					.withEnv("STS_ISSUER", "sts")
@@ -129,7 +129,7 @@ public class AbstractIntegrationTest {
 					.withNetworkAliases("sts-backend");
 			stsBackend.start();
 			
-			GenericContainer<?> sts = new GenericContainer<>("kitdocker.kvalitetsit.dk/kvalitetsit/sts-frontend:543492665993a4323f1d4fc94d266278d58764fb")
+			GenericContainer<?> sts = new GenericContainer<>("kvalitetsit/sts-frontend:1.0.0")
 					.withEnv("SERVER_NAME", "sts")
 					.withEnv("STS_HOST", "sts-backend")
 					.withClasspathResourceMapping("sts/sts.cer", "/certificates/sts.cer", BindMode.READ_ONLY)
