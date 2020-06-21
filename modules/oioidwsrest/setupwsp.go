@@ -7,10 +7,14 @@ import (
 	gooioidwsrest "github.com/KvalitetsIT/gooioidwsrest"
 	securityprotocol "github.com/KvalitetsIT/gosecurityprotocol"
 	"net/http"
+	"net/url"
 	"github.com/caddyserver/caddy/v2"
 	"github.com/caddyserver/caddy/v2/caddyconfig/caddyfile"
 	"github.com/caddyserver/caddy/v2/caddyconfig/httpcaddyfile"
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
+
+	"encoding/pem"
+	"crypto/x509"
 
 	"time"
 	"go.uber.org/zap"
@@ -32,6 +36,8 @@ type CaddyOioIdwsRestWsp struct {
 	HoK string `json:"hok,omitempty"`
 
 	SessiondataHeaderName string `json:"sessiondata_headername,omitempty"`
+
+	SslClientCertHeaderNames []string `json:"ssl_client_cert_header_names,omitempty"`
 
 	ProviderProtocol *gooioidwsrest.OioIdwsRestWsp
 
@@ -108,6 +114,8 @@ func (m *CaddyOioIdwsRestWsp) Provision(ctx caddy.Context) error {
 		wspConfig.SessiondataHeaderName = m.SessiondataHeaderName
 	}
 
+	wspConfig.ClientCertHandler = createClientCertHandler(m.SslClientCertHeaderNames, m.Logger)
+
 	m.ProviderProtocol = gooioidwsrest.NewOioIdwsRestWspFromConfig(wspConfig, sessionCache, m.Logger)
 
 	return nil
@@ -159,3 +167,51 @@ var (
 	_ caddyhttp.MiddlewareHandler    = (*CaddyOioIdwsRestWsp)(nil)
 	_ caddyfile.Unmarshaler          = (*CaddyOioIdwsRestWsp)(nil)
 )
+
+func createClientCertHandler(sslClientCertHeaderNames []string, logger *zap.SugaredLogger) func(req *http.Request) *x509.Certificate {
+
+	if (sslClientCertHeaderNames == nil || len(sslClientCertHeaderNames) == 0) {
+		return getClientCertificateDefault
+	}
+
+	getClientCertFromHeaders := func(req *http.Request) *x509.Certificate  {
+
+		for _, clientCertHeaderName := range sslClientCertHeaderNames {
+			clientCertHeader := req.Header.Get(clientCertHeaderName)
+			if (clientCertHeader != "") {
+				logger.Debugf("Found HTTP header: %s", clientCertHeader)
+				decodedClientCertHeader, err := url.QueryUnescape(clientCertHeader)
+				if (err != nil) {
+					logger.Infof("Could not url decode HTTP header value: %s", err.Error())
+				}
+				if (decodedClientCertHeader != "") {
+					block, _ := pem.Decode([]byte(decodedClientCertHeader))
+					if (block == nil) {
+						logger.Infof("Could not decode decoded HTTP header value into PEM")
+                                	}
+					cert, certErr := x509.ParseCertificate(block.Bytes)
+					if (certErr != nil) {
+						logger.Infof("Could not parse PEM block into certificate: %s", certErr.Error())
+					}
+					return cert
+				}
+			}
+		}
+		return getClientCertificateDefault(req)
+	}
+
+	return getClientCertFromHeaders
+}
+
+
+func getClientCertificateDefault(req *http.Request) *x509.Certificate {
+
+        if (req.TLS != nil) {
+                if (len(req.TLS.PeerCertificates) > 0) {
+                        cert := req.TLS.PeerCertificates[0]
+                        return cert
+                }
+        }
+        return nil
+}
+

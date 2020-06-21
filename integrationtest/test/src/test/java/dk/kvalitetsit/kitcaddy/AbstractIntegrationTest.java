@@ -170,6 +170,8 @@ public class AbstractIntegrationTest {
 				.withClasspathResourceMapping("wsp/testserviceaa-ssl.pem", "/wsp/wspssl.pem", BindMode.READ_ONLY)
 
 				.withClasspathResourceMapping("sts/sts.cer", "/trust/sts.cer", BindMode.READ_ONLY)
+				
+				.withClasspathResourceMapping("frontend/frontend.cer", "/trust/frontend.cer", BindMode.READ_ONLY)
 
 				.withClasspathResourceMapping(config, "/configs/config.json", BindMode.READ_ONLY)
 				.withCommand("-config", "/configs/config.json")
