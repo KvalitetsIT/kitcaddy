@@ -109,16 +109,25 @@ data:
                         "mongo_host": {{ .mongoHost | quote }},
                         "mongo_db": {{ .mongoDb | quote }},
                         "trust_cert_files": [
-                                {{- range $index, $trust := .trusts }}
-                                    {{- if $index}},{{- end}}
-                                {{ $trust | quote }}
-                                {{- end }}
+                          {{- range $index, $trust := .trusts }}
+                              {{- if $index}},{{- end}}
+                          {{ $trust | quote }}
+                          {{- end }}
                         ],
                         "audience_restriction": {{ .audienceRestriction | quote }},
                         {{- if (.sessiondataHeadername) }}
                         "sessiondata_headername": {{ .sessiondataHeadername | quote }},
                         {{- end }}
+                        {{- if (.sslClientCertHeaderNames) }}
+                        "ssl_client_cert_header_names": [
+                          {{- range $index, $names := .sslClientCertHeaderNames }}
+                              {{- if $index}},{{- end}}
+                          {{ $names | quote }}
+                          {{- end }}
+                        ],
+                        {{- end }}
                         "hok": {{ .hok | quote }}
+
                       },
                       {{- end }}
                       {{- end }}

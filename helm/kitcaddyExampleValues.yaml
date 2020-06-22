@@ -70,6 +70,9 @@ kitcaddy:
             hok: true
             trusts:
               - /trust/sts.cer
+            sslClientCertHeaderNames:
+              - surviving-bogus-header
+              - forwarded-from-nginx
           wsc:
             mongoHost: mongodb.mongo
             mongoDb: pexip-history-wsc
@@ -104,10 +107,10 @@ kitcaddy:
           upstream:
             host: localhost
             port: 8080
-    #        clientTls:
-    #          insecureSkipVerify: true
-    #          clientCertificateFile: WSC_CLIENT_CERTIFICATE_FILE
-    #          clientCertificateKeyFile: WSC_CLIENT_KEY_FILE
+            clientTls:
+              insecureSkipVerify: true
+              clientCertificateFile: WSC_CLIENT_CERTIFICATE_FILE
+              clientCertificateKeyFile: WSC_CLIENT_KEY_FILE
     - listenPort: 80443
       name: pexip-wsp2
       routes:
@@ -191,6 +194,11 @@ ingress:
   enabled: true
   annotations:
     kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/auth-tls-verify-client: optional_no_ca
+    nginx.ingress.kubernetes.io/auth-tls-pass-certificate-to-upstream: true
+    nginx.ingress.kubernetes.io/auth-url: http://testserviceaa:8787/
+    nginx.ingress.kubernetes.io/auth-snippet: |
+      proxy_set_header forwarded-from-nginx $ssl_client_escaped_cert;
   hosts:
     - host: pexip-sink.vdxapi.dk
       paths:
