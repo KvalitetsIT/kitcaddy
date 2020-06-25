@@ -29,6 +29,7 @@ type SamlProviderModule struct {
 	SessionHeaderName   string `json:"session_header_name,omitempty"`
 	SessionExpiryHours  string `json:"session_expiry_hours,omitempty"`
 	AudienceRestriction string `json:"audience_restriction,omitempty"`
+	SessiondataHeaderName string `json:"sessiondata_headername,omitempty"`
 
 	EntityId string `json:"entityId,omitempty"`
 
@@ -128,6 +129,7 @@ func (m *SamlProviderModule) Provision(ctx caddy.Context) error {
 	samlProviderConfig.SessionExpiryHours = m.SessionExpiryHours
 	samlProviderConfig.Logger = m.Logger
 	samlProviderConfig.LogoutLandingPage = m.LogoutLandingPage
+	samlProviderConfig.SessiondataHeaderName = m.SessiondataHeaderName
 	m.Logger.Infof("Starting SAML provider with config: %v", samlProviderConfig)
 	m.SamlProvider, _ = gosamlserviceprovider.NewSamlServiceProviderFromConfig(samlProviderConfig, sessionCache)
 	return nil

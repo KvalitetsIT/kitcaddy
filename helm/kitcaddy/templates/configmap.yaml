@@ -151,6 +151,9 @@ data:
                       {
                         "handler": "samlprovider",
                         "session_header_name": {{ .sessionHeaderName | quote }},
+                        {{- if (.sessiondataHeadername) }}
+                        "sessiondata_headername": {{ .sessiondataHeadername | quote }},
+                        {{- end }}
                         "session_expiry_hours": {{ .sessionExpiryHours | quote }},
                         "mongo_host": {{ .mongoHost | quote }},
                         "mongo_db": {{ .mongoDb | quote }},

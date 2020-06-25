@@ -85,6 +85,7 @@ kitcaddy:
             mongoHost: mongodb.mongo
             mongoDb: m-sp
             sessionHeaderName: sessionid
+            sessiondataHeadername: sessiondataheader
             sessionExpiryHours: 1
             audienceRestriction: urn:m:vdxapi:dk
             idpMetadataUrl: https://login.vdxapi.dk/auth/realms/broker/protocol/saml/descriptor

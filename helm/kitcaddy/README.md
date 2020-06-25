@@ -73,6 +73,7 @@ Parameter | Description | Example
 `kitcaddy.servers.routes.saml.mongoHost` | URL of the MongoDB | `mongodb.mongo`
 `kitcaddy.servers.routes.saml.mongoDb` | Database in Mongo to be used by the SAML | `web-service-saml`
 `kitcaddy.servers.routes.saml.sessionHeaderName` | Header name for session data | `sessiondataheader` 
+`kitcaddy.servers.routes.saml.sessiondataHeadername` | Header name for session data | `sessiondataheader`
 `kitcaddy.servers.routes.saml.sessionExpiryHours` | Expiry time for the session in hours | `1` 
 `kitcaddy.servers.routes.saml.audienceRestriction` | | `urn:web-service:domain:dk`
 `kitcaddy.servers.routes.saml.idpMetadataUrl` | IDP metadata URL | `https://login.domain.dk/auth`
