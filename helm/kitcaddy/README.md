@@ -54,9 +54,10 @@ Parameter | Description | Example
 `kitcaddy.servers.routes.wsp.mongoHost` | URL of the MongoDB | `mongodb.mongo`
 `kitcaddy.servers.routes.wsp.mongoDb` | Database in Mongo to be used by the WSP | `web-service-wsp`
 `kitcaddy.servers.routes.wsp.audienceRestriction` | | `urn:web-service:domain:dk`
-`kitcaddy.servers.routes.wsp.sessiondataHeadername` | Header name for session data | `sessiondataheader`
+`kitcaddy.servers.routes.wsp.sessiondataHeadername` | Header name for session data. If not set variable not in config | `sessiondataheader`
 `kitcaddy.servers.routes.wsp.hok` | Hold on key | `true`
 `kitcaddy.servers.routes.wsp.trusts` | Array of path to trusted certificates | `- /trust/sts.cer`
+`kitcaddy.servers.routes.wsp.sslClientCertHeaderNames` | Array of SSL client cert header names. If not set variable not in config | `- surviving-bogus-header`<br>`- forwarded-from-nginx`
 **KitCaddy - WSC** |
 `kitcaddy.servers.routes.wsc` | Set values under this to enable WSC
 `kitcaddy.servers.routes.wsc.mongoHost` | URL of the MongoDB | `mongodb.mongo`
