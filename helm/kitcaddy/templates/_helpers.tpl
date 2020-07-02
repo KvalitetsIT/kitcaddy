@@ -61,6 +61,7 @@ Selector labels
 {{- define "kitcaddy.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "kitcaddy.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+app: {{ .Release.Name }}
 {{- end }}
 
 {{/*
@@ -69,6 +70,7 @@ Selector labels documentation
 {{- define "documentation.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "kitcaddy.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}-documentation
+app: {{ .Release.Name }}-documentation
 {{- end }}
 
 {{/*
