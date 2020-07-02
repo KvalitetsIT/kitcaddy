@@ -6,6 +6,10 @@ metadata:
   namespace: {{ .Values.namespace | default "default" }}
   labels:
     {{- include "documentation.labels" . | nindent 4 }}
+  {{- with .Values.docService.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   type: {{ .Values.docService.type }}
   ports:

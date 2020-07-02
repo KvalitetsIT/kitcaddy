@@ -61,12 +61,14 @@ service:
   type: ClusterIP
   port: 80
   targetPort: proxy-port
+  annotations: {}
 
 docService:
   enabled: false
   type: ClusterIP
   port: 80
   targetPort: container-port
+  annotations: {}
 
 ingress:
   enabled: true

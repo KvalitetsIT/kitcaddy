@@ -110,6 +110,7 @@ Parameter | Description | Example
 **Service** |
 `service.port` | Port on the service | `8080`
 `service.targetPort` | Target port | `proxy-port`
+`service.annotations` | Annotations for service | `prometheus.io/path: /manage/actuator/appmetrics`
 **Documentation** | Default documentation image is `image.repository`-documentation
 **Documentation Deployment** |
 `docDeployment.enabled` | Enables the deployment for the documentation | `true`
@@ -125,3 +126,4 @@ Parameter | Description | Example
 `docService.enabled` | Enables the service for the documentation | `true`
 `docService.port` | Port on the service | `8080`
 `docService.targetPort` | Target port | `proxy-port`
+`docService.annotations` | Annotations for service | `prometheus.io/path: /manage/actuator/appmetrics`

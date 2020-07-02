@@ -84,9 +84,7 @@ podTemplate(
                      sshagent(['github'])
                      {
                         sh """
-                        pwd
                         cd ${WORKSPACE}/helm-repo/
-                        pwd
                         git config --global user.email "developer@kvalitetsit.dk"
                         git config --global user.name "Jenkins"
                         git status

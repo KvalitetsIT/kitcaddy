@@ -225,6 +225,10 @@ docIngress:
 service:
   port: 8080
   targetPort: proxy-port
+  annotations:
+    prometheus.io/path: /manage/actuator/appmetrics
+    prometheus.io/port: "8081"
+    prometheus.io/scrape: "true"
 
 docService:
   enabled: true
