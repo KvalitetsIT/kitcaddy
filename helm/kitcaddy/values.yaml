@@ -24,7 +24,6 @@ kitcaddy:
 
 deployment:
   containerPort: 80
-  env: []
 
 docDeployment:
   enabled: false

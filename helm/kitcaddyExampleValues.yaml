@@ -134,39 +134,30 @@ kitcaddy:
 deployment:
   containerPort: 8080
   env:
-    - name: nats.url
+    nats.url:
       value: nats://nats:4222
-    - name: nats.subject
+    nats.subject:
       value: PexipEvent
-    - name: nats.clusterId
+    nats.clusterId:
       value: nats-stream
-    - name: nats.clientId
-      valueFrom:
-        fieldRef:
-          fieldPath: metadata.name
-    - name: nats.queue.group
+    nats.clientId:
+      type: fieldPath
+      value: metadata.name
+    jdbc.pass:
+      type: secretKeyRef
+      name: vdxapidb
+      key: password
+    nats.queue.group:
       value: PexipEvent
-    - name: nats.queue.durableName
+    nats.queue.durableName:
       value: "04062020_1430"
-    - name: mongodb.uri
+    mongodb.uri:
       value: mongodb://mongodb.mongo:27017/?readPreference=secondaryPreferred&replicaSet=rs0
-    - name: mongodb.database
+    mongodb.database:
       value: PexipEvent
-    - name: usercontext.header.name
+    usercontext.header.name:
       value: X-Test-Auth
-    - name: userattributes.role.key
-      value: UserRoles
-    - name: userrole.admin.values
-      value: admin
-    - name: userrole.user.values
-      value: justuser,user
-    - name: userattributes.org.key
-      value: Org
-    - name: userrole.monitor.values
-      value: monitor
-    - name: userrole.provisioner.values
-      value: provisioner
-    - name: logging.level.dk.medcom.vdx.pexip
+    logging.level.dk.medcom.vdx.pexip:
       value: DEBUG
 
   readinessProbe:

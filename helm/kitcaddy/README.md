@@ -100,9 +100,16 @@ Parameter | Description | Example
 `kitcaddy.servers.routes.upstream.clientTls.clientCertificateKeyFile` | Path to client certificate key file | `/certificate/client.key`
 **Deployment** | 
 `deployment.containerPort` | Port on web-service | `8080` 
-`deployment.env` | Array of environment variables 
 `deplyment.readinessProbe` | Set values under this to config readiness probe
 `deplyment.livenessProbe` | Set values under this to config liveness probe
+**Deployment - Environment variables** |
+`deployment.env` | Map of environment variables
+`deployment.env.{name}` | Name of the environment variables
+`deployment.env.{name}.value` | Value of the environment variable
+`deployment.env.{name}.type` | Type of the environment variables. 'fieldPath' or 'secretKeyRef'. If not set classic environment variable. | `secretKeyRef`
+SecretKeyRef |  
+`deployment.env.{name}.name` | Name of the SecretKeyRef
+`deployment.env.{name}.key` | Key for the SecretKeyRef
 **Ingress** |
 `ingress.enabled` | Set to true to enable ingress | `true`
 `ingress.annotations` | Annotations for ingress | `kubernetes.io/ingress.class: nginx`
