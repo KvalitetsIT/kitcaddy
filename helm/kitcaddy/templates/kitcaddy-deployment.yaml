@@ -54,7 +54,7 @@ spec:
             {{- range $key, $value := .Values.deployment.env }}
             - name: {{ $key }}
             {{- if (not $value.type) }}
-              value: {{ $value.value }}
+              value: {{ $value.value | quote }}
             {{- else if eq $value.type "fieldPath" }}
               valueFrom:
                 fieldRef:
