@@ -36,6 +36,7 @@ Common labels
 */}}
 {{- define "kitcaddy.labels" -}}
 helm.sh/chart: {{ include "kitcaddy.chart" . }}
+app: {{ .Release.Name }}
 {{ include "kitcaddy.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
@@ -48,6 +49,7 @@ Common labels documentation
 */}}
 {{- define "documentation.labels" -}}
 helm.sh/chart: {{ include "kitcaddy.chart" . }}
+app: {{ .Release.Name }}-documentation
 {{ include "documentation.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
@@ -61,7 +63,6 @@ Selector labels
 {{- define "kitcaddy.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "kitcaddy.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
-app: {{ .Release.Name }}
 {{- end }}
 
 {{/*
@@ -70,7 +71,6 @@ Selector labels documentation
 {{- define "documentation.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "kitcaddy.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}-documentation
-app: {{ .Release.Name }}-documentation
 {{- end }}
 
 {{/*
