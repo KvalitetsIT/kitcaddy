@@ -18,11 +18,11 @@ serviceAccount:
 
 kitcaddy:
   secretName: sts-public-cert
-  extraVolumeMounts: |
-    - mountPath: /trust
-      name: sts-public-cert
-  extraVolumes: |
-    - name: sts-public-cert
+  extraVolumeMounts:
+    sts-public-cert:
+      mountPath: /trust
+  extraVolumes:
+    sts-public-cert: |
       secret:
         secretName: sts-public-cert
 
@@ -42,7 +42,8 @@ kitcaddy:
               - abc
 
   servers:
-    - listenPort: 80
+    pexip-wsp:
+      listenPort: 80
       name: pexip-wsp
       strictSniHost:
         value: false
@@ -53,12 +54,14 @@ kitcaddy:
         disableRedirects: true
 
       routes:
-        - paths:
+        meet:
+          paths:
             - /meet/*
           upstream:
             host: localhost
             port: 8080
-        - paths:
+        host:
+          paths:
             - /host/*
           prometheus:
             path: /metrics
@@ -112,10 +115,12 @@ kitcaddy:
               insecureSkipVerify: true
               clientCertificateFile: WSC_CLIENT_CERTIFICATE_FILE
               clientCertificateKeyFile: WSC_CLIENT_KEY_FILE
-    - listenPort: 80443
+    pexip-wsp2:
+      listenPort: 80443
       name: pexip-wsp2
       routes:
-        - paths:
+        h:
+          paths:
             - /h
           prometheus:
             path: /metrics

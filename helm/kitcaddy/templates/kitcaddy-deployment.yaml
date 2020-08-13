@@ -41,8 +41,9 @@ spec:
           volumeMounts:
             - mountPath: /config
               name: caddy-config
-            {{- with .Values.kitcaddy.extraVolumeMounts }}
-            {{- tpl . $ | nindent 12 }}
+            {{- range $key, $value := .Values.kitcaddy.extraVolumeMounts }}
+            - mountPath: {{ $value.mountPath}}
+              name: {{ $key }}
             {{- end }}
         - name: {{ include "kitcaddy.fullname" . }}
           securityContext:
@@ -83,8 +84,9 @@ spec:
         - configMap:
             name: {{ include "kitcaddy.fullname" . }}-config
           name: caddy-config
-        {{- with .Values.kitcaddy.extraVolumes }}
-        {{- tpl . $ | nindent 8 }}
+        {{- range $key, $value := .Values.kitcaddy.extraVolumes }}
+        - name: {{$key}}
+          {{- tpl . $ | nindent 10 -}}
         {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
