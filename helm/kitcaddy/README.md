@@ -31,8 +31,8 @@ Parameter | Description | Example
 `podAnnotations` | Annotations for the pod fx prometheus | `prometheus.io/path: actuator/prometheus` <br> `prometheus.io/scrape: "true"` <br> 
 **KitCaddy** |
 `kitcaddy.secretName` |  
-`kitcaddy.extraVolumeMounts` | Array of extra volume mounts 
-`kitcaddy.extraVolumes` | Array of extra volumes 
+`kitcaddy.extraVolumeMounts` | Extra volume mounts 
+`kitcaddy.extraVolumes` | Extra volumes 
 `kitcaddy.logLevel` | Set default log level. Default values 'INFO' | `DEBUG`
 `kitcaddy.admin.disabled` | Set admin disabled. Default values 'true' | `true`
 `kitcaddy.apps.tls.certificates.loadfiles` | Array of certificates to load from files
@@ -40,14 +40,14 @@ Parameter | Description | Example
 `kitcaddy.apps.tls.certificates.loadfiles.key` | Path to certificate key file | `/certificates/server.key`
 `kitcaddy.apps.tls.certificates.loadfiles.format` | Format of the certificate | `pem`
 `kitcaddy.apps.tls.certificates.loadfiles.tags` | Array of tags
-`kitcaddy.servers` | Array of servers
+`kitcaddy.servers` | Dictionary with servers
 `kitcaddy.servers.name` | Name of the server
 `kitcaddy.servers.listenPort` | Port for incoming traffic | `80`
 `kitcaddy.servers.strictSniHost.value` | Value for Strict SNI host. true or false | `false`
 `kitcaddy.servers.tlsConnectionPolicies.clientAuthentication.require` | Value for client authentication. true or false | `true`
 `kitcaddy.servers.automaticHttps.disableRedirects` | Value for disable HTTPS redirects. true or false | `true`
-`kitcaddy.servers.routes` | Array if routs 
-`kitcaddy.servers.routes.paths` | Array of paths for KitCaddy to listen on
+`kitcaddy.servers.routes` | Dictionary with routes for the server 
+`kitcaddy.servers.routes.paths` | Array of path for KitCaddy to listen on
 `kitcaddy.servers.routes.prometheus.path` | Prometheus path on KitCaddy. If not set Prometheus is disabled| `/metrics`
 **KitCaddy - WSP** |
 `kitcaddy.servers.routes.wsp` | Set values under this to enable WSP
