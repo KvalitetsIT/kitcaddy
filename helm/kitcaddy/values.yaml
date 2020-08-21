@@ -23,6 +23,7 @@ kitcaddy:
       certificates: {}
 
 deployment:
+  enabled: true
   containerPort: 80
 
 docDeployment:

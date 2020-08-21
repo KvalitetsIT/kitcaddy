@@ -45,6 +45,8 @@ spec:
             - mountPath: {{ $value.mountPath}}
               name: {{ $key }}
             {{- end }}
+
+      {{- if .Values.deployment.enabled }}
         - name: {{ include "kitcaddy.fullname" . }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
@@ -80,6 +82,8 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+      {{- end }}
+
       volumes:
         - configMap:
             name: {{ include "kitcaddy.fullname" . }}-config
