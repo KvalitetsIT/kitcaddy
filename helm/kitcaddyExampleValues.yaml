@@ -1,6 +1,16 @@
 fullnameOverride: pexip-history
 namespace: pexip
 
+extraConfigMapJson:
+  test.json:
+    [
+      {
+        "organizationId": "123",
+        "organization":  "test",
+        "secretKeyLocation": "key.txt"
+      }
+    ]
+
 podAnnotations:
   prometheus.io/path: /history/actuator/prometheus
   prometheus.io/port: "8080"
