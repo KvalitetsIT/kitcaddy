@@ -147,6 +147,8 @@ kitcaddy:
             port: 8080132
 
 deployment:
+  configMapMountPath: /config
+
   containerPort: 8080
   env:
     nats.url:

@@ -100,6 +100,7 @@ Parameter | Description | Example
 `kitcaddy.servers.routes.upstream.clientTls.clientCertificateKeyFile` | Path to client certificate key file | `/certificate/client.key`
 **Deployment** | 
 `deployment.containerPort` | Port on web-service | `8080` 
+`deployment.configMapMountPath` | Set value if config map needs to mount on deployment | `/config`
 `deplyment.readinessProbe` | Set values under this to config readiness probe
 `deplyment.livenessProbe` | Set values under this to config liveness probe
 **Deployment - Environment variables** |

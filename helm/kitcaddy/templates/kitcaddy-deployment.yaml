@@ -72,14 +72,23 @@ spec:
           ports:
             - name: container-port
               containerPort: {{ .Values.deployment.containerPort }}
+
+          {{- if (.Values.deployment.configMapMountPath) }}
+          volumeMounts:
+            - mountPath: {{ .Values.deployment.configMapMountPath }}
+              name: caddy-config
+          {{- end }}
+
           {{- if (.Values.deployment.livenessProbe) }}
           livenessProbe:
-            {{- toYaml .Values.deployment.readinessProbe | nindent 12 }}
+            {{- toYaml .Values.deployment.livenessProbe | nindent 12 }}
           {{- end }}
+
           {{- if (.Values.deployment.readinessProbe) }}
           readinessProbe:
             {{- toYaml .Values.deployment.readinessProbe | nindent 12 }}
           {{- end }}
+
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- end }}
