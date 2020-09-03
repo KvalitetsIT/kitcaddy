@@ -148,6 +148,9 @@ kitcaddy:
 
 deployment:
   configMapMountPath: /config
+  extraVolumeMounts:
+    test123:
+      mountPath: /123
 
   containerPort: 8080
   env:

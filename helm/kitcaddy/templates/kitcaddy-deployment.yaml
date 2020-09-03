@@ -73,10 +73,16 @@ spec:
             - name: container-port
               containerPort: {{ .Values.deployment.containerPort }}
 
-          {{- if (.Values.deployment.configMapMountPath) }}
+          {{- if or (.Values.deployment.configMapMountPath) (.Values.deployment.extraVolumeMounts) }}
           volumeMounts:
+          {{- end }}
+          {{- if (.Values.deployment.configMapMountPath) }}
             - mountPath: {{ .Values.deployment.configMapMountPath }}
               name: caddy-config
+          {{- end }}
+          {{- range $key, $value := .Values.deployment.extraVolumeMounts }}
+            - mountPath: {{ $value.mountPath }}
+              name: {{ $key }}
           {{- end }}
 
           {{- if (.Values.deployment.livenessProbe) }}

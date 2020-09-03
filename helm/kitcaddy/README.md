@@ -101,6 +101,7 @@ Parameter | Description | Example
 **Deployment** | 
 `deployment.containerPort` | Port on web-service | `8080` 
 `deployment.configMapMountPath` | Set value if config map needs to mount on deployment | `/config`
+`deplyment.extraVolumeMounts` | Extra volume mounts 
 `deplyment.readinessProbe` | Set values under this to config readiness probe
 `deplyment.livenessProbe` | Set values under this to config liveness probe
 **Deployment - Environment variables** |
