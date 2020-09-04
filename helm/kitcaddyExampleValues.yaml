@@ -217,7 +217,14 @@ ingress:
   hosts:
     - host: pexip-sink.vdxapi.dk
       paths:
-        - /history
+        - path: /history
+
+    - host: pexip-sink.vdxapi.dk
+      paths:
+        - path: /test
+          servicePort: 123
+        - path: /test2
+
   tls:
     - hosts:
         - vdxapi.dk
