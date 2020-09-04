@@ -16,5 +16,11 @@ spec:
       targetPort: {{ .Values.service.targetPort }}
       protocol: TCP
       name: http
+    {{- range $key, $value := .Values.service.extraPorts }}
+    - port: {{ $value.port }}
+      targetPort: {{ $value.targetPort }}
+      protocol: {{ $value.protocol | default "TCP" }}
+      name: {{ $key }}
+    {{- end }}
   selector:
     {{- include "kitcaddy.selectorLabels" . | nindent 4 }}

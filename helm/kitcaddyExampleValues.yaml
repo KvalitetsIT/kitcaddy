@@ -237,6 +237,13 @@ docIngress:
 service:
   port: 8080
   targetPort: proxy-port
+
+  extraPorts:
+    test:
+      port: 80
+      targetPort: 80
+
+
   annotations:
     prometheus.io/path: /manage/actuator/appmetrics
     prometheus.io/port: "8081"
