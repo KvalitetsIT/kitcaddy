@@ -36,6 +36,9 @@ kitcaddy:
       secret:
         secretName: sts-public-cert
 
+  extraPorts:
+    proxy-port7070: 7070
+
   apps:
     tls:
       certificates:

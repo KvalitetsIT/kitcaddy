@@ -38,6 +38,10 @@ spec:
           ports:
             - containerPort: 80
               name: proxy-port
+            {{- range $key, $value := .Values.kitcaddy.extraPorts }}
+            - containerPort: {{ $value }}
+              name: {{ $key }}
+            {{- end }}
           volumeMounts:
             - mountPath: /config
               name: caddy-config
