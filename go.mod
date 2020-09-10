@@ -2,7 +2,7 @@ module kitcaddy
 
 go 1.14
 
-replace github.com/KvalitetsIT/gooioidwsrest => github.com/KvalitetsIT/gooioidwsrest v0.0.0-20200621083836-ece6891da778
+replace github.com/KvalitetsIT/gooioidwsrest => github.com/KvalitetsIT/gooioidwsrest v0.0.0-20200907194144-625faa8a273f
 
 replace github.com/KvalitetsIT/gosecurityprotocol => github.com/KvalitetsIT/gosecurityprotocol v0.0.0-20200416184625-51822bff6698
                                                                                            
@@ -10,7 +10,7 @@ replace github.com/KvalitetsIT/gosamlserviceprovider => github.com/KvalitetsIT/g
 
 require (
 
-        github.com/KvalitetsIT/gooioidwsrest v0.0.0-20200621083836-ece6891da778
+        github.com/KvalitetsIT/gooioidwsrest v0.0.0-20200907194144-625faa8a273f
 
 	github.com/KvalitetsIT/gosecurityprotocol v0.0.0-20200416184625-51822bff6698
 
