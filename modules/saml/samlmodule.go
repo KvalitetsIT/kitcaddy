@@ -99,7 +99,7 @@ func (m *SamlProviderModule) Provision(ctx caddy.Context) error {
 	sessionCache, err := securityprotocol.NewMongoSessionCache(mongo_url, m.MongoDb, "samlsessions")
 	if err != nil {
 		m.Logger.Errorf("Can't setup sessionCache: %s", err.Error())
-		return err
+		panic(err)
 	}
 	// maintain the sessioncache regularly
 	go func() {
@@ -112,7 +112,7 @@ func (m *SamlProviderModule) Provision(ctx caddy.Context) error {
 	keystore, err := tls.LoadX509KeyPair(m.SignCertFile, m.SignKeyFile)
 	if err != nil {
 		m.Logger.Errorf("Cannot load Keystore: %s", err.Error())
-		return err
+		panic(err)
 	}
 	samlProviderConfig.ServiceProviderKeystore = &keystore
 	samlProviderConfig.EntityId = m.EntityId
@@ -131,7 +131,11 @@ func (m *SamlProviderModule) Provision(ctx caddy.Context) error {
 	samlProviderConfig.LogoutLandingPage = m.LogoutLandingPage
 	samlProviderConfig.SessiondataHeaderName = m.SessiondataHeaderName
 	m.Logger.Infof("Starting SAML provider with config: %v", samlProviderConfig)
-	m.SamlProvider, _ = gosamlserviceprovider.NewSamlServiceProviderFromConfig(samlProviderConfig, sessionCache)
+	m.SamlProvider, err = gosamlserviceprovider.NewSamlServiceProviderFromConfig(samlProviderConfig, sessionCache)
+	if (err != nil) {
+		m.Logger.Errorf("Error creating samlprovider: %s", err.Error())
+		panic(err)
+	}
 	return nil
 }
 
