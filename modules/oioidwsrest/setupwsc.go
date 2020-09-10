@@ -124,6 +124,9 @@ func (m *CaddyOioIdwsRestWsc) Provision(ctx caddy.Context) error {
 	// Maps to wsc config
 	wscConfig := new(gooioidwsrest.OioIdwsRestHttpProtocolClientConfig)
 	wscConfig.SessionHeaderName = DEFAULT_VALUE_SESSION_HEADER_NAME
+        if (len(m.SessionHeaderName) == 0){
+		wscConfig.SessionHeaderName = m.SessionHeaderName
+        }
 	wscConfig.SessionDataFetcher = new(securityprotocol.NilSessionDataFetcher)
 	wscConfig.StsUrl = m.StsUrl
 	wscConfig.TrustCertFiles = m.TrustCertFiles
