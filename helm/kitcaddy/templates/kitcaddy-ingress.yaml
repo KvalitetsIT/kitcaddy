@@ -1,6 +1,6 @@
-{{- if .Values.ingress.enabled -}}
 {{- $fullName := include "kitcaddy.fullname" . -}}
 {{- $svcPort := .Values.service.port -}}
+{{- if .Values.ingress.enabled -}}
 {{- if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
 apiVersion: networking.k8s.io/v1beta1
 {{- else -}}
@@ -40,3 +40,49 @@ spec:
           {{- end }}
     {{- end }}
   {{- end }}
+
+
+{{- range $name, $values := .Values.extraIngress }}
+{{- with $ }}
+#extra ingress
+---
+{{- if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion }}
+apiVersion: networking.k8s.io/v1beta1
+{{- else }}
+apiVersion: extensions/v1beta1
+{{- end }}
+kind: Ingress
+metadata:
+  name: {{ $fullName }}-{{ $name }}
+  namespace: {{ .Values.namespace | default "default" }}
+  labels:
+    {{- include "kitcaddy.labels" . | nindent 4 }}
+  {{- with $values.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if $values.tls }}
+  tls:
+    {{- range $values.tls }}
+    - hosts:
+        {{- range .hosts }}
+        - {{ . | quote }}
+        {{- end }}
+      secretName: {{ .secretName }}
+    {{- end }}
+  rules:
+    {{- range $values.hosts }}
+    - host: {{ .host | quote }}
+      http:
+        paths:
+          {{- range .paths }}
+          - path: {{ .path }}
+            backend:
+              serviceName: {{ $fullName }}
+              servicePort: {{ .servicePort | default  $svcPort }}
+          {{- end }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+{{- end }}

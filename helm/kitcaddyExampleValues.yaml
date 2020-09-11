@@ -230,6 +230,24 @@ ingress:
         - vdxapi.dk
       secretName: star.vdxapi.dk
 
+extraIngress:
+  internalOnly:
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      ingress.kubernetes.io/whitelist-source-range: "1.1.1.1/24"
+    hosts:
+      - host: booking.vconf-stage.dk
+        paths:
+          - path: /
+            servicePort: 7070
+          - path: /getsessiondata
+            servicePort: 8080
+
+    tls:
+      - hosts:
+          - booking.vconf-stage.dk
+        secretName: booking.vconf-stage.dk
+
 docIngress:
   enabled: true
   annotations:

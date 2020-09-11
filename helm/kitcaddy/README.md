@@ -117,6 +117,8 @@ SecretKeyRef |
 `ingress.annotations` | Annotations for ingress | `kubernetes.io/ingress.class: nginx`
 `ingress.hosts` | Hosts served by the ingress | `- host: domain.dk`
 `ingress.tls` | TLS config 
+`extraIngress` | Map of extra ingress 
+`extraIngress.{name}` | Place ingress values under the name value
 **Service** |
 `service.port` | Port on the service | `8080`
 `service.targetPort` | Target port | `proxy-port`
