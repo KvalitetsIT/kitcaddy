@@ -102,6 +102,9 @@
       "handler": "oioidwsrestwsc",
       "mongo_host": {{ .mongoHost | quote }},
       "mongo_db": {{ .mongoDb | quote }},
+      {{- if (.sessionHeaderName) }}
+      "session_header_name": {{ .sessionHeaderName | quote }},
+      {{- end }}
       "sts_url": {{ .stsUrl | quote }},
       "client_cert_file": {{ .clientCertFile | quote }},
       "client_key_file": {{ .clientKeyFile | quote }},

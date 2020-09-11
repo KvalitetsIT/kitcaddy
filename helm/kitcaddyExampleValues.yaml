@@ -92,6 +92,7 @@ kitcaddy:
           wsc:
             mongoHost: mongodb.mongo
             mongoDb: pexip-history-wsc
+            sessionHeaderName: test123
             stsUrl: mysts.host/sts
             clientCertFile: /trust/client.cer
             clientKeyFile: /trust/client.key
