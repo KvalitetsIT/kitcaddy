@@ -9,6 +9,10 @@ spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
     {{- end }}
+  {{- if (.Values.deploymentStrategy) }}
+  strategy:
+    type: {{ .Values.deploymentStrategy }}
+  {{- end }}
   selector:
     matchLabels:
       {{- include "kitcaddy.selectorLabels" . | nindent 6 }}

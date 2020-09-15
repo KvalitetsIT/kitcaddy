@@ -26,6 +26,8 @@ image:
 serviceAccount:
   create: false
 
+deploymentStrategy: Recreate
+
 kitcaddy:
   secretName: sts-public-cert
   extraVolumeMounts:

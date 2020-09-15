@@ -29,6 +29,7 @@ Parameter | Description | Example
 `image.repository` | Name of the web-service image 
 `imgae.tag` | Web-service image tag 
 `podAnnotations` | Annotations for the pod fx prometheus | `prometheus.io/path: actuator/prometheus` <br> `prometheus.io/scrape: "true"` <br> 
+`deploymentStrategy` | Enables to set deployment strategy | `Recreate`
 **KitCaddy** |
 `kitcaddy.secretName` |  
 `kitcaddy.extraVolumeMounts` | Extra volume mounts 
