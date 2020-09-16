@@ -284,3 +284,26 @@ docService:
   enabled: true
   port: 8080
   targetPort: container-port
+
+certificate:
+  urlhandler.vconf-stage.dk:
+    namespace: vdx
+    spec:
+      secretName: urlhandler.vconf-stage.dk
+      issuerRef:
+        name: letsencrypt-prod
+        kind: ClusterIssuer
+        group: cert-manager.io
+      dnsNames:
+        - urlhandler.vconf-stage.dk
+  vdx-urlhandler:
+    namespace: vdx
+    spec:
+      secretName: urlhandler-client-cert
+      duration: 87600h
+      renewBefore: 24h
+      commonName: vdx-urlhandler
+      issuerRef:
+        name: ca-issuer
+        kind: ClusterIssuer
+        group: cert-manager.io
