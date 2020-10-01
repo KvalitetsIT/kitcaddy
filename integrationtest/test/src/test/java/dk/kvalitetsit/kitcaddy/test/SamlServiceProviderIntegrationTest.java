@@ -1,7 +1,6 @@
 package dk.kvalitetsit.kitcaddy.test;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Base64;
@@ -18,7 +17,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.testcontainers.containers.BindMode;
@@ -39,6 +37,8 @@ import dk.kvalitetsit.kitcaddy.TestConstants;
  *    This testsetup
  * 
  *    | Webbrowser |    ->    | SAML-SP |    ->    | echoservice | 
+ *    
+ *                      ->    | otherSAML-SP |    ->    | echoservice | 
  *
  */
 public class SamlServiceProviderIntegrationTest extends AbstractBrowserBasedIntegrationTest {
@@ -47,10 +47,15 @@ public class SamlServiceProviderIntegrationTest extends AbstractBrowserBasedInte
 	public static final int 	SAML_SP_PORT 	= 8787;
 	public static final String 	SAML_SP_URL 	= SAML_SP_HOST+":"+SAML_SP_PORT;
 
+	public static final String 	OTHER_SAML_SP_HOST 	= "other";
+	public static final int 	OTHER_SAML_SP_PORT 	= 8787;
+	public static final String 	OTHER_SAML_SP_URL 	= OTHER_SAML_SP_HOST+":"+OTHER_SAML_SP_PORT;
+
 	@Rule
 	public BrowserWebDriverContainer<?> chrome = createChrome();
 
 	public GenericContainer<?> samlContainer;
+	public GenericContainer<?> otherSamlContainer;
 	
 	@After
 	public void tearDown() {
@@ -58,7 +63,14 @@ public class SamlServiceProviderIntegrationTest extends AbstractBrowserBasedInte
 			samlContainer.stop();
 		}
 	}
-	
+
+	@After
+	public void tearDownOther() {
+		if (otherSamlContainer != null) {
+			otherSamlContainer.stop();
+		}
+	}
+
 	@Test
 	public void testGetSpMetadata() throws IOException {
 
@@ -175,7 +187,82 @@ public class SamlServiceProviderIntegrationTest extends AbstractBrowserBasedInte
 		// Then
 		Assert.assertTrue("Expected to be redirected to the pretty logout page", afterLogoutResult.contains("Congratulations with your logout (123456789)!"));
 	}
-	
+
+	@Test
+	public void testSLOWithLandingPage() throws JSONException, IOException {
+
+		// Given
+		samlContainer = getKitCaddyContainer(SAML_SP_HOST, SAML_SP_PORT, getDockerNetwork(), "samlserviceprovider/saml-logoutlandingpage.config");
+		samlContainer.withClasspathResourceMapping("samlserviceprovider/pretty-logoutpage.html", "/htmls/pretty-logoutpage.html", BindMode.READ_ONLY);
+		samlContainer.start();
+
+		otherSamlContainer = getKitCaddyContainer(OTHER_SAML_SP_HOST, OTHER_SAML_SP_PORT, getDockerNetwork(), "samlserviceprovider/saml-other.config");
+		otherSamlContainer.withClasspathResourceMapping("samlserviceprovider/pretty-logoutpage.html", "/htmls/pretty-logoutpage.html", BindMode.READ_ONLY);
+		otherSamlContainer.start();
+
+		String username = "testabc"+UUID.randomUUID().toString();
+		String password = "secret1234";
+		addUserToKeycloak(username, password);
+		RemoteWebDriver webdriver = chrome.getWebDriver();
+		String otherUrl = "http://"+OTHER_SAML_SP_URL+"/echo/test";
+		String logoutUrl = "http://"+SAML_SP_URL+"/saml/logout";
+
+		// When
+		doLoginFlow(webdriver, "http://"+SAML_SP_URL+"/echo/test", username, password);
+		
+		webdriver.get(otherUrl);
+		String afterSingleSignOnHopefully = webdriver.getPageSource();
+		
+		webdriver.get(logoutUrl);
+		String afterLogoutResult = webdriver.getPageSource();
+		
+		webdriver.get(otherUrl);
+		String otherAfterSlo = webdriver.getPageSource();
+
+		// Then
+		Assert.assertTrue("Expected to be redirected to the pretty logout page", afterLogoutResult.contains("Congratulations with your logout (123456789)!"));
+		Assert.assertTrue("Single Logon to other app failed", afterSingleSignOnHopefully.contains("\"host\": \"other:8787\""));
+		Assert.assertTrue("SLO failed for othercontainer", otherAfterSlo.contains("<title>Log in to test</title>"));
+	}
+
+	@Test
+	public void testSLOWithLandingPageLogoutInitiatedByOther() throws JSONException, IOException {
+
+		// Given
+		samlContainer = getKitCaddyContainer(SAML_SP_HOST, SAML_SP_PORT, getDockerNetwork(), "samlserviceprovider/saml-logoutlandingpage.config");
+		samlContainer.withClasspathResourceMapping("samlserviceprovider/pretty-logoutpage.html", "/htmls/pretty-logoutpage.html", BindMode.READ_ONLY);
+		samlContainer.start();
+
+		otherSamlContainer = getKitCaddyContainer(OTHER_SAML_SP_HOST, OTHER_SAML_SP_PORT, getDockerNetwork(), "samlserviceprovider/saml-other.config");
+		otherSamlContainer.withClasspathResourceMapping("samlserviceprovider/pretty-logoutpage.html", "/htmls/pretty-logoutpage.html", BindMode.READ_ONLY);
+		otherSamlContainer.start();
+
+		String username = "testslocba"+UUID.randomUUID().toString();
+		String password = "secret1234";
+		addUserToKeycloak(username, password);
+		RemoteWebDriver webdriver = chrome.getWebDriver();
+		String otherUrl = "http://"+OTHER_SAML_SP_URL+"/echo/test";
+		String logoutUrl = "http://"+OTHER_SAML_SP_URL+"/saml/logout";
+		String testUrl = "http://"+SAML_SP_URL+"/echo/test";
+
+		// When
+		doLoginFlow(webdriver, testUrl, username, password);
+		
+		webdriver.get(otherUrl);
+		String afterSingleSignOnHopefully = webdriver.getPageSource();
+		
+		webdriver.get(logoutUrl);
+		String afterLogoutResult = webdriver.getPageSource();
+		
+		webdriver.get(testUrl);
+		String otherAfterSlo = webdriver.getPageSource();
+
+		// Then
+		Assert.assertTrue("Expected to be redirected to login page", afterLogoutResult.contains("<title>Log in to test</title>"));
+		Assert.assertTrue("Single Logon to other app failed", afterSingleSignOnHopefully.contains("\"host\": \"other:8787\""));
+		Assert.assertTrue("SLO failed for saml container", otherAfterSlo.contains("<title>Log in to test</title>"));
+	}
+
 	public String getSpServiceUrl(GenericContainer<?> samlContainer) {
 		return "http://"+samlContainer.getContainerIpAddress()+":"+samlContainer.getMappedPort(SAML_SP_PORT);
 	}
