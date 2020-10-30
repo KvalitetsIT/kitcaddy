@@ -6,8 +6,7 @@ replace github.com/KvalitetsIT/gooioidwsrest => github.com/KvalitetsIT/gooioidws
 
 replace github.com/KvalitetsIT/gosecurityprotocol => github.com/KvalitetsIT/gosecurityprotocol v0.0.0-20200416184625-51822bff6698
                                                                                            
-replace github.com/KvalitetsIT/gosamlserviceprovider => github.com/KvalitetsIT/gosamlserviceprovider/samlprovider v0.0.0-20201001093854-595aafd146ab
-
+replace github.com/KvalitetsIT/gosamlserviceprovider => github.com/KvalitetsIT/gosamlserviceprovider/samlprovider v0.0.0-20201030165709-28155709a79a
 
 require (
 
@@ -15,7 +14,7 @@ require (
 
 	github.com/KvalitetsIT/gosecurityprotocol v0.0.0-20200416184625-51822bff6698
 
-        github.com/KvalitetsIT/gosamlserviceprovider v0.0.0-20201001093854-595aafd146ab
+        github.com/KvalitetsIT/gosamlserviceprovider v0.0.0-20201030165709-28155709a79a
 
 	github.com/caddyserver/caddy/v2 v2.0.0-rc.3
 
@@ -51,5 +50,5 @@ require (
 )
 
 replace github.com/russellhaering/goxmldsig => github.com/evtr/goxmldsig v0.0.0-20190907195011-53d9398322c5
-replace github.com/russellhaering/gosaml2 => github.com/KvalitetsIT/gosaml2 v0.0.0-20200311115749-13fe093be2ad
+replace github.com/russellhaering/gosaml2 => github.com/KvalitetsIT/gosaml2 v0.0.0-20201030140015-1552cb4e4bec
 

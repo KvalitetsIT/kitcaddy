@@ -51,11 +51,16 @@ public class SamlServiceProviderIntegrationTest extends AbstractBrowserBasedInte
 	public static final int 	OTHER_SAML_SP_PORT 	= 8787;
 	public static final String 	OTHER_SAML_SP_URL 	= OTHER_SAML_SP_HOST+":"+OTHER_SAML_SP_PORT;
 
+	public static final String 	ENCRYPTED_SAML_SP_HOST 	= "encrypted";
+	public static final int 	ENCRYPTED_SAML_SP_PORT 	= 8787;
+	public static final String 	ENCRYPTED_SP_URL 	= ENCRYPTED_SAML_SP_HOST+":"+ENCRYPTED_SAML_SP_PORT;
+
 	@Rule
 	public BrowserWebDriverContainer<?> chrome = createChrome();
 
 	public GenericContainer<?> samlContainer;
 	public GenericContainer<?> otherSamlContainer;
+	public GenericContainer<?> encryptedSamlContainer;
 	
 	@After
 	public void tearDown() {
@@ -68,6 +73,13 @@ public class SamlServiceProviderIntegrationTest extends AbstractBrowserBasedInte
 	public void tearDownOther() {
 		if (otherSamlContainer != null) {
 			otherSamlContainer.stop();
+		}
+	}
+
+	@After
+	public void tearDownEncrypted() {
+		if (encryptedSamlContainer != null) {
+			encryptedSamlContainer.stop();
 		}
 	}
 
@@ -225,6 +237,53 @@ public class SamlServiceProviderIntegrationTest extends AbstractBrowserBasedInte
 		Assert.assertTrue("SLO failed for othercontainer", otherAfterSlo.contains("<title>Log in to test</title>"));
 	}
 
+	@Test
+	public void testLoginWithEncryptedAssertion() throws JSONException, IOException {
+
+		// Given
+		encryptedSamlContainer = getKitCaddyContainer(ENCRYPTED_SAML_SP_HOST, ENCRYPTED_SAML_SP_PORT, getDockerNetwork(), "samlserviceprovider/saml-encrypted.config");
+		encryptedSamlContainer.withClasspathResourceMapping("samlserviceprovider/pretty-logoutpage.html", "/htmls/pretty-logoutpage.html", BindMode.READ_ONLY);
+		encryptedSamlContainer.start();
+
+		String username = "testabc"+UUID.randomUUID().toString();
+		String password = "secret1234";
+		addUserToKeycloak(username, password);
+		RemoteWebDriver webdriver = chrome.getWebDriver();
+
+		// When
+		String result = doLoginFlow(webdriver, "http://"+ENCRYPTED_SP_URL+"/echo/test", username, password);
+
+		// Then
+		Assert.assertTrue("Expected to find the start of JSON data", result.indexOf("{") >= 0 );
+		Assert.assertTrue("Expected to find the end of JSON data", result.lastIndexOf("}") >= 0 );
+		String jsonReturned = result.substring(result.indexOf("{"), result.lastIndexOf("}") + 1);
+		JsonNode responseParsed = new ObjectMapper().readValue(jsonReturned, JsonNode.class);
+		Assert.assertNotNull(responseParsed);
+		
+		JsonNode headerJson = responseParsed.get("headers");
+		Assert.assertNotNull(headerJson);
+	
+		JsonNode sessionDataHeaderJson = headerJson.get("sessiondataheader");
+		Assert.assertNotNull(sessionDataHeaderJson);
+		
+		String sessionDataHeaderContent = sessionDataHeaderJson.asText();
+		Assert.assertNotNull(sessionDataHeaderContent);
+		
+		String decodedData = new String(Base64.getDecoder().decode(sessionDataHeaderContent));
+		JsonNode decodedDataJson = new ObjectMapper().readValue(decodedData, JsonNode.class);
+		Assert.assertNotNull(decodedDataJson);
+		
+		JsonNode authenticationTokenJson = decodedDataJson.get("Authenticationtoken");
+		Assert.assertNotNull(authenticationTokenJson);
+		String authenticationToken = authenticationTokenJson.asText();		
+		String decodedAuthenticationToken = new String(Base64.getDecoder().decode(authenticationToken));
+		Assert.assertNotNull(decodedAuthenticationToken);
+		Assert.assertTrue(decodedAuthenticationToken.startsWith("<saml:Assertion"));
+		Assert.assertTrue(decodedAuthenticationToken.contains(username));
+	}
+
+	
+	
 	@Test
 	public void testSLOWithLandingPageLogoutInitiatedByOther() throws JSONException, IOException {
 
