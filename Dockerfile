@@ -25,5 +25,4 @@ FROM scratch
 #scratch
 COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 COPY --from=builder /go/bin/caddy /usr/bin/caddy
-ENTRYPOINT ["/usr/bin/caddy", "run"]
-
+ENTRYPOINT ["/usr/bin/caddy", "run", "${CADDY_ARGS}"]
