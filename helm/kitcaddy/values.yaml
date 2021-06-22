@@ -12,6 +12,7 @@ image:
   tag: ""
 
 kitcaddy:
+  resources: {}
   logLevel: INFO
   admin:
     disabled: true
