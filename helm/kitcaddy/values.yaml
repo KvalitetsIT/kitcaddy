@@ -31,6 +31,7 @@ docDeployment:
   enabled: false
   containerPort: 8080
   env: []
+  resources: {}
 
 imagePullSecrets: []
 nameOverride: ""

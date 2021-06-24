@@ -47,4 +47,6 @@ spec:
           readinessProbe:
             {{- toYaml .Values.docDeployment.readinessProbe | nindent 12 }}
           {{- end }}
+          resources:
+            {{- toYaml .Values.docDeployment.resources | nindent 12 }}
 {{- end -}}
