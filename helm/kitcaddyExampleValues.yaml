@@ -307,3 +307,13 @@ certificate:
         name: ca-issuer
         kind: ClusterIssuer
         group: cert-manager.io
+
+sealedSecret:
+  Mariadb:
+    encryptedData:
+      username: username-encrypted
+      pasword: password-encrypted
+  OtherSecret:
+    type: Opaque
+    encryptedData:
+      key: AgBOQOoh7RGqTBPPSG0CtbfZD/Wh+Csl/c5HSqTzy2SoRBxh9nE4Ud4QqEAO1+S1e5VvZw2+ycpxB/272M1uxweHzzPwozFFJ6YI1zu6oG4WETU9CFCk0MBR8TOj7ng1ccR4MNJB1vJmtfkuCXrd6UDs4gYYGo+xaCHNfsVTkpVhpLrQiv/FVpfeutCOYXtTOGJ6M2a6eF7HpUijARmyIiM+nGGzjaiT4BvDE522eV1qId205WH/tti5Kgl+4iH4djZo0TG92+r3k1HcFEk3vQojTA62LFy6djmPJqreSOSEIDngSsbxhasmory0J2ehDdshCGCyaHEu3QtJ7P07WVjgwGX+G9IYrGW3tqQUohWO9+uZUOPB0Mq+K0850QeA5OfkfggOX+L6GiLR10E5JZ94Ke7QU5D0uT3IDYMkwIREUP6f3ZwLJOz4YgX4cl5tTsUOVIAFXcZsMyKXoroXmqxeoCMaam8taO+F8geEyOxqMEm3XDVxKXATfOdFIgk59to7rRNCI29pNaPdiDhX9t71ur1CRvcLqU5FYq6EZkL0Ivinj6XUsfQGXznV/8k+LfzhOmoSPtxBO4xPgcBAKHeUTokuXjnayPNSg96Goxr/v9i5FmdxcqITIsnD30XSXDFylBZ3CV

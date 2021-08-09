@@ -140,3 +140,8 @@ SecretKeyRef |
 `docService.port` | Port on the service | `8080`
 `docService.targetPort` | Target port | `proxy-port`
 `docService.annotations` | Annotations for service | `prometheus.io/path: /manage/actuator/appmetrics`
+&nbsp; |
+**Sealed Secret** |
+`sealedSecret.{name}` | Name of secret |
+`sealedSecret.{name}.type` | Type of the secret - Default Opaque | `kubernetes.io/tls`
+`sealedSecret.{name}.encryptedData` | List of 'Key: Value' pair of the encrypted data | `password: AgBOQOoh7RGqTBPPSG0Ctbf...`
