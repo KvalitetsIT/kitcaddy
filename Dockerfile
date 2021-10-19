@@ -1,11 +1,12 @@
-#FROM golang:1.13.4 as builder
-FROM golang:1.14.1 as builder
+#FROM golang:1.16.9 as builder
+FROM golang:1.16.9 as builder
 ENV GO111MODULE=on
 
 # Prepare for custom caddy build
 RUN mkdir /kitcaddy
 WORKDIR /kitcaddy
-ADD go.mod go.mod
+COPY go.mod .
+COPY go.sum .
 RUN go mod download
 
 COPY modules /kitcaddy/modules
