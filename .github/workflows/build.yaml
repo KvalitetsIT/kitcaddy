@@ -33,5 +33,11 @@ jobs:
       - name: Push sts dev docker image (KitCaddy)
         run: docker push kvalitetsit/kitcaddy:latest
 
+      - name: Push sts dev docker image (KitCaddy)
+        run: docker push kvalitetsit/kitcaddy:${{ github.sha }}
+
       - name: Push sts dev docker image (KitCaddy templates)
         run: docker push kvalitetsit/kitcaddy-templates:latest
+
+      - name: Push sts dev docker image (KitCaddy templates)
+        run: docker push kvalitetsit/kitcaddy-templates:${{ github.sha }}
