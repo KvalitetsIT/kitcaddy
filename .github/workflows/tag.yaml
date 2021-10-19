@@ -24,21 +24,21 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USER }}
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
 
-      - name: Pull docker KitCaddy image from last commit
+      - name: Pull docker image from last commit (KitCaddy)
         run: ./build/docker-pull.sh kvalitetsit/kitcaddy:${{ github.sha }}
 
-      - name: Tag KitCaddy
+      - name: Tag (KitCaddy)
         run: ./build/docker-tag.sh kvalitetsit/kitcaddy:${{ github.sha }} kvalitetsit/kitcaddy:${{steps.tag.outputs.tag}}
 
-      - name: Push kitcaddy with tag to Dockerhub
+      - name: Push with tag to Dockerhub (KitCaddy)
         run: ./build/docker-push.sh kvalitetsit/kitcaddy:${{steps.tag.outputs.tag}}
 
       # kitcaddy-templates
-      - name: Pull docker kitcaddy-templates image from last commit
+      - name: Pull docker image from last commit (KitCaddy templates)
         run: ./build/docker-pull.sh kvalitetsit/kitcaddy-templates:${{ github.sha }}
 
-      - name: Tag kitcaddy-templates
+      - name: Tag (KitCaddy templates)
         run: ./build/docker-tag.sh kvalitetsit/kitcaddy-templates:${{ github.sha }} kvalitetsit/kitcaddy-templates:${{steps.tag.outputs.tag}}
 
-      - name: Push kitcaddy-templates with tag to Dockerhub
+      - name: Push with tag to Dockerhub (KitCaddy templates)
         run: ./build/docker-push.sh kvalitetsit/kitcaddy-templates:${{steps.tag.outputs.tag}}
