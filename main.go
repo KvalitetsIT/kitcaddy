@@ -1,7 +1,7 @@
 package kitcaddy
 
 import (
-	_ "kitcaddy/modules/prometheus"
+	_ "github.com/KvalitetsIT/kitcaddy/modules/prometheus"
 //	_ "kitcaddy/modules/saml"
-        _ "kitcaddy/modules/oioidwsrest"
+        _ "github.com/KvalitetsIT/kitcaddy/modules/oioidwsrest"
 )
