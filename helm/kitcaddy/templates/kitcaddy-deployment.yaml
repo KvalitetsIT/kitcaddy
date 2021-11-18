@@ -107,7 +107,7 @@ spec:
           {{- end }}
 
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+            {{- toYaml .Values.deployment.resources | nindent 12 }}
       {{- end }}
 
       volumes:
