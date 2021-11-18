@@ -42,3 +42,10 @@ jobs:
 
       - name: Push with tag to Dockerhub (KitCaddy templates)
         run: ./build/docker-push.sh kvalitetsit/kitcaddy-templates:${{steps.tag.outputs.tag}}
+
+      - name: Build and test helm chart
+        run: ./build/build-helm.sh service ${{ steps.tag.outputs.VERSION }} ${{ steps.trunk.outputs.VERSION }}
+
+      - name: Push tagged helm chart to repo
+        if: ${{ steps.tag.conclusion != 'skipped' }}
+        run: ./build/push-helm-chart.sh ${{ secrets.KIT_GITHUB_ACCESS }}
