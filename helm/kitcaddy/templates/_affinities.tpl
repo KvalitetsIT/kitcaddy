@@ -55,7 +55,6 @@ Return a soft podAffinity/podAntiAffinity definition
 preferredDuringSchedulingIgnoredDuringExecution:
   - podAffinityTerm:
       labelSelector:
-        matchLabels: {{- (include "kitcaddy.selectorLabels" .context) | nindent 10 }}
           {{- range $key, $value := $extraMatchLabels }}
           {{ $key }}: {{ $value | quote }}
           {{- end }}
@@ -74,7 +73,6 @@ Return a hard podAffinity/podAntiAffinity definition
 {{- $extraMatchLabels := default (dict) .extraMatchLabels -}}
 requiredDuringSchedulingIgnoredDuringExecution:
   - labelSelector:
-      matchLabels: {{- (include "kitcaddy.selectorLabels" .context) | nindent 8 }}
         {{- range $key, $value := $extraMatchLabels }}
         {{ $key }}: {{ $value | quote }}
         {{- end }}

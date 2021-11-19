@@ -2,7 +2,7 @@ name: Build Action - KITCaddy
 
 on:
   push:
-    branches: [ master, v1.2.x ]
+    branches: [ master ]
 
 jobs:
   build:
