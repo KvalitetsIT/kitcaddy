@@ -56,9 +56,6 @@ preferredDuringSchedulingIgnoredDuringExecution:
   - podAffinityTerm:
       labelSelector:
         matchLabels: {{- (include "kitcaddy.selectorLabels" .context) | nindent 10 }}
-          {{- if not (empty $component) }}
-          {{ printf "app.kubernetes.io/component: %s" $component }}
-          {{- end }}
           {{- range $key, $value := $extraMatchLabels }}
           {{ $key }}: {{ $value | quote }}
           {{- end }}
@@ -78,9 +75,6 @@ Return a hard podAffinity/podAntiAffinity definition
 requiredDuringSchedulingIgnoredDuringExecution:
   - labelSelector:
       matchLabels: {{- (include "kitcaddy.selectorLabels" .context) | nindent 8 }}
-        {{- if not (empty $component) }}
-        {{ printf "app.kubernetes.io/component: %s" $component }}
-        {{- end }}
         {{- range $key, $value := $extraMatchLabels }}
         {{ $key }}: {{ $value | quote }}
         {{- end }}
