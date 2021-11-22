@@ -1,6 +1,8 @@
 fullnameOverride: pexip-history
 namespace: pexip
 
+podAntiAffinityPreset: hard
+
 extraConfigMapJson:
   test.json:
     [
@@ -157,7 +159,10 @@ deployment:
   extraVolumeMounts:
     test123:
       mountPath: /123
-
+  resources:
+    limits:
+      memory: 1Gi
+      cpu: 1
   containerPort: 8080
   env:
     nats.url:

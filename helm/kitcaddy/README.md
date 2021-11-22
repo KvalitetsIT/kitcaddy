@@ -32,7 +32,7 @@ Parameter | Description | Example
 `deploymentStrategy` | Enables to set deployment strategy | `Recreate`
 `affinity`                          | Affinity for pod assignment.                                     |
 `podAffinityPreset`                  | Pod affinity preset. Ignored if `affinity` is set. Allowed values: ``, `soft` or `hard`       | `""`                         |
-`podAntiAffinityPreset`              | Pod anti-affinity preset. Ignored if `affinity` is set. Allowed values: ``,`soft` or `hard`  | `soft`                       |
+`podAntiAffinityPreset`              | Pod anti-affinity preset. Ignored if `affinity` is set. Allowed values: ``,`soft` or `hard`  Default soft| `soft`                       |
 `nodeAffinityPreset.type`            | Node affinity preset type. Ignored if `affinity` is set. Allowed values: `soft` or `hard` | `""`                         |
 `nodeAffinityPreset.key`             | Node label key to match Ignored if `affinity` is set.                                     | `""`                         |
 `nodeAffinityPreset.values`          | Node label values to match. Ignored if `affinity` is set.

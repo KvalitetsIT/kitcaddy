@@ -1,4 +1,3 @@
-
 #!/bin/sh
 
 FROM_TAG=$1
