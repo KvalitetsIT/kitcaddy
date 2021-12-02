@@ -83,7 +83,7 @@ spec:
 
           command: [
             {{- range $index, $cmd := .Values.deployment.commands }}
-            {{- if $index }},{{ - end }}
+            {{- if $index }},{{- end }}
             {{ $cmd | quote }}
             {{- end }}
           ]
