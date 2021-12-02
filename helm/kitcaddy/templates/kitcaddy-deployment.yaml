@@ -80,6 +80,19 @@ spec:
                   name: {{ $value.name }}
             {{- end }}
             {{- end }}
+
+          command: [
+            {{- range $index, $cmd := .Values.deployment.commands }}
+            {{- if $index }},{{ - end }}
+            {{ $cmd | quote }}
+            {{- end }}
+          ]
+          args: [
+            {{- range $index, $arg := .Values.deployment.args }}
+            {{- if $index }},{{- end }}
+            {{ $arg | quote }}
+            {{- end }}
+          ]
           ports:
             - name: container-port
               containerPort: {{ .Values.deployment.containerPort }}
