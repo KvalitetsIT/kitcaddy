@@ -48,6 +48,7 @@ type SamlProviderModule struct {
 	LogoutLandingPage string `json:"logout_landing_page,omitempty"`
 	CookieDomain string `json:"cookie_domain,omitempty"`
 	CookiePath   string `json:"cookie_path,omitempty"`
+	CookieHttpOnly   string `json:"cookie_http_only,omitempty"`
 
 	SamlProvider *gosamlserviceprovider.SamlServiceProvider
 
@@ -119,6 +120,7 @@ func (m *SamlProviderModule) Provision(ctx caddy.Context) error {
 	samlProviderConfig.ExternalUrl = m.ExternalUrl
 	samlProviderConfig.CookieDomain = m.CookieDomain
 	samlProviderConfig.CookiePath = m.CookiePath
+	samlProviderConfig.CookieHttpOnly, _ = strconv.ParseBool(m.CookieHttpOnly)
 	samlProviderConfig.AudienceRestriction = m.AudienceRestriction
 	samlProviderConfig.IdpMetaDataUrl = m.IdpMetaDataUrl
 	samlProviderConfig.SessionHeaderName = m.SessionHeaderName

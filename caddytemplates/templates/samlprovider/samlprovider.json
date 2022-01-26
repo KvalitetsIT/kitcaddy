@@ -54,7 +54,8 @@
 		  "logout_landing_page": "${SAML_LOGOUT_LANDING_PAGE}",
 
                   "cookie_domain": "${SAML_COOKIE_DOMAIN}",
-                  "cookie_path": "${SAML_COOKIE_PATH}"
+                  "cookie_path": "${SAML_COOKIE_PATH}",
+                  "cookie_http_only": "${SAML_COOKIE_HTTP_ONLY}"
                 },
                 {
                   "handler": "reverse_proxy",
