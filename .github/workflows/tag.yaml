@@ -1,0 +1,51 @@
+name: Tag Action - KITCaddy
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+      # Checkout source code
+      - uses: actions/checkout@v2
+
+      - name: Get github tag
+        id: tag
+        uses: dawidd6/action-get-tag@v1
+
+      # Login to docker hub using secrets in GitHub.
+      - name: Login to docker
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USER }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+
+      - name: Pull docker image from last commit (KitCaddy)
+        run: ./build/docker-pull.sh kvalitetsit/kitcaddy:${{ github.sha }}
+
+      - name: Tag (KitCaddy)
+        run: ./build/docker-tag.sh kvalitetsit/kitcaddy:${{ github.sha }} kvalitetsit/kitcaddy:${{steps.tag.outputs.tag}}
+
+      - name: Push with tag to Dockerhub (KitCaddy)
+        run: ./build/docker-push.sh kvalitetsit/kitcaddy:${{steps.tag.outputs.tag}}
+
+      # kitcaddy-templates
+      - name: Pull docker image from last commit (KitCaddy templates)
+        run: ./build/docker-pull.sh kvalitetsit/kitcaddy-templates:${{ github.sha }}
+
+      - name: Tag (KitCaddy templates)
+        run: ./build/docker-tag.sh kvalitetsit/kitcaddy-templates:${{ github.sha }} kvalitetsit/kitcaddy-templates:${{steps.tag.outputs.tag}}
+
+      - name: Push with tag to Dockerhub (KitCaddy templates)
+        run: ./build/docker-push.sh kvalitetsit/kitcaddy-templates:${{steps.tag.outputs.tag}}
+
+      - name: Build and test helm chart
+        run: ./build/build-helm.sh kitcaddy ${{ steps.tag.outputs.tag }} ${{ steps.trunk.outputs.tag }}
+
+      - name: Push tagged helm chart to repo
+        if: ${{ steps.tag.conclusion != 'skipped' }}
+        run: ./build/push-helm-chart.sh ${{ secrets.KIT_GITHUB_ACCESS }}

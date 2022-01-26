@@ -1,0 +1,43 @@
+name: Build Action - KITCaddy
+
+on:
+  push:
+    branches: [ master, v1.2.x, 1.2.22_cookie_httpOnly_configurable ]
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+      # Checkout source code
+      - uses: actions/checkout@v2
+
+      - name: Login to docker
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USER }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+
+      - name: Build Docker image (KitCaddy)
+        run: docker build -t kvalitetsit/kitcaddy:latest .
+
+      - name: Build Docker image (KitCaddy templates)
+        run: docker build -t  kvalitetsit/kitcaddy-templates:latest ./caddytemplates
+
+      - name: Tag with Github ID (KitCaddy)
+        run: ./build/docker-tag.sh kvalitetsit/kitcaddy:latest kvalitetsit/kitcaddy:${{ github.sha }}
+
+      - name: Tag with Github ID (KitCaddy templates))
+        run: ./build/docker-tag.sh kvalitetsit/kitcaddy-templates:latest kvalitetsit/kitcaddy-templates:${{ github.sha }}
+
+      - name: Push sts dev docker image (KitCaddy)
+        run: docker push kvalitetsit/kitcaddy:latest
+
+      - name: Push sts dev docker image (KitCaddy)
+        run: docker push kvalitetsit/kitcaddy:${{ github.sha }}
+
+      - name: Push sts dev docker image (KitCaddy templates)
+        run: docker push kvalitetsit/kitcaddy-templates:latest
+
+      - name: Push sts dev docker image (KitCaddy templates)
+        run: docker push kvalitetsit/kitcaddy-templates:${{ github.sha }}
