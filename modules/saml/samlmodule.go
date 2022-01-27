@@ -120,7 +120,13 @@ func (m *SamlProviderModule) Provision(ctx caddy.Context) error {
 	samlProviderConfig.ExternalUrl = m.ExternalUrl
 	samlProviderConfig.CookieDomain = m.CookieDomain
 	samlProviderConfig.CookiePath = m.CookiePath
-	samlProviderConfig.CookieHttpOnly, _ = strconv.ParseBool(m.CookieHttpOnly)
+	
+	defaultHttpOnly := true
+	if len(m.CookieHttpOnly) != 0 {
+		defaultHttpOnly, _ = strconv.ParseBool(m.CookieHttpOnly)
+	}
+	samlProviderConfig.CookieHttpOnly = defaultHttpOnly
+	
 	samlProviderConfig.AudienceRestriction = m.AudienceRestriction
 	samlProviderConfig.IdpMetaDataUrl = m.IdpMetaDataUrl
 	samlProviderConfig.SessionHeaderName = m.SessionHeaderName
