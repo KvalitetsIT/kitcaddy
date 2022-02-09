@@ -1,0 +1,24 @@
+name: Pull Request CI
+
+on:
+  pull_request: ~
+
+jobs:
+  pr_build:
+    runs-on: ubuntu-20.04
+
+    steps:
+      # Checkout source code
+      - uses: actions/checkout@v2
+
+      - name: Login to docker
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USER }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+
+      - name: Build Docker image (KitCaddy)
+        run: docker build -t kvalitetsit/kitcaddy:latest .
+
+      - name: Build Docker image (KitCaddy templates)
+        run: docker build -t  kvalitetsit/kitcaddy-templates:latest ./caddytemplates
