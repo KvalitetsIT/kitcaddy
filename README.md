@@ -15,3 +15,6 @@ If configured by configuration file, KitCaddy expecting a configuration file pla
 
 The flow whit WSC and WSP this shown in the flowchart below.
 ![](documentation/WSC-WSP-flow.png)
+
+
+dd
