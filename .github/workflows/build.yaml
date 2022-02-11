@@ -2,7 +2,7 @@ name: Build Action - KITCaddy
 
 on:
   push:
-    branches: [ master, v1.2.x, 1.2.22_cookie_httpOnly_configurable ]
+    branches: [ master, v1.2.x, 1.2.22_cookie_httpOnly_configurable, networking-v1 ]
 
 jobs:
   build:
