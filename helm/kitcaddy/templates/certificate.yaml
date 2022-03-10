@@ -1,6 +1,10 @@
 ---
 {{- range $name, $value := .Values.certificate}}
+{{- if $.Capabilities.APIVersions.Has "cert-manager.io/v1" }}
+apiVersion: cert-manager.io/v1
+{{- else }}
 apiVersion: cert-manager.io/v1alpha2
+{{- end }}
 kind: Certificate
 metadata:
   name: {{ $name }}
