@@ -68,15 +68,20 @@ public class WebsocketsIntegrationTest extends AbstractBrowserBasedIntegrationTe
 		RemoteWebDriver webdriver = chrome.getWebDriver();
 
 		// When
-		doLoginFlow(webdriver, "http://"+SAML_SP_URL+"/websocket.html", username, password);
+		String url = "http://"+SAML_SP_URL+"/websocket.html";
+		doLoginFlow(webdriver, url, username, password);
 		
-		// Then
-//		Thread.sleep(2000); // Async javascript ahead...wait a bit :-) 
-	//	String source = webdriver.getPageSource();
-		Thread.sleep(2000); // Async javascript ahead...wait a bit :-) 
+		// 	Then
+		// 	Thread.sleep(2000); // Async javascript ahead...wait a bit :-)
+		//	String source = webdriver.getPageSource();
+		//Thread.sleep(5000); // Async javascript ahead...wait a bit :-)
 		List<WebElement> outputs = webdriver.findElementById("output").findElements(By.xpath("//*"));
-//		Thread.sleep(2000); // Async javascript ahead...wait a bit :-) 
-		Assert.assertTrue("Expected to find elements under the 'output' node", outputs.size() > 0);
-		Assert.assertEquals("Expected response from the websocket server", "WebSocket Test\nCONNECTED\nSENT: WebSocket rocks\nRESPONSE: WebSocket rocks\nDISCONNECTED", outputs.get(0).getText());
+		String outputText = outputs.get(0).getText();
+		//	Thread.sleep(2000); // Async javascript ahead...wait a bit :-)
+		System.out.println("TEST THIS HERE 2");
+		System.out.println(outputText);
+		System.out.println("TEST THIS HERE 2");
+		Assert.assertEquals("Expected response from the websocket server", "WebSocket Test\nCONNECTED\nSENT: WebSocket rocks\nRESPONSE: WebSocket rocks\nDISCONNECTED", outputText);
+		Thread.sleep(5000);
 	}
 }

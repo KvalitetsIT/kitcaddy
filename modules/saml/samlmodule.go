@@ -3,13 +3,13 @@ package saml
 import (
 	"crypto/tls"
 	"fmt"
-	securityprotocol "github.com/KvalitetsIT/gosecurityprotocol"
 	gosamlserviceprovider "github.com/KvalitetsIT/gosamlserviceprovider/samlprovider"
+	securityprotocol "github.com/KvalitetsIT/gosecurityprotocol"
+	"github.com/caddyserver/caddy/v2"
 	"net/http"
 	"strconv"
 	"time"
 
-	"github.com/caddyserver/caddy/v2"
 	"github.com/caddyserver/caddy/v2/caddyconfig/caddyfile"
 	"github.com/caddyserver/caddy/v2/caddyconfig/httpcaddyfile"
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
@@ -26,9 +26,9 @@ type SamlProviderModule struct {
 
 	MongoDb string `json:"mongo_db,omitempty"`
 
-	SessionHeaderName   string `json:"session_header_name,omitempty"`
-	SessionExpiryHours  string `json:"session_expiry_hours,omitempty"`
-	AudienceRestriction string `json:"audience_restriction,omitempty"`
+	SessionHeaderName     string `json:"session_header_name,omitempty"`
+	SessionExpiryHours    string `json:"session_expiry_hours,omitempty"`
+	AudienceRestriction   string `json:"audience_restriction,omitempty"`
 	SessiondataHeaderName string `json:"sessiondata_headername,omitempty"`
 
 	EntityId string `json:"entityId,omitempty"`
@@ -41,13 +41,16 @@ type SamlProviderModule struct {
 
 	ExternalUrl string `json:"external_url,omitempty"`
 
-	MetadataPath string `json:"metadata_path,omitempty"`
-	LogoutPath   string `json:"logout_path,omitempty"`
-	SLOPath      string `json:"slo_path,omitempty"`
-	SSOPath      string `json:"sso_path,omitempty"`
+	MetadataPath      string `json:"metadata_path,omitempty"`
+	LogoutPath        string `json:"logout_path,omitempty"`
+	SLOPath           string `json:"slo_path,omitempty"`
+	SSOPath           string `json:"sso_path,omitempty"`
 	LogoutLandingPage string `json:"logout_landing_page,omitempty"`
-	CookieDomain string `json:"cookie_domain,omitempty"`
-	CookiePath   string `json:"cookie_path,omitempty"`
+	CookieDomain      string `json:"cookie_domain,omitempty"`
+	CookiePath        string `json:"cookie_path,omitempty"`
+
+	RoleAttributeName string   `json:"role_attribute_name,omitempty"`
+	AllowedRoles      []string `json:"allowed_roles,omitempty"`
 
 	SamlProvider *gosamlserviceprovider.SamlServiceProvider
 
@@ -75,8 +78,8 @@ func init() {
 // CaddyModule returns the Caddy module information.
 func (SamlProviderModule) CaddyModule() caddy.ModuleInfo {
 	return caddy.ModuleInfo{
-		ID: "http.handlers.samlprovider",
-		New:  func() caddy.Module { return new(SamlProviderModule) },
+		ID:  "http.handlers.samlprovider",
+		New: func() caddy.Module { return new(SamlProviderModule) },
 	}
 }
 
@@ -103,7 +106,7 @@ func (m *SamlProviderModule) Provision(ctx caddy.Context) error {
 	}
 	// maintain the sessioncache regularly
 	go func() {
-		securityprotocol.StartMaintenance(sessionCache, 10 * time.Minute, m.Logger)
+		securityprotocol.StartMaintenance(sessionCache, 10*time.Minute, m.Logger)
 	}()
 
 	samlProviderConfig := new(gosamlserviceprovider.SamlServiceProviderConfig)
@@ -130,9 +133,13 @@ func (m *SamlProviderModule) Provision(ctx caddy.Context) error {
 	samlProviderConfig.Logger = m.Logger
 	samlProviderConfig.LogoutLandingPage = m.LogoutLandingPage
 	samlProviderConfig.SessiondataHeaderName = m.SessiondataHeaderName
+
+	samlProviderConfig.AllowedRoles = m.AllowedRoles
+	samlProviderConfig.RoleAttributeName = m.RoleAttributeName
+
 	m.Logger.Infof("Starting SAML provider with config: %v", samlProviderConfig)
 	m.SamlProvider, err = gosamlserviceprovider.NewSamlServiceProviderFromConfig(samlProviderConfig, sessionCache)
-	if (err != nil) {
+	if err != nil {
 		m.Logger.Errorf("Error creating samlprovider: %s", err.Error())
 		panic(err)
 	}

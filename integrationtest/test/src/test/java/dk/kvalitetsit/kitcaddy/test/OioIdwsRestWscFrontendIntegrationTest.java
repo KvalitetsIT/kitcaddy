@@ -50,7 +50,6 @@ public class OioIdwsRestWscFrontendIntegrationTest extends AbstractOioIdwsRestWs
 		GenericContainer<?> nginxContainer = new GenericContainer<>("nginx:1.19.0")
 				.withExposedPorts(NGINX_SERVICE_PORT)
 				.withNetwork(getDockerNetwork())
-
 				.withClasspathResourceMapping("frontend/frontend.cer", "/cert/frontend.cer", BindMode.READ_ONLY)
 				.withClasspathResourceMapping("frontend/frontend.pem", "/cert/frontend.pem", BindMode.READ_ONLY)
 				.withClasspathResourceMapping("frontend/nginx.conf", "/etc/nginx/nginx.conf", BindMode.READ_ONLY)

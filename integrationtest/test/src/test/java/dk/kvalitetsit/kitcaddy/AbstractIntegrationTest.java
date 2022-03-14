@@ -128,7 +128,7 @@ public class AbstractIntegrationTest {
 					.waitingFor(Wait.forListeningPort())
 					.withNetworkAliases("sts-backend");
 			stsBackend.start();
-			
+
 			GenericContainer<?> sts = new GenericContainer<>("kvalitetsit/sts-frontend:1.0.0")
 					.withEnv("SERVER_NAME", "sts")
 					.withEnv("STS_HOST", "sts-backend")
@@ -140,7 +140,7 @@ public class AbstractIntegrationTest {
 					.withNetworkAliases("sts");
 			sts.start();
 
-			// Echo Service (backend service for test)
+			// Echo Service (b:devackend service for test)
 			GenericContainer<?> echoService = new GenericContainer<>("mendhak/http-https-echo")
 					.withExposedPorts(80)
 					.withNetwork(n)
@@ -152,7 +152,8 @@ public class AbstractIntegrationTest {
 	}
 
 	public static GenericContainer<?> getKitCaddyContainer(String alias, int port, Network n, String config) {
-		return getKitCaddyContainer("kvalitetsit/kitcaddy:dev", alias, port, n, config);
+		GenericContainer kitCaddy = getKitCaddyContainer("kvalitetsit/kitcaddy:dev", alias, port, n, config);
+		return kitCaddy;
 	}
 
 	private static GenericContainer<?> getKitCaddyContainer(String image, String alias, int port, Network n, String config) {

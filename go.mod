@@ -4,7 +4,7 @@ go 1.16
 
 require (
 	github.com/KvalitetsIT/gooioidwsrest v1.1.15
-	github.com/KvalitetsIT/gosamlserviceprovider v1.0.3
+	github.com/KvalitetsIT/gosamlserviceprovider v1.0.8-0.20220314091800-e38e20808605
 	github.com/KvalitetsIT/gosecurityprotocol v1.0.1
 	github.com/caddyserver/caddy/v2 v2.4.5
 	github.com/prometheus/client_golang v1.11.0
