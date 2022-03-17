@@ -25,6 +25,5 @@ FROM scratch
 #scratch
 # Add user
 COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
-COPY --from=builder /go/bin/caddy /home/caddy
-COPY --from=certs /etc/passwd /etc/passwd
-ENTRYPOINT ["/home/caddy", "run"]
+COPY --from=builder /go/bin/caddy /usr/bin/caddy
+ENTRYPOINT ["/usr/bin/caddy", "run"]
