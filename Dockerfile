@@ -20,11 +20,10 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /go/bin/caddy ./c
 
 FROM alpine:3.10.3 as certs
 RUN apk --update add ca-certificates
-
 FROM scratch
 #alpine:3.10.3
 #scratch
+# Add user
 COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 COPY --from=builder /go/bin/caddy /usr/bin/caddy
 ENTRYPOINT ["/usr/bin/caddy", "run"]
-

@@ -125,7 +125,10 @@ kitcaddy:
             logoutLandingPage: https://m.vdxapi.dk/meet
             cookieDomain: m.vdxapi.dk
             cookiePath: /
-
+            roleAttributeName: myrolename
+            allowedRoles:
+              - role1
+              - role2 role3
           upstream:
             host: localhost
             port: 8080

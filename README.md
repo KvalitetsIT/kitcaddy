@@ -15,3 +15,10 @@ If configured by configuration file, KitCaddy expecting a configuration file pla
 
 The flow whit WSC and WSP this shown in the flowchart below.
 ![](documentation/WSC-WSP-flow.png)
+
+## How to run the tests
+In order to run the `KitCaddy` tests, first build the `KitCaddy` docker image locally:
+```
+    docker build -t kvalitetsit/kitcaddy:dev .
+```
+Then go to `/integrationtest` and run `mvn test`.

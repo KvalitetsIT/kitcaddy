@@ -51,8 +51,6 @@ public class AllInOneExpiryIntegrationTest extends AbstractAllInOneIT {
 		Expiry expiry = new Expiry() {
 			@Override
 			public void doExpiry(JsonNode resultBeforeExpiry) {
-
-
 				String samlSessionId = resultBeforeExpiry.get(TestConstants.ECHO_SERVICE_HTTP_HEADER_KEY).get(TestConstants.SESSION_HEADER_NAME).asText();
 				Assert.assertNotNull("Expected a session Id", samlSessionId);
 				Query query = new Query();
@@ -65,7 +63,7 @@ public class AllInOneExpiryIntegrationTest extends AbstractAllInOneIT {
 		};
 
 		// When
-		Response responseAfterExpiry = resultAfterExpiry(expiry);		
+		Response responseAfterExpiry = resultAfterExpiry(expiry);
 
 		// Then
 		String title = responseAfterExpiry.getWebDriver().getTitle();
@@ -189,7 +187,7 @@ public class AllInOneExpiryIntegrationTest extends AbstractAllInOneIT {
 	}
 
 
-	private Response resultAfterExpiry(Expiry expiry) throws JSONException  {
+	private Response  resultAfterExpiry(Expiry expiry) throws JSONException  {
 		return resultAfterExpiry(expiry, true);
 	}
 
@@ -232,7 +230,7 @@ public class AllInOneExpiryIntegrationTest extends AbstractAllInOneIT {
 			JsonNode responseParsed = new ObjectMapper().readValue(jsonReturned, JsonNode.class);
 			return responseParsed;
 		} catch (JsonProcessingException e) {
-			System.out.println("Not parsed: "+result);
+				System.out.println("Not parsed exception: "+result);
 			return null;
 		}
 	}
@@ -259,7 +257,6 @@ public class AllInOneExpiryIntegrationTest extends AbstractAllInOneIT {
 	}
 
 	private interface Expiry {
-
 		public void doExpiry(JsonNode resultBeforeExpiry);
 	}
 }

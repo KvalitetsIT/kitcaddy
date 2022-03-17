@@ -8,10 +8,8 @@ public class AbstractBrowserBasedIntegrationTest extends AbstractIntegrationTest
 		webdriver.get(url);
 		webdriver.findElementByName("username").sendKeys(username);
 		webdriver.findElementByName("password").sendKeys(password);
-		webdriver.findElementByName("login").click();;
-
+		webdriver.findElementByName("login").click();
 		String source = webdriver.getPageSource();
-
 		return source;
 	}
 }

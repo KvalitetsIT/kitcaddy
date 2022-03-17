@@ -89,7 +89,7 @@ public class SamlServiceProviderIntegrationTest extends AbstractBrowserBasedInte
 		// Given
 		samlContainer = getKitCaddyContainer(SAML_SP_HOST, SAML_SP_PORT, getDockerNetwork(), "samlserviceprovider/saml.config");
 		samlContainer.start();
-		String metadataUrl = getSpServiceUrl(samlContainer)+"/saml/metadata";
+		String metadataUrl = getSpServiceUrl(samlContainer)+"/saml/metadata"; // check that Kitcaddy server
 
 		// When
 		ResponseEntity<String> metadataResponse = restTemplate.getForEntity(metadataUrl, String.class);
@@ -175,7 +175,6 @@ public class SamlServiceProviderIntegrationTest extends AbstractBrowserBasedInte
 		JsonNode responseParsed = new ObjectMapper().readValue(jsonReturned, JsonNode.class);
 		Assert.assertNotNull(responseParsed);
 		Assert.assertEquals("Expected to be returned to the external url of the service...which again should redirect us to the login page", "Log in to test", afterLogoutResultTitle);
-
 	}
 
 	@Test

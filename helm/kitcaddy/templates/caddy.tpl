@@ -146,7 +146,13 @@
       "sso_path": {{ .ssoPath | quote }},
       "logout_landing_page": {{ .logoutLandingPage | quote }},
       "cookie_domain": {{ .cookieDomain | quote }},
-      "cookie_path": {{ .cookiePath | quote }}
+      "cookie_path": {{ .cookiePath | quote }},
+      {{- if (.roleAttributeName) }}
+      "role_attribute_name": {{ .roleAttributeName | quote }},
+      {{- end }}
+      {{- if (.allowedRoles) }}
+      "allowed_roles": {{ .allowedRoles | toJson}},
+      {{- end }}
     },
     {{- end }}
     {{- end }}
