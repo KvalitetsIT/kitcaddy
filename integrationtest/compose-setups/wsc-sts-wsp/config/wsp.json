@@ -1,0 +1,78 @@
+{
+  "logging": {
+    "logs": {
+      "default": {
+        "level": "${WSP_CLIENT_LOGLEVEL}"
+      }
+    }
+  },
+  "apps": {
+    "tls": {
+      "certificates": {
+        "load_files": [
+          {
+            "certificate": "${WSP_SSL_CERTIFICATE_FILE}",
+            "key": "${WSP_SSL_KEY_FILE}",
+            "format": "pem",
+            "tags": []
+          }
+        ]
+      }
+    },
+    "http": {
+      "servers": {
+        "srv${LISTEN_PORT}": {
+          "listen": [
+            ":${LISTEN_PORT}"
+          ],
+          "logs": {
+	  },
+          "strict_sni_host": false,
+          "tls_connection_policies": [
+            {
+              "client_authentication": {
+                "mode":  "request"
+              }
+            }
+          ],
+          "automatic_https": {
+            "disable_redirects": true
+          },
+          "routes": [
+            {
+              "match": [
+                {
+                  "path": [
+                    "/*"
+                  ]
+                }
+              ],
+              "handle": [
+                {
+                  "handler": "oioidwsrestwsp",
+                  "mongo_host": "${MONGO_HOST}",
+                  "mongo_db": "${MONGO_DATABASE}",
+                  "trust_cert_files": [ "${WSP_TRUST_CERT_FILES}" ],
+                  "audience_restriction": "${WSP_AUDIENCE_RESTRICTION}",
+		  "hok": "true"
+                },
+                {
+                  "handler": "reverse_proxy",
+                  "transport": {
+                    "protocol": "http",
+                    "read_buffer_size": 4096
+                  },
+                  "upstreams": [
+                    {
+                      "dial": "${WSP_BACKEND_HOST}:${WSP_BACKEND_PORT}"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+}

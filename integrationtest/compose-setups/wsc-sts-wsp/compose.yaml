@@ -1,0 +1,23 @@
+services:
+  kitCaddyWsc:
+    image: kvalitetsit/kitcaddy
+    volumes:
+      - ./wscCerts:/cert
+      - ./sts.cer:/trust/sts.cer
+      - ./config:/config
+    command: -config ./config/Caddyfile-wsc.json
+    ports:
+      - "80:8080"
+  kitCaddy.Wsp:
+    image: kvalitetsit/kitcaddy
+    volumes:
+      - ./wspCerts:/cert
+      - ./sts.cer:/trust/sts.cer
+      - ./config:/config
+    command: -config ./config/Caddyfile-wsp.json
+  mongo:
+    image: mongo:3.6
+  echo:
+    image: mendhak/http-https-echo
+    environment:
+      HTTPS_PORT: 8888

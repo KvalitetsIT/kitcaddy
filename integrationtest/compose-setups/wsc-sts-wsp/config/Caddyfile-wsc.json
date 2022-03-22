@@ -1,0 +1,62 @@
+{
+  "logging": {
+    "logs": {
+      "default": {
+         "level": "DEBUG"
+       }
+   }
+  },
+
+   "apps":{
+      "http":{
+         "servers":{
+            "srv8080":{
+               "automatic_https":{
+                  "disable": true
+	       },
+               "logs" : {
+		},
+               "listen":[
+                  ":8080"
+               ],
+               "routes":[
+                    {
+		         "handle": [
+				    {
+                                       "handler": "oioidwsrestwsc",
+				       "mongo_host": "mongo",
+				       "mongo_db": "mongodb",
+				       "sts_url": "https://sts-signatur.hosting.kitkube.dk/sts/service/sts",
+                                       "client_cert_file": "/cert/certificate.cer",
+                                       "client_key_file": "/cert/key.pem",
+                                       "trust_cert_files": [ "/trust/sts.cer" ],
+                                       "service_endpoint": "http://kitCaddy.Wsp:80",
+                                       "service_audience": "teststs"
+                                    },
+                                    {
+                                       "handler":"reverse_proxy",
+                                       "transport":{
+                                          "protocol":"http",
+                                          "read_buffer_size":4096
+                                       },
+                                       "upstreams":[
+                                          {
+                                             "dial":"kitCaddyWsp:80"
+                                          }
+                                       ]
+                                    }
+                          ],
+                          "match":[
+                                {
+                                    "path":[
+                                       "/*"
+                                     ]
+                                }
+                          ]
+                     }
+               ]
+            }
+         }
+      }
+   }
+}
