@@ -13,7 +13,7 @@ services:
     image: kvalitetsit/kitcaddy
     volumes:
       - ./wspCerts:/cert
-      - ./sts.cer:/trust/sts.cer
+      - ./stsTODO.cer:/trust/sts.cer
       - ./config:/config
     command: -config ./config/Caddyfile-wsp.json
   mongo:
