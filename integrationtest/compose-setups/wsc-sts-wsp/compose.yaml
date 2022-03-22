@@ -4,11 +4,12 @@ services:
     volumes:
       - ./wscCerts:/cert
       - ./sts.cer:/trust/sts.cer
+      - ./wspCerts/certificate.cer:/trust/wsp.cer
       - ./config:/config
     command: -config ./config/Caddyfile-wsc.json
     ports:
       - "80:8080"
-  kitCaddy.Wsp:
+  kitCaddyWsp:
     image: kvalitetsit/kitcaddy
     volumes:
       - ./wspCerts:/cert

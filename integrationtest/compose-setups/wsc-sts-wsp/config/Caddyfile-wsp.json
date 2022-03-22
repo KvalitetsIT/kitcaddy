@@ -7,15 +7,33 @@
     }
   },
   "apps": {
+    "tls": {
+      "certificates": {
+        "load_files": [
+          {
+            "certificate": "/cert/certificate.cer",
+            "key": "/cert/key.pem",
+            "format": "pem",
+            "tags": []
+          }
+        ]
+      }
+    },
     "http": {
       "servers": {
-        "srv80": {
+        "srv443": {
           "listen": [
-            ":80"
+            ":443"
           ],
-          "logs": {
-          },
+          "logs": { },
           "strict_sni_host": false,
+          "tls_connection_policies": [
+            {
+              "client_authentication": {
+                "mode": "request"
+              }
+            }
+          ],
           "automatic_https": {
             "disable_redirects": true
           },
@@ -47,7 +65,7 @@
                   },
                   "upstreams": [
                     {
-                      "dial": "http://localhost:8888"
+                      "dial": "echo:8888"
                     }
                   ]
                 }
