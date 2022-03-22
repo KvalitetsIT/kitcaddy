@@ -65,7 +65,7 @@
                   },
                   "upstreams": [
                     {
-                      "dial": "echo:8888"
+                      "dial": "echo:80"
                     }
                   ]
                 }
