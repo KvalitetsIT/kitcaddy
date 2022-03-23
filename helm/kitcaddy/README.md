@@ -97,6 +97,8 @@ Parameter | Description | Example
 `kitcaddy.servers.routes.saml.logoutLandingPage` | Landing page after logout | `https://domain.dk/`
 `kitcaddy.servers.routes.saml.cookieDomain` | Cookie domain | `domain.dk`
 `kitcaddy.servers.routes.saml.cookiePath` | Cookie path | `/`
+`kitcaddy.servers.routes.saml.roleAttributeName` | Name of the attribute key we are looking for in the XML with the role value | `nameOfAttribute`
+`kitcaddy.servers.routes.saml.allowedRoles` | Array with role user needs to have in order to login. If role is not present, the user cannot login. | `["role1", "role2", "role3 role4"]` this example is equivalent to (role1 OR role2 OR (role3 AND role4)
 **KitCaddy - Upstream** |
 `kitcaddy.servers.routes.upstream` | Set values under this to config upstream
 `kitcaddy.servers.routes.upstream.host` | Upstream host | `localhost`
