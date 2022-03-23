@@ -41,7 +41,7 @@ accordingly. Replace `TODO` in the WSC config with the URL to the STS. Replace t
 with the public certificate from the STS, so that the WSC and the WSP can add it to their trusted certificates.
 
 Run the setup with `docker-compose up`, and visit <a href="localhost:8080">localhost:8080</a> in your browser to verify
-that the STS correctly pass a token to the WCS and allow access to the service that the WSP is connected to.
+that the STS correctly pass a token to the WSC and allow access to the service that the WSP is connected to.
 
 The certificate for the KitCaddy WSP must be a SAN certificate, with the DNS.1 attribute set to the lowercase name of
 the service (
