@@ -19,6 +19,9 @@ The flow whit WSC and WSP this shown in the flowchart below.
 
 ## How to test a STS with KitCaddy as WSC and WSP
 
+A brief introduction to the setup described below: the WSC is the server that request a token from the STS, while the WSP is the server that validates tokens from
+the WSC against the public key from the STS, and provides access to a service if the token is valid.
+
 In `/integrationtest/compose-setups/wsc-sts-wsp` a docker `compose.yaml`  file can be found. This will start two
 KitCaddy images, one as a WSC and one as a WSP, a database used by the WSC and WSP, and an HTTP echo service.
 Under `wsc-sts-wsp` a `config` folder exists, which contain files to configure the WSC and WSP. These config files are
@@ -33,13 +36,14 @@ with the public certificate from the STS, so that the WSC and the WSP can add it
 Run the setup with `docker-compose up`, and visit <a href="localhost:8080">localhost:8080</a> in your browser to verify
 that the STS correctly pass a token to the WCS and allow access to the service that the WSP is connected to.
 
-The certificate for the WSP must be a SAN certificate, with the DNS.1 attribute set to the lowercase name of the
-service (
+The certificate for the KitCaddy WSP must be a SAN certificate, with the DNS.1 attribute set to the lowercase name of
+the service (
 "kitcaddywsp" when running the WSP using the provided `compose.yaml`). No other DNS attributes are needed.
 See <a href="https://fabianlee.org/2018/02/17/ubuntu-creating-a-self-signed-san-certificate-using-openssl/">this</a> for
 details. The domain described doesn't matter for the setup run with compose. A `san.cnf` is provided, which can be used
 to create a certificate
-with `openssl req -x509 -newkey rsa:4096 -keyout key.pem -out certificate.cer -sha256 -days 365 -nodes -config san.cnf -extensions v3_req`.
+with `openssl req -x509 -newkey rsa:4096 -keyout key.pem -out certificate.cer -sha256 -days 365 -nodes -config san.cnf -extensions v3_req`
+.
 
 ## How to run the tests
 
