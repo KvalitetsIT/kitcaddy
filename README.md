@@ -30,10 +30,10 @@ and servers must both trust the STS. Beside the STS, the clients must also trust
 
 In `/integrationtest/compose-setups/wsc-sts-wsp` a docker `compose.yaml`  file can be found. This will start two
 KitCaddy images, one as a WSC and one as a WSP, a database used by the WSC and WSP, and an HTTP echo service.
-Under `wsc-sts-wsp` a `config` folder exists, which contain files to configure the WSC and WSP. These config files are
+In the same folder, a `config` folder exists, which contain files to configure the WSC and WSP. These config files are
 Caddy JSON configuration structures. For details of the configuration files, look for the JSON configuration structure
 documentation on the <a href="https://caddyserver.com/">Caddy website</a>. The necessary trust is set up with the
-provided compose and configuration.
+provided compose and configuration files.
 
 By default, the WSP is configured to forward traffic to the echo service. This can be configured in the WSP config -
 look for `"dial": "echo:80"`, and change `echo:80`
