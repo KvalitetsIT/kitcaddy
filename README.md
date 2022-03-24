@@ -4,7 +4,7 @@ KitCaddy is an open source Web Server written in Golang, with a Kit (KvalitetsIT
 security protocol. See more <a href="https://www.digitaliser.dk/resource/3457606">here</a> about OIO IDWS REST. KitCaddy
 works as a reverse proxy in front of a webservice, so it can decouple the security protocol from the webservice.
 
-![](documentation/KitCaddy-overview.png)
+![](documentation/KitCaddy-overview.png) 
 
 The images show the three configurations possible for KitCaddy; SAML, WSC and WSP. Configuration of KitCaddy is done
 with a configuration file or with a Helm Chart.
