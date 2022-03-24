@@ -1,0 +1,22 @@
+services:
+  kitCaddyWsc:
+    image: kvalitetsit/kitcaddy
+    volumes:
+      - ./wscCerts:/cert
+      - ./sts.cer:/trust/sts.cer
+      - ./wspCerts/certificate.cer:/trust/wsp.cer
+      - ./config:/config
+    command: -config ./config/Caddyfile-wsc.json
+    ports:
+      - "8080:80"
+  kitCaddyWsp:
+    image: kvalitetsit/kitcaddy
+    volumes:
+      - ./wspCerts:/cert
+      - ./stsTODO.cer:/trust/sts.cer
+      - ./config:/config
+    command: -config ./config/Caddyfile-wsp.json
+  mongo:
+    image: mongo:3.6
+  echo:
+    image: ealen/echo-server

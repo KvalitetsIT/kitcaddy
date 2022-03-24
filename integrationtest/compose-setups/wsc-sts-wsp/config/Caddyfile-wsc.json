@@ -1,0 +1,72 @@
+{
+  "logging": {
+    "logs": {
+      "default": {
+        "level": "DEBUG"
+      }
+    }
+  },
+  "admin": {
+    "disabled": true
+  },
+  "apps": {
+    "tls": {},
+    "http": {
+      "servers": {
+        "srv8080": {
+          "automatic_https":{
+            "disable": true
+          },
+          "logs": {},
+          "listen": [
+            ":80"
+          ],
+          "routes": [
+            {
+              "handle": [
+                {
+                  "handler": "oioidwsrestwsc",
+                  "mongo_host": "mongo",
+                  "mongo_db": "mongodb",
+                  "sts_url": TODO,
+                  "client_cert_file": "/cert/certificate.cer",
+                  "client_key_file": "/cert/key.pem",
+                  "trust_cert_files": [
+                    "/trust/sts.cer",
+                    "/trust/wsp.cer"
+                  ],
+                  "service_endpoint": "https://kitcaddywsp:443",
+                  "service_audience": "teststs"
+                },
+                {
+                  "handler": "reverse_proxy",
+                  "transport": {
+                    "protocol": "http",
+                    "tls": {
+                      "insecure_skip_verify": true,
+                      "client_certificate_file": "/cert/certificate.cer",
+                      "client_certificate_key_file": "/cert/key.pem"
+                    },
+                    "read_buffer_size": 4096
+                  },
+                  "upstreams": [
+                    {
+                      "dial": "kitcaddywsp:443"
+                    }
+                  ]
+                }
+              ],
+              "match": [
+                {
+                  "path": [
+                    "/*"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+}
