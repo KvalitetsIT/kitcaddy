@@ -35,6 +35,8 @@ Caddy JSON configuration structures. For details of the configuration files, loo
 documentation on the <a href="https://caddyserver.com/">Caddy website</a>. The necessary trust is set up with the
 provided compose and configuration files.
 
+### Configuring and running the provided WSC and WSP setup 
+
 By default, the WSP is configured to forward traffic to the echo service. This can be configured in the WSP config -
 look for `"dial": "echo:80"`, and change `echo:80`
 accordingly. Replace `TODO` in the WSC config with the URL to the STS. Replace the `stsTODO.cer` in the `compose.yaml`
