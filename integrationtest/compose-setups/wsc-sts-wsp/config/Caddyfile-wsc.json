@@ -28,7 +28,7 @@
                   "handler": "oioidwsrestwsc",
                   "mongo_host": "mongo",
                   "mongo_db": "mongodb",
-                  "sts_url": "https://sts-signatur.hosting.kitkube.dk/",
+                  "sts_url": TODO,
                   "client_cert_file": "/cert/certificate.cer",
                   "client_key_file": "/cert/key.pem",
                   "trust_cert_files": [
