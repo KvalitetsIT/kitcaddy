@@ -43,6 +43,8 @@ with the public certificate from the STS, so that the WSC and the WSP can add it
 Run the setup with `docker-compose up`, and visit <a href="localhost:8080">localhost:8080</a> in your browser to verify
 that the STS correctly pass a token to the WSC and allow access to the service that the WSP is connected to.
 
+### Creating a new certificate for the WSP
+
 The certificate for the KitCaddy WSP must be a SAN certificate, with the DNS.1 attribute set to the lowercase name of
 the service (
 "kitcaddywsp" when running the WSP using the provided `compose.yaml`). No other DNS attributes are needed.
