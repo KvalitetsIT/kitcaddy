@@ -35,6 +35,8 @@ Caddy JSON configuration structures. For details of the configuration files, loo
 documentation on the <a href="https://caddyserver.com/">Caddy website</a>. The necessary trust is set up with the
 provided compose and configuration files.
 
+### Configuring and running the provided WSC and WSP setup 
+
 By default, the WSP is configured to forward traffic to the echo service. This can be configured in the WSP config -
 look for `"dial": "echo:80"`, and change `echo:80`
 accordingly. Replace `TODO` in the WSC config with the URL to the STS. Replace the `stsTODO.cer` in the `compose.yaml`
@@ -42,6 +44,8 @@ with the public certificate from the STS, so that the WSC and the WSP can add it
 
 Run the setup with `docker-compose up`, and visit <a href="localhost:8080">localhost:8080</a> in your browser to verify
 that the STS correctly pass a token to the WSC and allow access to the service that the WSP is connected to.
+
+### Creating a new certificate for the WSP
 
 The certificate for the KitCaddy WSP must be a SAN certificate, with the DNS.1 attribute set to the lowercase name of
 the service (
