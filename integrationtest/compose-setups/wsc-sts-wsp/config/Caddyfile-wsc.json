@@ -28,7 +28,7 @@
                   "handler": "oioidwsrestwsc",
                   "mongo_host": "mongo",
                   "mongo_db": "mongodb",
-                  "sts_url": TODO,
+                  "sts_url": "https://venliglogin-sts.esbjerg-kommune.t0.hosting.kitkube.dk/sts/service/sts",
                   "client_cert_file": "/cert/certificate.cer",
                   "client_key_file": "/cert/key.pem",
                   "trust_cert_files": [
