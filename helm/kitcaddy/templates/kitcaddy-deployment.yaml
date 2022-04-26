@@ -124,6 +124,66 @@ spec:
             {{- toYaml .Values.deployment.resources | nindent 12 }}
       {{- end }}
 
+      {{- if (.Values.initContainers) }}
+      initContainers:
+      {{- end }}
+      {{- range $key, $value := .Values.initContainers }}
+        - name: {{ $key }}
+          image: "{{ $value.image.repository }}:{{ $value.image.tag }}"
+          env: {{ if (not $value.env) }}[ ]{{ end }}
+            {{- range $key, $value := $value.env }}
+            - name: {{ $key }}
+            {{- if (not $value.type) }}
+              value: {{ $value.value | quote }}
+            {{- else if eq $value.type "fieldPath" }}
+              valueFrom:
+                fieldRef:
+                fieldPath: {{ $value.value }}
+            {{- else if eq $value.type "secretKeyRef" }}
+              valueFrom:
+                secretKeyRef:
+                  key: {{ $value.key }}
+                  name: {{ $value.name }}
+            {{- end }}
+            {{- end }}
+          command: [
+            {{- range $index, $cmd := $value.commands }}
+            {{- if $index }},{{- end }}
+            {{ $cmd | quote }}
+            {{- end }}
+          ]
+          args: [
+            {{- range $index, $arg := $value.args }}
+            {{- if $index }},{{- end }}
+            {{ $arg | quote }}
+            {{- end }}
+          ]
+          {{- if ($value.resources)}}
+          resources:
+            {{- toYaml $value.resources | nindent 12 }}
+          {{- end }}
+          {{- if or ($value.configMapMountPaths) ($value.extraVolumeMounts) }}
+          volumeMounts:
+          {{- end }}
+          {{- range $key, $value := $value.configMapMountPaths }}
+            - mountPath: {{ $value.configMapMountPath }}
+              name: configmap
+              {{- if ($value.configMapMountSubPath) }}
+              subPath: {{ $value.configMapMountSubPath }}
+              {{- end }}
+          {{- end }}
+          {{- range $key, $value := $value.extraVolumeMounts }}
+            - mountPath: {{ $value.mountPath }}
+              {{- /* # Remove "_<number>" at end of string */}}
+              {{ $underScoreSuffix := regexFind "_\\d+$" $key }}
+              {{ $newLength := int (sub (len $key) (len $underScoreSuffix)) }}
+              name: {{ substr 0 $newLength $key }}
+              {{- if ($value.subPath) }}
+              subPath: {{ $value.subPath }}
+              {{- end }}
+          {{- end }}
+      {{- end }}
+
       volumes:
         - configMap:
             name: {{ include "kitcaddy.fullname" . }}-config
