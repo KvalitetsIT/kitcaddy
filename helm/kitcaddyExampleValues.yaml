@@ -167,9 +167,18 @@ kitcaddy:
 
 deployment:
   configMapMountPath: /config
+  extraVolumes:
+    myEmptyDir: |
+      emtpyDir: {}
   extraVolumeMounts:
     test123:
       mountPath: /123
+    myDeploymentEmptyDir:
+      mountPath: /dir
+    myDeploymentEmptyDir_1:
+      mountPath: /dir1
+    myDeploymentEmptyDir_2:
+      mountPath: /dir2
   resources:
     limits:
       memory: 1Gi
