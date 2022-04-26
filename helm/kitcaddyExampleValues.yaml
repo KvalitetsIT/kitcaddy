@@ -35,10 +35,18 @@ kitcaddy:
   extraVolumeMounts:
     sts-public-cert:
       mountPath: /trust
+    myEmptyDir:
+      mountPath: /dir
+    myEmptyDir_1:
+      mountPath: /dir1
+    myEmptyDir_2:
+      mountPath: /dir2
   extraVolumes:
     sts-public-cert: |
       secret:
         secretName: sts-public-cert
+    myEmptyDir: |
+      emtpyDir: {}
 
   extraPorts:
     proxy-port7070: 7070
