@@ -167,9 +167,6 @@ kitcaddy:
 
 deployment:
   configMapMountPath: /config
-  extraVolumes:
-    myEmptyDir: |
-      emtpyDir: {}
   extraVolumeMounts:
     test123:
       mountPath: /123
