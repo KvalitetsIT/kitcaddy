@@ -3,6 +3,16 @@ namespace: pexip
 
 podAntiAffinityPreset: hard
 
+extraConfigMap:
+  test.txt: |
+    [
+      {
+        "organizationId": "123",
+        "organization":  "test",
+        "secretKeyLocation": "key.txt"
+      }
+    ]
+
 extraConfigMapJson:
   test.json:
     [
