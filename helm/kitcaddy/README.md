@@ -38,7 +38,7 @@ Parameter | Description | Example
 `nodeAffinityPreset.values`          | Node label values to match. Ignored if `affinity` is set.
 **KitCaddy** |
 `kitcaddy.secretName` |  
-`kitcaddy.extraVolumeMounts` | Extra volume mounts 
+`kitcaddy.extraVolumeMounts` | Extra volume mounts. Due to limitations of Helm, two mounts cannot refer to the same volume. This chart allows to ovecome this by adding `_<number>` to the end of the name. Thus, `myEmptyDir_1` and `myEmptyDir_2` (and `myEmptyDir`) will refer to the same volume, with name `myEmptyDir`.
 `kitcaddy.extraVolumes` | Extra volumes 
 `kitcaddy.logLevel` | Set default log level. Default values 'INFO' | `DEBUG`
 `kitcaddy.admin.disabled` | Set admin disabled. Default values 'true' | `true`
