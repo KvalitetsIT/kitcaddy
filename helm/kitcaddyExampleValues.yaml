@@ -3,6 +3,16 @@ namespace: pexip
 
 podAntiAffinityPreset: hard
 
+extraConfigMap:
+  test.txt: |
+    [
+      {
+        "organizationId": "123",
+        "organization":  "test",
+        "secretKeyLocation": "key.txt"
+      }
+    ]
+
 extraConfigMapJson:
   test.json:
     [
@@ -167,9 +177,6 @@ kitcaddy:
 
 deployment:
   configMapMountPath: /config
-  extraVolumes:
-    myEmptyDir: |
-      emtpyDir: {}
   extraVolumeMounts:
     test123:
       mountPath: /123

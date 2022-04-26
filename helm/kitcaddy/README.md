@@ -36,6 +36,7 @@ Parameter | Description | Example
 `nodeAffinityPreset.type`            | Node affinity preset type. Ignored if `affinity` is set. Allowed values: `soft` or `hard` | `""`                         |
 `nodeAffinityPreset.key`             | Node label key to match Ignored if `affinity` is set.                                     | `""`                         |
 `nodeAffinityPreset.values`          | Node label values to match. Ignored if `affinity` is set.
+`extraConfigMap`          | Specify ConfigMaps.
 **KitCaddy** |
 `kitcaddy.secretName` |  
 `kitcaddy.extraVolumeMounts` | Extra volume mounts. Due to limitations of Helm, two mounts cannot refer to the same volume. This chart allows to ovecome this by adding `_<number>` to the end of the name. Thus, `myEmptyDir_1` and `myEmptyDir_2` (and `myEmptyDir`) will refer to the same volume, with name `myEmptyDir`.

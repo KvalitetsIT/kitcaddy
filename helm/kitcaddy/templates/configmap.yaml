@@ -9,6 +9,11 @@ data:
     {{ . | toJson }}
   {{- end }}
 
+  {{- range $key, $value := .Values.extraConfigMap }}
+  {{ $key }}: |
+    {{- $value | nindent 4 }}
+  {{- end }}
+
   config.json: |
     {
       "logging": {
