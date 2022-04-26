@@ -35,6 +35,20 @@ image:
   pullPolicy: IfNotPresent
   tag: "1.1.1"
 
+initContainers:
+  idp-theme:
+    image:
+      tag: 54b06eaf051db57b25409e7c09e1dadcaee032ee
+    env:
+    commands:
+      - bin/sh
+    args:
+      - -c
+      - cp -R /kitmodule /theme/kitmodule
+    extraVolumeMounts:
+      theme-volume:
+        mountPath: /theme
+
 serviceAccount:
   create: false
 
