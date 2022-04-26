@@ -110,7 +110,7 @@ Parameter | Description | Example
 **Deployment** | 
 `deployment.containerPort` | Port on web-service | `8080` 
 `deployment.configMapMountPath` | Set value if config map needs to mount on deployment | `/config`
-`deplyment.extraVolumeMounts` | Extra volume mounts 
+`deplyment.extraVolumeMounts` | Extra volume mounts. Due to limitations of Helm, two mounts cannot refer to the same volume. This chart allows to ovecome this by adding `_<number>` to the end of the name. Thus, `myEmptyDir_1` and `myEmptyDir_2` (and `myEmptyDir`) will refer to the same volume, with name `myEmptyDir`.
 `deplyment.readinessProbe` | Set values under this to config readiness probe
 `deplyment.livenessProbe` | Set values under this to config liveness probe
 **Deployment - Environment variables** |

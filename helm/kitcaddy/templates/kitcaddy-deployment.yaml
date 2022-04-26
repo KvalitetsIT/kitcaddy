@@ -101,7 +101,13 @@ spec:
           {{- end }}
           {{- range $key, $value := .Values.deployment.extraVolumeMounts }}
             - mountPath: {{ $value.mountPath }}
-              name: {{ $key }}
+              {{- /* # Remove "_<number>" at end of string */}}
+              {{ $underScoreSuffix := regexFind "_\\d+$" $key }}
+              {{ $newLength := int (sub (len $key) (len $underScoreSuffix)) }}
+              name: {{ substr 0 $newLength $key }}
+              {{- if ($value.subPath) }}
+              subPath: {{ $value.subPath }}
+              {{- end }}
           {{- end }}
 
           {{- if (.Values.deployment.livenessProbe) }}
