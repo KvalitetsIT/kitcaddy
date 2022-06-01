@@ -34,6 +34,56 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
+      {{- if (.Values.sidecar) }}
+        - name: {{ .Values.sidecar.name }}
+          image: "{{ .Values.sidecar.image.repository }}:{{ .Values.sidecar.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env: {{ if (not .Values.sidecar.env) }}[]{{ end }}
+          {{- range $key, $value := .Values.sidecar.env }}
+          - name: {{ $key }}
+          {{- if (not $value.type) }}
+            value: {{ $value.value | quote }}
+          {{- else if eq $value.type "fieldPath" }}
+            valueFrom:
+              fieldRef:
+                fieldPath: {{ $value.value }}
+          {{- else if eq $value.type "secretKeyRef" }}
+            valueFrom:
+              secretKeyRef:
+                key: {{ $value.key }}
+                name: {{ $value.name }}
+          {{- end }}
+          {{- end }}
+          command: [
+            {{- range $index, $cmd := .Values.sidecar.commands }}
+            {{- if $index }},{{- end }}
+            {{ $cmd | quote }}
+            {{- end }}
+          ]
+          args: [
+            {{- range $index, $arg := .Values.sidecar.args }}
+            {{- if $index }},{{- end }}
+            {{ $arg | quote }}
+            {{- end }}
+          ]
+          {{- if (.Values.sidecar.resources) }}
+          resources:
+            {{- toYaml .Values.sidecar.resources | nindent 12 }}
+          {{- end }}
+          ports:
+          - containerPort: {{ .Values.sidecar.containerPort }}
+            name: sidecar-port
+          {{- if (.Values.sidecar.extraVolumeMounts) }}
+          volumeMounts:
+          {{- end }}
+          {{- range $key, $value := .Values.sidecar.extraVolumeMounts }}
+            - mountPath: {{ $value.mountPath }}
+              {{- /* # Remove "_<number>" at end of string */}}
+              {{ $underScoreSuffix := regexFind "_\\d+$" $key }}
+              {{ $newLength := int (sub (len $key) (len $underScoreSuffix)) }}
+              name: {{ substr 0 $newLength $key }}
+          {{- end }}
+        {{- end }}
         - name: {{ .Chart.Name }}
           securityContext:
             readOnlyRootFilesystem: true
