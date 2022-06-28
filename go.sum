@@ -96,8 +96,8 @@ github.com/GeertJohan/go.incremental v1.0.0/go.mod h1:6fAjUhbVuX1KcMD3c8TEgVUqmo
 github.com/GeertJohan/go.rice v1.0.0/go.mod h1:eH6gbSOAUv07dQuZVnBmoDP8mgsM1rtixis4Tib9if0=
 github.com/GoogleCloudPlatform/cloudsql-proxy v0.0.0-20191009163259-e802c2cb94ae/go.mod h1:mjwGPas4yKduTyubHvD1Atl9r1rUq8DfVy+gkVvZ+oo=
 github.com/Knetic/govaluate v3.0.1-0.20171022003610-9aa49832a739+incompatible/go.mod h1:r7JcOSlj0wfOMncg0iLm8Leh48TZaKVeNIfJntJ2wa0=
-github.com/KvalitetsIT/gooioidwsrest v1.1.17 h1:fyeb8Kni0Vt4iU1M5rtviLm/4lDeAdtRa/+xIvcTXOg=
-github.com/KvalitetsIT/gooioidwsrest v1.1.17/go.mod h1:hZgujpBQPAJU9llZvtPSRud+CIHdSRlV/RmpAjYCbLI=
+github.com/KvalitetsIT/gooioidwsrest v1.1.18 h1:hP0Ih78olTExWHxLh34CEZ+o6OjAGkUhCOFOXQGpkOU=
+github.com/KvalitetsIT/gooioidwsrest v1.1.18/go.mod h1:h01/nPppXyId0VP2xjmwN9mV6hnTr+cMlfVkwe9idWc=
 github.com/KvalitetsIT/gosaml2 v0.0.0-20201030140015-1552cb4e4bec h1:ZESEReRY7NjfdFzCmr8OYesGtLFMCe2LhFTF4ehD/2Y=
 github.com/KvalitetsIT/gosaml2 v0.0.0-20201030140015-1552cb4e4bec/go.mod h1:yw7TSVqDvppr+vI/o9zfuP94S/R5qgb7drMMxF4LqB8=
 github.com/KvalitetsIT/gosamlserviceprovider v1.0.8-0.20220314091800-e38e20808605 h1:1zhJfFNMYhld9sCn/nilStpkVPJgMtvkvXExJ80GYCc=
@@ -105,8 +105,8 @@ github.com/KvalitetsIT/gosamlserviceprovider v1.0.8-0.20220314091800-e38e2080860
 github.com/KvalitetsIT/gosecurityprotocol v0.0.0-20200416184625-51822bff6698/go.mod h1:vP/ZpfXhOiJ+oqW/BeUwFWtQZJ/Y8ZkVUBibBINKysc=
 github.com/KvalitetsIT/gosecurityprotocol v1.0.1 h1:yCLHKUx5zgwREZ6w1eHw03MIzQRUNtg0T81WJ9Vx1Zs=
 github.com/KvalitetsIT/gosecurityprotocol v1.0.1/go.mod h1:nIQah+qvF+MIXY+c3JYnB4EsbuiVAgenyTbKo0arb0A=
-github.com/KvalitetsIT/gostsclient v1.0.0 h1:3yktAC//ZaZmnY4QvyGyJcVO5UuRa23/M+CqrN+35Uc=
-github.com/KvalitetsIT/gostsclient v1.0.0/go.mod h1:lvSPoxbDI5pbxphc8cr9ec9KD+oDCd5DAv14UWPdxJE=
+github.com/KvalitetsIT/gostsclient v1.0.1 h1:QaalwctZaubPkmWcw0Zi0E68MaAWicz5reRWOiMFvbU=
+github.com/KvalitetsIT/gostsclient v1.0.1/go.mod h1:lvSPoxbDI5pbxphc8cr9ec9KD+oDCd5DAv14UWPdxJE=
 github.com/Masterminds/glide v0.13.2/go.mod h1:STyF5vcenH/rUqTEv+/hBXlSTo7KYwg2oc2f4tzPWic=
 github.com/Masterminds/goutils v1.1.0/go.mod h1:8cTjp+g8YejhMuvIA5y2vz3BpJxksy863GQaJW2MFNU=
 github.com/Masterminds/goutils v1.1.1 h1:5nUrii3FMTL5diU80unEVvNevw1nH4+ZV4DSLVJLSYI=
