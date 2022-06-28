@@ -31,6 +31,8 @@ type CaddyOioIdwsRestWsc struct {
 
 	SessionHeaderName string `json:"session_header_name,omitempty"`
 
+	StsKombit string `json:"sts_kombit,omitempty"`
+
 	StsUrl string `json:"sts_url,omitempty"`
 
 	ClientCertFile string `json:"client_cert_file,omitempty"`
@@ -40,6 +42,8 @@ type CaddyOioIdwsRestWsc struct {
 	TrustCertFiles []string `json:"trust_cert_files,omitempty"`
 
 	ServiceEndpoint string `json:"service_endpoint,omitempty"`
+
+	ServiceTokenEndpoint string `json:"service_token_endpoint,omitempty"`
 
 	ServiceAudience string `json:"service_audience,omitempty"`
 
@@ -127,13 +131,23 @@ func (m *CaddyOioIdwsRestWsc) Provision(ctx caddy.Context) error {
         if (len(m.SessionHeaderName) != 0){
 		wscConfig.SessionHeaderName = m.SessionHeaderName
         }
+
 	wscConfig.SessionDataFetcher = new(securityprotocol.NilSessionDataFetcher)
 	wscConfig.StsUrl = m.StsUrl
+	if len(m.StsKombit) > 0 {
+		useKombit, err := strconv.ParseBool(m.StsKombit)
+		if err != nil {
+			m.Logger.Errorf("Can't parse sts_kombit as bool: %s", err.Error())
+			return err
+		}
+		wscConfig.UseKombitVersion = useKombit
+	}
 	wscConfig.TrustCertFiles = m.TrustCertFiles
 	wscConfig.ClientCertFile = m.ClientCertFile
 	wscConfig.ClientKeyFile = m.ClientKeyFile
 	wscConfig.ServiceAudience = m.ServiceAudience
 	wscConfig.ServiceEndpoint = m.ServiceEndpoint
+	wscConfig.ServiceTokenEndpoint = m.ServiceTokenEndpoint
 
 	// Create sessiondatafetcher if configured
 	if len(m.SessionDataUrl) > 0 {
