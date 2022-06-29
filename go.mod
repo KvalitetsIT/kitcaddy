@@ -3,7 +3,7 @@ module github.com/KvalitetsIT/kitcaddy
 go 1.16
 
 require (
-	github.com/KvalitetsIT/gooioidwsrest v1.1.18
+	github.com/KvalitetsIT/gooioidwsrest v1.1.20
 	github.com/KvalitetsIT/gosamlserviceprovider v1.0.8-0.20220314091800-e38e20808605
 	github.com/KvalitetsIT/gosecurityprotocol v1.0.1
 	github.com/caddyserver/caddy/v2 v2.4.5
