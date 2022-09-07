@@ -170,6 +170,11 @@ spec:
             {{- toYaml .Values.deployment.readinessProbe | nindent 12 }}
           {{- end }}
 
+          {{- if (.Values.deployment.startupProbe) }}
+          startupProbe:
+            {{- toYaml .Values.deployment.startupProbe | nindent 12 }}
+          {{- end }}          
+
           resources:
             {{- toYaml .Values.deployment.resources | nindent 12 }}
       {{- end }}
