@@ -3,13 +3,15 @@ module github.com/KvalitetsIT/kitcaddy
 go 1.16
 
 require (
+	github.com/DataDog/zstd v1.4.5 // indirect
 	github.com/KvalitetsIT/gooioidwsrest v1.1.20
-	github.com/KvalitetsIT/gosamlserviceprovider v1.0.8-0.20220314091800-e38e20808605
+	github.com/KvalitetsIT/gosamlserviceprovider v1.0.9
 	github.com/KvalitetsIT/gosecurityprotocol v1.0.1
-	github.com/caddyserver/caddy/v2 v2.4.5
+	github.com/caddyserver/caddy/v2 v2.4.6
+	github.com/kr/pretty v0.2.1 // indirect
 	github.com/prometheus/client_golang v1.11.0
 	github.com/prometheus/client_model v0.2.0
-	go.uber.org/zap v1.19.1
+	go.uber.org/zap v1.21.0
 	gotest.tools v2.2.0+incompatible
 )
 
