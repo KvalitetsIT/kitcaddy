@@ -33,7 +33,7 @@ spec:
           securityContext:
             capabilities:
               drop:
-                - all
+                - ALL
               {{- if (.Values.docDeployment.securityContextAddCapabilities) }}
               add:
                 {{- toYaml .Values.docDeployment.securityContextAddCapabilities | nindent 16 }}

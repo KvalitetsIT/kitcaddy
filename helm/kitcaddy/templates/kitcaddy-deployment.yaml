@@ -42,7 +42,7 @@ spec:
           securityContext:
             capabilities:
               drop:
-                - all
+                - ALL
               {{- if (.Values.sidecar.securityContextAddCapabilities) }}
               add:
                 {{- toYaml .Values.sidecar.securityContextAddCapabilities | nindent 16 }}
@@ -110,7 +110,7 @@ spec:
               type: RuntimeDefault
             capabilities:
               drop:
-                - all
+                - ALL
           args:
             - -config
             - /config/config.json
@@ -144,7 +144,7 @@ spec:
           securityContext:
             capabilities:
               drop:
-                - all
+                - ALL
               {{- if (.Values.deployment.securityContextAddCapabilities) }}
               add:
                 {{- toYaml .Values.deployment.securityContextAddCapabilities | nindent 16 }}
