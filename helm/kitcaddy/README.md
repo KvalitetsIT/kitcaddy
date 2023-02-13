@@ -38,6 +38,7 @@ Parameter | Description | Example
 `nodeAffinityPreset.values`          | Node label values to match. Ignored if `affinity` is set.
 `extraConfigMap`          | Specify ConfigMaps.
 `netpol.enabled`          | Enables default netpol only allowing traffick to kitcaddy ports. Default `true`.
+`serviceAccount.automount`          | Sets automountServiceAccountToken. Default `false`.
 **KitCaddy** |
 `kitcaddy.secretName` |  
 `kitcaddy.extraVolumeMounts` | Extra volume mounts. Due to limitations of Helm, two mounts cannot refer to the same volume. This chart allows to ovecome this by adding `_<number>` to the end of the name. Thus, `myEmptyDir_1` and `myEmptyDir_2` (and `myEmptyDir`) will refer to the same volume, with name `myEmptyDir`.
