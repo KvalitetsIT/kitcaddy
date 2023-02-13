@@ -118,6 +118,7 @@ Parameter | Description | Example
 `deplyment.securityContext.readOnlyRootFilesystem` | SecurityContext readOnlyRootFilesystem for deplyment container. Default `true`
 `deplyment.securityContext.allowPrivilegeEscalation` | SecurityContext allowPrivilegeEscalation for deplyment container. Default `false`
 `deplyment.securityContext.runAsNonRoot` | SecurityContext runAsNonRoot for deplyment container. Default `true`
+`deplyment.securityContext.seccompProfile` | SecurityContext seccompProfile for deplyment container. Default `RuntimeDefault`
 `deplyment.securityContextAddCapabilities` | SecurityContext capabilities list of capabilities to Add. | - NET_ADMIN <br> - SYS_TIME                                                                                     |
 `deplyment.readinessProbe` | Set values under this to config readiness probe
 `deplyment.livenessProbe` | Set values under this to config liveness probe
@@ -147,9 +148,10 @@ SecretKeyRef |
 `docDeployment.readinessProbe` | Set values under this to config readiness probe
 `docDeployment.livenessProbe` | Set values under this to config liveness probe
 `docDeployment.securityContext` | SecurityContext for deplyment container.
-`docDeployment.securityContext.readOnlyRootFilesystem` | SecurityContext readOnlyRootFilesystem for deplyment container. Default `true`
-`docDeployment.securityContext.allowPrivilegeEscalation` | SecurityContext allowPrivilegeEscalation for deplyment container. Default `false`
-`docDeployment.securityContext.runAsNonRoot` | SecurityContext runAsNonRoot for deplyment container. Default `true`
+`docDeployment.securityContext.readOnlyRootFilesystem` | SecurityContext readOnlyRootFilesystem for doc container. Default `true`
+`docDeployment.securityContext.allowPrivilegeEscalation` | SecurityContext allowPrivilegeEscalation for doc container. Default `false`
+`docDeployment.securityContext.runAsNonRoot` | SecurityContext runAsNonRoot for doc container. Default `true`
+`docDeployment.securityContext.seccompProfile` | SecurityContext seccompProfile for doc container. Default `RuntimeDefault`
 `docDeployment.securityContextAddCapabilities` | SecurityContext capabilities list of capabilities to Add. | - NET_ADMIN <br> - SYS_TIME                                                                                     |
 **Documentation Ingress** |
 `docIngress.enabled` | Enables the ingress for the documentation | `true`                                                                                                  

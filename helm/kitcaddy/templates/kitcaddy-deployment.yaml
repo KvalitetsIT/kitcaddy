@@ -50,6 +50,8 @@ spec:
             readOnlyRootFilesystem: {{ .Values.sidecar.securityContext.readOnlyRootFilesystem }}
             allowPrivilegeEscalation: {{ .Values.sidecar.securityContext.allowPrivilegeEscalation }}
             runAsNonRoot: {{ .Values.sidecar.securityContext.runAsNonRoot }}
+            seccompProfile:
+              type: {{ .Values.sidecar.securityContext.seccompProfile }}
             {{- if (.Values.sidecar.securityContext.extra) }}
             {{- toYaml .Values.sidecar.securityContext.extra | nindent 12 }}
             {{- end }}
@@ -104,6 +106,8 @@ spec:
             readOnlyRootFilesystem: true
             allowPrivilegeEscalation: false
             runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
             capabilities:
               drop:
                 - all
@@ -148,6 +152,8 @@ spec:
             readOnlyRootFilesystem: {{ .Values.deployment.securityContext.readOnlyRootFilesystem }}
             allowPrivilegeEscalation: {{ .Values.deployment.securityContext.allowPrivilegeEscalation }}
             runAsNonRoot: {{ .Values.deployment.securityContext.runAsNonRoot }}
+            seccompProfile:
+              type: {{ .Values.deployment.securityContext.seccompProfile }}
             {{- if (.Values.deployment.securityContext.extra) }}
             {{- toYaml .Values.deployment.securityContext.extra | nindent 12 }}
             {{- end }}
