@@ -3,21 +3,22 @@ namespace: pexip
 
 podAntiAffinityPreset: hard
 sidecar:
-    name: async-rabbitmq-producer
-    containerPort: 80
-    image:
-      tag: 94a7069de5055d802e4d6c1b73275206b3be2164
-    env:
-      PORT:
-        value: 7070
-      MQ_URL:
-        type: secretKeyRef
-        name: rabbitmq-creds #secret is found in rabbitmq-app
-        key: mq_url
-      CORRELATION_ID_HEADER_NAME:
-        value: "correlation-id"
-      MAPPING:
-        value: [{ url: "/notificationservice/sendNotification", exchange: "notification.exchange" }]
+  enabled: true
+  name: async-rabbitmq-producer
+  containerPort: 80
+  image:
+    tag: 94a7069de5055d802e4d6c1b73275206b3be2164
+  env:
+    PORT:
+      value: 7070
+    MQ_URL:
+      type: secretKeyRef
+      name: rabbitmq-creds #secret is found in rabbitmq-app
+      key: mq_url
+    CORRELATION_ID_HEADER_NAME:
+      value: "correlation-id"
+    MAPPING:
+      value: [{ url: "/notificationservice/sendNotification", exchange: "notification.exchange" }]
 extraConfigMap:
   test.txt: |
     [
@@ -205,6 +206,12 @@ kitcaddy:
             port: 8080132
 
 deployment:
+  securityContext:
+    extra:
+      runAsUser: 1000
+  securityContextAddCapabilities:
+    - 1234
+    - testest
   configMapMountPath: /config
   extraVolumeMounts:
     test123:

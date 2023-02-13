@@ -31,13 +31,28 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "kitcaddy.serviceAccountName" . }}
+      automountServiceAccountToken: {{ .Values.serviceAccount.automount }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-      {{- if (.Values.sidecar) }}
+      {{- if .Values.sidecar.enabled }}
         - name: {{ .Values.sidecar.name }}
           image: "{{ .Values.sidecar.image.repository }}:{{ .Values.sidecar.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            capabilities:
+              drop:
+                - all
+              {{- if (.Values.sidecar.securityContextAddCapabilities) }}
+              add:
+                {{- toYaml .Values.sidecar.securityContextAddCapabilities | nindent 16 }}
+              {{- end }}
+            readOnlyRootFilesystem: {{ .Values.sidecar.securityContext.readOnlyRootFilesystem }}
+            allowPrivilegeEscalation: {{ .Values.sidecar.securityContext.allowPrivilegeEscalation }}
+            runAsNonRoot: {{ .Values.sidecar.securityContext.runAsNonRoot }}
+            {{- if (.Values.sidecar.securityContext.extra) }}
+            {{- toYaml .Values.sidecar.securityContext.extra | nindent 12 }}
+            {{- end }}
           env: {{ if (not .Values.sidecar.env) }}[]{{ end }}
           {{- range $key, $value := .Values.sidecar.env }}
           - name: {{ $key }}
@@ -87,6 +102,11 @@ spec:
         - name: {{ .Chart.Name }}
           securityContext:
             readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            capabilities:
+              drop:
+                - all
           args:
             - -config
             - /config/config.json
@@ -118,7 +138,19 @@ spec:
       {{- if .Values.deployment.enabled }}
         - name: {{ include "kitcaddy.fullname" . }}
           securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
+            capabilities:
+              drop:
+                - all
+              {{- if (.Values.deployment.securityContextAddCapabilities) }}
+              add:
+                {{- toYaml .Values.deployment.securityContextAddCapabilities | nindent 16 }}
+              {{- end }}
+            readOnlyRootFilesystem: {{ .Values.deployment.securityContext.readOnlyRootFilesystem }}
+            allowPrivilegeEscalation: {{ .Values.deployment.securityContext.allowPrivilegeEscalation }}
+            runAsNonRoot: {{ .Values.deployment.securityContext.runAsNonRoot }}
+            {{- if (.Values.deployment.securityContext.extra) }}
+            {{- toYaml .Values.deployment.securityContext.extra | nindent 12 }}
+            {{- end }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env: {{ if (not .Values.deployment.env) }}[]{{ end }}

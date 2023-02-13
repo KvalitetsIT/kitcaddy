@@ -11,6 +11,9 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
 
+netpol:
+  enabled: true
+
 kitcaddy:
   logLevel: INFO
   admin:
@@ -32,7 +35,12 @@ kitcaddy:
 
 deployment:
   enabled: true
-  containerPort: 80
+  containerPort: 8080
+
+  securityContext:
+    readOnlyRootFilesystem: true
+    allowPrivilegeEscalation: false
+    runAsNonRoot: true
 
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
@@ -45,6 +53,15 @@ deployment:
     # requests:
   #   cpu: 100m
   #   memory: 128Mi
+
+sidecar:
+  enabled: false
+  containerPort: 7070
+  securityContext:
+    readOnlyRootFilesystem: true
+    allowPrivilegeEscalation: false
+    runAsNonRoot: true
+  resources: {}
 
 docDeployment:
   enabled: false
@@ -64,19 +81,12 @@ serviceAccount:
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: ""
+  automount: false
 
 podAnnotations: {}
 
 podSecurityContext: {}
   # fsGroup: 2000
-
-securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
 
 service:
   type: ClusterIP
