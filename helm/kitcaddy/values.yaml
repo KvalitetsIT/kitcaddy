@@ -66,6 +66,10 @@ sidecar:
 docDeployment:
   enabled: false
   containerPort: 8080
+  securityContext:
+    readOnlyRootFilesystem: true
+    allowPrivilegeEscalation: false
+    runAsNonRoot: true
   env: []
   resources: {}
 
