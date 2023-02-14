@@ -103,6 +103,8 @@ spec:
         {{- end }}
         - name: {{ .Chart.Name }}
           securityContext:
+            runAsUser: 11000
+            runAsGroup: 11000
             readOnlyRootFilesystem: true
             allowPrivilegeEscalation: false
             runAsNonRoot: true
