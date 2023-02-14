@@ -31,7 +31,19 @@ spec:
       containers:
         - name: {{ include "kitcaddy.fullname" . }}-documentation
           securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
+            capabilities:
+              drop:
+                - ALL
+              {{- if (.Values.docDeployment.securityContextAddCapabilities) }}
+              add:
+                {{- toYaml .Values.docDeployment.securityContextAddCapabilities | nindent 16 }}
+              {{- end }}
+            readOnlyRootFilesystem: {{ .Values.docDeployment.securityContext.readOnlyRootFilesystem }}
+            allowPrivilegeEscalation: {{ .Values.docDeployment.securityContext.allowPrivilegeEscalation }}
+            runAsNonRoot: {{ .Values.docDeployment.securityContext.runAsNonRoot }}
+            {{- if (.Values.docDeployment.securityContext.extra) }}
+            {{- toYaml .Values.docDeployment.securityContext.extra | nindent 12 }}
+            {{- end }}
           image: "{{ .Values.image.repository }}-documentation:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
