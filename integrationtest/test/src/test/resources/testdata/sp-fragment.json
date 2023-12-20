@@ -37,7 +37,7 @@
                   },
                   "upstreams": [
                     {
-                      "dial": "echo:80"
+                      "dial": "echo:8080"
                     }
                   ]
                 }

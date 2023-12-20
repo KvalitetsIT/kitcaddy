@@ -26,13 +26,12 @@ public class TemplateIntegrationTest extends AbstractIntegrationTest {
 	
 	@Before
 	public void setupTest() throws IOException {
-		templateContainer = new GenericContainer<>("kvalitetsit/kitcaddy-templates:dev")
+		templateContainer = new GenericContainer<>("kvalitetsit/kitcaddy-templates:"+getKitCaddyVersionUnderTest())
 				.withEnv("CADDYFILE", "/configs/myoutput")
 				.withNetwork(getDockerNetwork())
 				.withStartupCheckStrategy(new OneShotStartupCheckStrategy());
 	}
-	
-	
+
 	@Test
 	public void testSamlServiceTemplate() throws IOException {
 
