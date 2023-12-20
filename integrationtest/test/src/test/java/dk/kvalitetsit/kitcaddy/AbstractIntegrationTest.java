@@ -47,7 +47,6 @@ public class AbstractIntegrationTest {
 
 	public static Integer mongoPort;
 	public static String mongoHost;
-
 	
 	protected static GenericContainer<?> mongoContainer;
 	
@@ -59,6 +58,10 @@ public class AbstractIntegrationTest {
 		return (BrowserWebDriverContainer<?>) new BrowserWebDriverContainer<>().withCapabilities(new ChromeOptions()).withNetwork(n);
 	}
 
+	protected final static String getKitCaddyVersionUnderTest() {
+		return "dev";//"1.3.19";
+	}
+
 	@BeforeClass
 	public static void setupTestEnvironment() throws UnsupportedOperationException, IOException, InterruptedException {
 
@@ -68,7 +71,7 @@ public class AbstractIntegrationTest {
 
 			// Start the Mongo container
 			String mongoAlias = "mongo";
-			mongoContainer = new GenericContainer<>("mongo:3.7")
+			mongoContainer = new GenericContainer<>("mongo:7.0")
 					.withExposedPorts(27017)
 					.withNetwork(n)
 					.withReuse(false)
@@ -82,25 +85,16 @@ public class AbstractIntegrationTest {
 			// Start Keycloack service
 			File keycloakCertificate = getKeycloakContainer(n);
 
-			// Start MySQL for STS
-			MySQLContainer mysql = (MySQLContainer) new MySQLContainer("mysql:5.5")
-					.withDatabaseName("sts")
-					.withUsername("sts")
-					.withPassword("sts123")
-					.withNetwork(n)
-					.withExposedPorts(3306)
-					.waitingFor(Wait.forListeningPort())
-					.withNetworkAliases("stsdb");
-			mysql.start();
-
 			// Start STS
-			GenericContainer<?> stsBackend = new GenericContainer<>("kvalitetsit/sts:1.0.0")
+			GenericContainer<?> stsBackend = new GenericContainer<>("kvalitetsit/sts:1.0.34")
 					.withEnv("LOG_lEVEL", "INFO")
 
 					.withEnv("STS_ISSUER", "sts")
 					.withEnv("STS_TOKEN_LIFETIME", "2800")
 					.withEnv("STS_SUPPORTED_CLAIMS", TestConstants.STS_ALLOWED_CLAIM_A+","+TestConstants.STS_ALLOWED_CLAIM_B)
 					.withEnv("STS_COPY_ATTRIBUTES", "claim-a")
+					.withEnv("USE_DB", "false")
+					.withEnv("STS_TOKEN_VALID_FROM_OFFSET", "30")
 
 					// STS keys
 					.withClasspathResourceMapping("sts/sts.cer", "/certificates/sts.cer", BindMode.READ_ONLY)
@@ -112,12 +106,6 @@ public class AbstractIntegrationTest {
 					.withFileSystemBind(keycloakCertificate.getAbsolutePath(), "/trust/keycloak.cer")
 					.withEnv("STS_TRUST_CA_PATH", "/trust/*")
 
-					// Database
-					.withEnv("MYSQL_HOST", "stsdb")
-					.withEnv("MYSQL_DBNAME", "sts")
-					.withEnv("MYSQL_USERNAME", "sts")
-					.withEnv("MYSQL_PASSWORD", "sts123")
-
 					// Clients
 					.withClasspathResourceMapping("sts/clients.json", "/clients/clients.json", BindMode.READ_ONLY)
 					.withClasspathResourceMapping("wsc/wsc.cer", "/clients/wsc.cer", BindMode.READ_ONLY)
@@ -126,23 +114,12 @@ public class AbstractIntegrationTest {
 					.withExposedPorts(8181)
 					.withNetwork(n)
 					.waitingFor(Wait.forListeningPort())
-					.withNetworkAliases("sts-backend");
+					.withNetworkAliases("sts");
 			stsBackend.start();
 
-			GenericContainer<?> sts = new GenericContainer<>("kvalitetsit/sts-frontend:1.0.0")
-					.withEnv("SERVER_NAME", "sts")
-					.withEnv("STS_HOST", "sts-backend")
-					.withClasspathResourceMapping("sts/sts.cer", "/certificates/sts.cer", BindMode.READ_ONLY)
-					.withClasspathResourceMapping("sts/sts.pem", "/certificates/sts.pem", BindMode.READ_ONLY)
-					.withExposedPorts(443)
-					.withNetwork(n)
-					.waitingFor(Wait.forListeningPort())
-					.withNetworkAliases("sts");
-			sts.start();
-
 			// Echo Service (b:devackend service for test)
-			GenericContainer<?> echoService = new GenericContainer<>("mendhak/http-https-echo")
-					.withExposedPorts(80)
+			GenericContainer<?> echoService = new GenericContainer<>("mendhak/http-https-echo:31")
+					.withExposedPorts(8080)
 					.withNetwork(n)
 					.waitingFor(Wait.forListeningPort())	
 					.withNetworkAliases("echo");
@@ -152,7 +129,7 @@ public class AbstractIntegrationTest {
 	}
 
 	public static GenericContainer<?> getKitCaddyContainer(String alias, int port, Network n, String config) {
-		GenericContainer kitCaddy = getKitCaddyContainer("kvalitetsit/kitcaddy:dev", alias, port, n, config);
+		GenericContainer kitCaddy = getKitCaddyContainer("kvalitetsit/kitcaddy:"+getKitCaddyVersionUnderTest(), alias, port, n, config);
 		return kitCaddy;
 	}
 
