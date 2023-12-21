@@ -181,10 +181,9 @@ spec:
           ports:
             - name: container-port
               containerPort: {{ .Values.deployment.containerPort }}
-
-          {{- if or (.Values.deployment.configMapMountPath) (.Values.deployment.extraVolumeMounts) }}
           volumeMounts:
-          {{- end }}
+            - mountPath: /tmp
+              name: tmp
           {{- if (.Values.deployment.configMapMountPath) }}
             - mountPath: {{ .Values.deployment.configMapMountPath }}
               name: caddy-config
@@ -280,6 +279,8 @@ spec:
       {{- end }}
 
       volumes:
+        - emptyDir: {}
+          name: tmp
         - configMap:
             name: {{ include "kitcaddy.fullname" . }}-config
           name: caddy-config
