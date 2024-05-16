@@ -23,11 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import org.testcontainers.containers.BindMode;
-import org.testcontainers.containers.BrowserWebDriverContainer;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.MySQLContainer;
-import org.testcontainers.containers.Network;
+import org.testcontainers.containers.*;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
@@ -158,18 +154,18 @@ public class AbstractIntegrationTest {
 		return kitCaddyContainer;						
 	}
 
-	private static File getKeycloakContainer(Network n) throws IOException {
-		GenericContainer<?> keycloackContainer = new GenericContainer<>("jboss/keycloak:8.0.1")
-				.withClasspathResourceMapping("keycloak/test-realm.json", "/importrealms/realm-test.json", BindMode.READ_ONLY)
-				.withEnv("KEYCLOAK_USER", "kit")
-				.withEnv("KEYCLOAK_PASSWORD", "Test1234")
-				.withEnv("KEYCLOAK_LOGLEVEL", "DEBUG")
-				.withEnv("KEYCLOAK_IMPORT", "/importrealms/realm-test.json")
+	private static File getKeycloakContainer(Network n) throws IOException, InterruptedException {
+		GenericContainer<?> keycloackContainer = new GenericContainer<>("quay.io/keycloak/keycloak:23.0.7")
+				.withClasspathResourceMapping("keycloak/test-realm.json", "/opt/keycloak/data/import/realm-test.json", BindMode.READ_ONLY)
+				.withEnv("KEYCLOAK_ADMIN", "kit")
+				.withEnv("KEYCLOAK_ADMIN_PASSWORD", "Test1234")
+				.withEnv("KEYCLOAK_LOG_LEVEL", "DEBUG")
+				//.withEnv("KEYCLOAK_IMPORT", "/importrealms/realm-test.json")
+				.withCommand("start-dev --import-realm")
 				.withNetwork(n)
 				.withNetworkAliases("keycloak")
 				.withExposedPorts(8080)
-				.waitingFor(Wait.forHttp("/auth/realms/test/protocol/saml/descriptor").withStartupTimeout(Duration.ofMinutes(3)));
-
+				.waitingFor(Wait.forHttp("/realms/test/protocol/saml/descriptor").withStartupTimeout(Duration.ofMinutes(3)));
 		keycloackContainer.start();
 		logContainerOutput(keycloackContainer, keycloakLogger);
 		keycloakPort = keycloackContainer.getMappedPort(8080);
@@ -177,11 +173,11 @@ public class AbstractIntegrationTest {
 
 		// Find the IDP certificate from keycloak and save it to temporary file for use in trust
 		RestTemplate restTemplate = new RestTemplate();
-		ResponseEntity<String> idpMetadata = restTemplate.getForEntity("http://"+keycloackHost+":"+keycloakPort+"/auth/realms/test/protocol/saml/descriptor", String.class);
+		ResponseEntity<String> idpMetadata = restTemplate.getForEntity("http://"+keycloackHost+":"+keycloakPort+"/realms/test/protocol/saml/descriptor", String.class);
 		String metadata = idpMetadata.getBody();
 
-		final String TAG_CERTIFICATE_START = "<dsig:X509Certificate>";
-		final String TAG_CERTIFICATE_END = "</dsig:X509Certificate>";
+		final String TAG_CERTIFICATE_START = "<ds:X509Certificate>";
+		final String TAG_CERTIFICATE_END = "</ds:X509Certificate>";
 		int startIndex = metadata.indexOf(TAG_CERTIFICATE_START);
 		int endIndex = metadata.indexOf(TAG_CERTIFICATE_END);
 		String certificateContent = metadata.substring(startIndex + TAG_CERTIFICATE_START.length(), endIndex);
@@ -221,7 +217,7 @@ public class AbstractIntegrationTest {
 		// Do create user
 		HttpHeaders userheaders = getKeycloakApiHeaders(accessToken);
 		HttpEntity<User> requestUser = new HttpEntity<User>(user, userheaders);
-		ResponseEntity<String> result = restTemplate.postForEntity(appendToKeycloakHostAndPort("/auth/admin/realms/test/users"), requestUser, String.class);
+		ResponseEntity<String> result = restTemplate.postForEntity(appendToKeycloakHostAndPort("/admin/realms/test/users"), requestUser, String.class);
 		if (HttpStatus.CREATED != result.getStatusCode()) {
 			throw new RuntimeException("User not created");
 		}
@@ -245,7 +241,7 @@ public class AbstractIntegrationTest {
 		map.add("password", "Test1234");
 		map.add("grant_type", "password");
 		HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
-		ResponseEntity<String> response = restTemplate.postForEntity(appendToKeycloakHostAndPort("/auth/realms/master/protocol/openid-connect/token"), request, String.class);
+		ResponseEntity<String> response = restTemplate.postForEntity(appendToKeycloakHostAndPort("/realms/master/protocol/openid-connect/token"), request, String.class);
 		String authBody = response.getBody();
 		JSONObject authJson = new JSONObject(authBody);
 		String accessToken = authJson.getString("access_token");
