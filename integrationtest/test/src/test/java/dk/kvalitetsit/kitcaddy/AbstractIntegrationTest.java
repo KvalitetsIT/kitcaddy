@@ -148,7 +148,7 @@ public class AbstractIntegrationTest {
 				.withClasspathResourceMapping("frontend/frontend.cer", "/trust/frontend.cer", BindMode.READ_ONLY)
 
 				.withClasspathResourceMapping(config, "/configs/config.json", BindMode.READ_ONLY)
-				.withCommand("-config", "/configs/config.json")
+				.withCommand("--config", "/configs/config.json")
 				.waitingFor(Wait.forLogMessage(".*serving initial configuration.*\\n", 1))
 				.withNetworkAliases(alias);
 		return kitCaddyContainer;						
