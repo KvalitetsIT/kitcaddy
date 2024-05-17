@@ -114,7 +114,7 @@ spec:
               drop:
                 - ALL
           args:
-            - -config
+            - --config
             - /config/config.json
           env: []
           image: "{{ .Values.kitcaddy.image.repository }}:{{ .Values.kitcaddy.image.tag | default .Chart.AppVersion }}"
