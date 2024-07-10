@@ -10,13 +10,89 @@ spec:
       {{- include "kitcaddy.selectorLabels" . | nindent 6 }}
   policyTypes:
     - Ingress
+    - Egress
   ingress:
-    - ports:
-        - port: 80 #KitCaddy default
+  - ports:
+      - port: 80 #KitCaddy default
+        protocol: TCP
+  {{- range $key, $value := .Values.netpol.ingress }}
+  #  {{ $key }}
+  - from:
+    {{- if ($value.namespaceSelector) }}
+    - namespaceSelector:
+        matchLabels:
+    {{- end }}
+          {{- range $netpolKey, $netpolValue := $value.namespaceSelector}}
+          {{$netpolKey}}: {{$netpolValue}}
+          {{- end }}
+      {{- if ($value.podSelector) }}
+      podSelector:
+        matchLabels:
+      {{- end }}
+          {{- range $netpolKey, $netpolValue := $value.podSelector }}
+          {{$netpolKey}}: {{$netpolValue}}
+          {{- end }}
+    {{- if ($value.ipBlock) }}
+    - ipBlock:
+        cidr: {{ $value.ipBlock }}
+    {{- end }}
+    {{- if ($value.ports) }}
+    ports:
+    {{- end }}
+      {{- range $netpolKey, $netpolValue := $value.ports }}
+      - protocol: {{$netpolValue}}
+        port: {{$netpolKey}}
+      {{- end }}
+  {{- end }}
+  {{- if (.Values.netpol.egress) }}
+  egress:
+  {{- end }}
+  {{- range $key, $value := .Values.netpol.egress }}
+  #  {{ $key }}
+  - to:
+      {{- if ($value.namespaceSelector) }}
+    - namespaceSelector:
+        matchLabels:
+      {{- end }}
+          {{- range $netpolKey, $netpolValue := $value.namespaceSelector }}
+          {{$netpolKey}}: {{$netpolValue}}
+          {{- end }}
+      {{- if ($value.podSelector) }}
+      podSelector:
+        matchLabels:
+      {{- end }}
+          {{- range $netpolKey, $netpolValue := $value.podSelector }}
+          {{$netpolKey}}: {{$netpolValue}}
+          {{- end }}
+    {{- if ($value.ipBlock) }}
+    - ipBlock:
+        cidr: {{ $value.ipBlock }}
+    {{- end }}
+    {{- if ($value.ports) }}
+    ports:
+    {{- end }}
+      {{- range $netpolKey, $netpolValue := $value.ports }}
+      - protocol: {{$netpolValue}}
+        port: {{$netpolKey}}
+      {{- end }}
+  {{- end }}
+{{- end }}
+---
+{{- if .Values.netpol.allowLetsEncrypt }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "kitcaddy.fullname" . }}-lets-encrypt
+  namespace: {{ .Values.namespace | default "default" }}
+spec:
+  podSelector:
+    matchLabels:
+      acme.cert-manager.io/http01-solver: 'true'
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+      ports:
+        - port: 8089
           protocol: TCP
-        {{- range $key, $value := .Values.kitcaddy.extraPorts }}
-        - port: {{ $value }}
-          protocol: TCP
-        {{- end }}
-
 {{- end }}
