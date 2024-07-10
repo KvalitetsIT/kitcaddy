@@ -26,7 +26,7 @@ require (
 	github.com/alecthomas/chroma/v2 v2.9.1 // indirect
 	github.com/antlr/antlr4/runtime/Go/antlr/v4 v4.0.0-20230305170008-8188dc5388df // indirect
 	github.com/aryann/difflib v0.0.0-20210328193216-ff5ff6dc229b // indirect
-	github.com/beevik/etree v1.1.0 // indirect
+	github.com/beevik/etree v1.2.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/caddyserver/certmagic v0.20.0 // indirect
 	github.com/cenkalti/backoff/v4 v4.2.1 // indirect
@@ -72,12 +72,13 @@ require (
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
 	github.com/jackc/pgtype v1.14.0 // indirect
 	github.com/jackc/pgx/v4 v4.18.0 // indirect
-	github.com/jonboulle/clockwork v0.3.0 // indirect
+	github.com/jonboulle/clockwork v0.4.0 // indirect
 	github.com/klauspost/compress v1.17.0 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.5 // indirect
 	github.com/libdns/libdns v0.2.1 // indirect
 	github.com/manifoldco/promptui v0.9.0 // indirect
 	github.com/mastercactapus/proxyprotocol v0.0.4 // indirect
+	github.com/mattermost/xml-roundtrip-validator v0.1.0 // indirect
 	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/mattn/go-isatty v0.0.16 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.4 // indirect
@@ -97,7 +98,7 @@ require (
 	github.com/quic-go/quic-go v0.40.0 // indirect
 	github.com/rs/xid v1.5.0 // indirect
 	github.com/russellhaering/gosaml2 v0.6.0 // indirect
-	github.com/russellhaering/goxmldsig v1.1.0 // indirect
+	github.com/russellhaering/goxmldsig v1.4.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/shopspring/decimal v1.2.0 // indirect
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
@@ -161,6 +162,6 @@ require (
 	howett.net/plist v1.0.0 // indirect
 )
 
-replace github.com/russellhaering/goxmldsig => github.com/evtr/goxmldsig v0.0.0-20190907195011-53d9398322c5
+replace github.com/russellhaering/goxmldsig => github.com/KvalitetsIT/goxmldsig v0.0.0-20240710093049-ea14fa9b0ce2
 
-replace github.com/russellhaering/gosaml2 => github.com/KvalitetsIT/gosaml2 v0.0.0-20201030140015-1552cb4e4bec
+replace github.com/russellhaering/gosaml2 => github.com/KvalitetsIT/gosaml2 v0.0.0-20240710095931-91671f7592f8
