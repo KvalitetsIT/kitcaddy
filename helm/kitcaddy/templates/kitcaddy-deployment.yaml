@@ -117,6 +117,26 @@ spec:
             - -config
             - /config/config.json
           env: []
+          startupProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /metrics
+              port: 80
+              scheme: HTTP
+            initialDelaySeconds: 50
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 1
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /metrics
+              port: 80
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 1
           image: "{{ .Values.kitcaddy.image.repository }}:{{ .Values.kitcaddy.image.tag | default .Chart.AppVersion }}"
           ports:
             - containerPort: 80
