@@ -120,8 +120,8 @@ spec:
           startupProbe:
             failureThreshold: 3
             httpGet:
-              path: /metrics
-              port: 80
+              path: {{ if and .Values.kitcaddy .Values.kitcaddy.startupProbe }}{{ .Values.kitcaddy.startupProbe.path | default "/metrics" }}{{ else }}/metrics{{ end }}
+              port: {{ if and .Values.kitcaddy .Values.kitcaddy.startupProbe }}{{ .Values.kitcaddy.startupProbe.port | default 80 }}{{ else }}80{{ end }}
               scheme: HTTP
             initialDelaySeconds: 50
             periodSeconds: 5
@@ -130,8 +130,8 @@ spec:
           readinessProbe:
             failureThreshold: 3
             httpGet:
-              path: /metrics
-              port: 80
+              path: {{ if and .Values.kitcaddy .Values.kitcaddy.readinessProbe }}{{ .Values.kitcaddy.readinessProbe.path | default "/metrics" }}{{ else }}/metrics{{ end }}
+              port: {{ if and .Values.kitcaddy .Values.kitcaddy.readinessProbe }}{{ .Values.kitcaddy.readinessProbe.port | default 80 }}{{ else }}80{{ end }}
               scheme: HTTP
             initialDelaySeconds: 5
             periodSeconds: 5
