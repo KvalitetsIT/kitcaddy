@@ -20,7 +20,12 @@ kitcaddy:
     disabled: true
   image:
     repository: kvalitetsit/kitcaddy
-
+  startupProbe:
+    path: /metrics
+    port: 80
+  readinessProbe:
+    path: /metrics
+    port: 80
   resources:
     limits:
      cpu: 100m
