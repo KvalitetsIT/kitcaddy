@@ -67,7 +67,7 @@ public class AllInOneExpiryIntegrationTest extends AbstractAllInOneIT {
 
 		// Then
 		String title = responseAfterExpiry.getWebDriver().getTitle();
-		Assert.assertEquals("Expected the login page of keycloak after expiry of saml session", "Log in to test", title);
+		Assert.assertEquals("Expected the login page of keycloak after expiry of saml session", "Sign in to test", title);
 	}
 
 	@Test

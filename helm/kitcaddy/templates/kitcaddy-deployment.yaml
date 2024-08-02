@@ -114,7 +114,7 @@ spec:
               drop:
                 - ALL
           args:
-            - -config
+            - --config
             - /config/config.json
           env: []
           startupProbe:
