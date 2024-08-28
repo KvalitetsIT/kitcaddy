@@ -21,6 +21,9 @@ spec:
       {{- end }}
       labels:
         {{- include "documentation.selectorLabels" . | nindent 8 }}
+        {{- if .Values.docPodLabels }}
+        {{- toYaml .Values.docPodLabels | nindent 8 }}
+        {{- end }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -52,6 +55,10 @@ spec:
           ports:
             - name: container-port
               containerPort: {{ .Values.docDeployment.containerPort }}
+            {{- range $name, $port := .Values.docDeployment.extraContainerPort }}
+            - name: {{ $name }}
+              containerPort: {{ $port }}
+            {{- end }}
           {{- if (.Values.docDeployment.livenessProbe) }}
           livenessProbe:
             {{- toYaml .Values.docDeployment.readinessProbe | nindent 12 }}
