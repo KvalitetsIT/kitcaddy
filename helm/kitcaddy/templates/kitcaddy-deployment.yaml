@@ -121,15 +121,15 @@ spec:
             - /config/config.json
           env: []
           startupProbe:
-            failureThreshold: 3
+            failureThreshold: {{ if and .Values.kitcaddy .Values.kitcaddy.startupProbe }}{{ .Values.kitcaddy.startupProbe.failureThreshold | default 5 }}{{ else }}5{{ end }}
             httpGet:
               path: {{ if and .Values.kitcaddy .Values.kitcaddy.startupProbe }}{{ .Values.kitcaddy.startupProbe.path | default "/metrics" }}{{ else }}/metrics{{ end }}
               port: {{ if and .Values.kitcaddy .Values.kitcaddy.startupProbe }}{{ .Values.kitcaddy.startupProbe.port | default 80 }}{{ else }}80{{ end }}
               scheme: HTTP
-            initialDelaySeconds: 50
-            periodSeconds: 5
+            initialDelaySeconds: {{ if and .Values.kitcaddy .Values.kitcaddy.startupProbe }}{{ .Values.kitcaddy.startupProbe.initialDelaySeconds | default 50 }}{{ else }}50{{ end }}
+            periodSeconds: 10
             successThreshold: 1
-            timeoutSeconds: 1
+            timeoutSeconds: 5
           readinessProbe:
             failureThreshold: 3
             httpGet:
