@@ -120,26 +120,14 @@ spec:
             - -config
             - /config/config.json
           env: []
+          {{- if .Values.kitcaddy.startupProbe }}
           startupProbe:
-            failureThreshold: {{ if and .Values.kitcaddy .Values.kitcaddy.startupProbe }}{{ .Values.kitcaddy.startupProbe.failureThreshold | default 5 }}{{ else }}5{{ end }}
-            httpGet:
-              path: {{ if and .Values.kitcaddy .Values.kitcaddy.startupProbe }}{{ .Values.kitcaddy.startupProbe.path | default "/metrics" }}{{ else }}/metrics{{ end }}
-              port: {{ if and .Values.kitcaddy .Values.kitcaddy.startupProbe }}{{ .Values.kitcaddy.startupProbe.port | default 80 }}{{ else }}80{{ end }}
-              scheme: HTTP
-            initialDelaySeconds: {{ if and .Values.kitcaddy .Values.kitcaddy.startupProbe }}{{ .Values.kitcaddy.startupProbe.initialDelaySeconds | default 50 }}{{ else }}50{{ end }}
-            periodSeconds: 10
-            successThreshold: 1
-            timeoutSeconds: 5
+            {{- toYaml .Values.kitcaddy.startupProbe | nindent 12 }}
+          {{- end }}
+          {{- if .Values.kitcaddy.readinessProbe }}
           readinessProbe:
-            failureThreshold: 3
-            httpGet:
-              path: {{ if and .Values.kitcaddy .Values.kitcaddy.readinessProbe }}{{ .Values.kitcaddy.readinessProbe.path | default "/metrics" }}{{ else }}/metrics{{ end }}
-              port: {{ if and .Values.kitcaddy .Values.kitcaddy.readinessProbe }}{{ .Values.kitcaddy.readinessProbe.port | default 80 }}{{ else }}80{{ end }}
-              scheme: HTTP
-            initialDelaySeconds: 5
-            periodSeconds: 5
-            successThreshold: 1
-            timeoutSeconds: 1
+            {{- toYaml .Values.kitcaddy.readinessProbe | nindent 12 }}
+          {{- end }}
           image: "{{ .Values.kitcaddy.image.repository }}:{{ .Values.kitcaddy.image.tag | default .Chart.AppVersion }}"
           ports:
             - containerPort: 80

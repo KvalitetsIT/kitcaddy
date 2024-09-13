@@ -15,17 +15,31 @@ netpol:
   enabled: true
 
 kitcaddy:
+  startupProbe:
+    failureThreshold: 5
+    httpGet:
+      path: /metrics
+      port: 80
+      scheme: HTTP
+    initialDelaySeconds: 50
+    periodSeconds: 10
+    successThreshold: 1
+    timeoutSeconds: 5
+  readinessProbe:
+    failureThreshold: 3
+    httpGet:
+      path: /metrics
+      port: 80
+      scheme: HTTP
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    successThreshold: 1
+    timeoutSeconds: 1
   logLevel: INFO
   admin:
     disabled: true
   image:
     repository: kvalitetsit/kitcaddy
-  startupProbe:
-    path: /metrics
-    port: 80
-  readinessProbe:
-    path: /metrics
-    port: 80
   resources:
     limits:
      cpu: 100m
