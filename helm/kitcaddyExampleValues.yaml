@@ -77,6 +77,18 @@ serviceAccount:
 deploymentStrategy: Recreate
 
 kitcaddy:
+  startupProbe: null
+  readinessProbe: 
+    httpGet:
+      path: /metrics
+      port: 80
+      scheme: HTTP
+    initialDelaySeconds: 5
+    failureThreshold: 3
+    periodSeconds: 5
+    successThreshold: 1
+    timeoutSeconds: 1
+    
   secretName: sts-public-cert
   extraVolumeMounts:
     sts-public-cert:
