@@ -174,7 +174,7 @@ public class SamlServiceProviderIntegrationTest extends AbstractBrowserBasedInte
 		String jsonReturned = afterLoginResult.substring(afterLoginResult.indexOf("{"), afterLoginResult.lastIndexOf("}") + 1);
 		JsonNode responseParsed = new ObjectMapper().readValue(jsonReturned, JsonNode.class);
 		Assert.assertNotNull(responseParsed);
-		Assert.assertEquals("Expected to be returned to the external url of the service...which again should redirect us to the login page", "Log in to test", afterLogoutResultTitle);
+		Assert.assertEquals("Expected to be returned to the external url of the service...which again should redirect us to the login page", "Sign in to test", afterLogoutResultTitle);
 	}
 
 	@Test
@@ -233,7 +233,7 @@ public class SamlServiceProviderIntegrationTest extends AbstractBrowserBasedInte
 		// Then
 		Assert.assertTrue("Expected to be redirected to the pretty logout page", afterLogoutResult.contains("Congratulations with your logout (123456789)!"));
 		Assert.assertTrue("Single Logon to other app failed", afterSingleSignOnHopefully.contains("\"host\": \"other:8787\""));
-		Assert.assertTrue("SLO failed for othercontainer", otherAfterSlo.contains("<title>Log in to test</title>"));
+		Assert.assertTrue("SLO failed for othercontainer", otherAfterSlo.contains("<title>Sign in to test</title>"));
 	}
 
 	@Test
@@ -316,9 +316,9 @@ public class SamlServiceProviderIntegrationTest extends AbstractBrowserBasedInte
 		String otherAfterSlo = webdriver.getPageSource();
 
 		// Then
-		Assert.assertTrue("Expected to be redirected to login page", afterLogoutResult.contains("<title>Log in to test</title>"));
+		Assert.assertTrue("Expected to be redirected to login page", afterLogoutResult.contains("<title>Sign in to test</title>"));
 		Assert.assertTrue("Single Logon to other app failed", afterSingleSignOnHopefully.contains("\"host\": \"other:8787\""));
-		Assert.assertTrue("SLO failed for saml container", otherAfterSlo.contains("<title>Log in to test</title>"));
+		Assert.assertTrue("SLO failed for saml container", otherAfterSlo.contains("<title>Sign in to test</title>"));
 	}
 
 	public String getSpServiceUrl(GenericContainer<?> samlContainer) {

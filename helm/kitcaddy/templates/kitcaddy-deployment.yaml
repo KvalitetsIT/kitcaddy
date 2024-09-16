@@ -117,7 +117,7 @@ spec:
               drop:
                 - ALL
           args:
-            - -config
+            - --config
             - /config/config.json
           env: []
           {{- if .Values.kitcaddy.startupProbe }}
