@@ -39,10 +39,16 @@ extraConfigMapJson:
       }
     ]
 
+docPodLabels: 
+  DepLabelDoc: 3
+
 podAnnotations:
   prometheus.io/path: /history/actuator/prometheus
   prometheus.io/port: "8080"
   prometheus.io/scrape: "true"
+
+podLabels: 
+  DepLabel: 1
 
 imagePullSecrets:
   - name: kit4medcom
@@ -71,6 +77,18 @@ serviceAccount:
 deploymentStrategy: Recreate
 
 kitcaddy:
+  startupProbe: null
+  readinessProbe: 
+    httpGet:
+      path: /metrics
+      port: 80
+      scheme: HTTP
+    initialDelaySeconds: 5
+    failureThreshold: 3
+    periodSeconds: 5
+    successThreshold: 1
+    timeoutSeconds: 1
+    
   secretName: sts-public-cert
   extraVolumeMounts:
     sts-public-cert:
@@ -266,7 +284,8 @@ deployment:
 docDeployment:
   enabled: true
   containerPort: 8080
-
+  extraContainerPort:
+    http: 8080
   readinessProbe:
     httpGet:
       path: /
