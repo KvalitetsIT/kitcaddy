@@ -124,6 +124,10 @@ spec:
           startupProbe:
             {{- toYaml .Values.kitcaddy.startupProbe | nindent 12 }}
           {{- end }}
+          {{- if .Values.kitcaddy.livenessProbe }}
+          livenessProbe:
+            {{- toYaml .Values.kitcaddy.livenessProbe | nindent 12 }}
+          {{- end }}
           {{- if .Values.kitcaddy.readinessProbe }}
           readinessProbe:
             {{- toYaml .Values.kitcaddy.readinessProbe | nindent 12 }}
