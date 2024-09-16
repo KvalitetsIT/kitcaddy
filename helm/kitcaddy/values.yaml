@@ -16,17 +16,16 @@ netpol:
 
 kitcaddy:
   startupProbe:
-    failureThreshold: 5
     httpGet:
       path: /metrics
       port: 80
       scheme: HTTP
-    initialDelaySeconds: 50
-    periodSeconds: 10
+    failureThreshold: 5
+    initialDelaySeconds: 5
+    periodSeconds: 5
     successThreshold: 1
     timeoutSeconds: 5
   readinessProbe:
-    failureThreshold: 3
     httpGet:
       path: /metrics
       port: 80
@@ -34,6 +33,7 @@ kitcaddy:
     initialDelaySeconds: 5
     periodSeconds: 5
     successThreshold: 1
+    failureThreshold: 3
     timeoutSeconds: 1
   logLevel: INFO
   admin:
