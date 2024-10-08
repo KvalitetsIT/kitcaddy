@@ -96,6 +96,10 @@ spec:
           ports:
           - containerPort: {{ .Values.sidecar.containerPort }}
             name: sidecar-port
+          {{- range $name, $port := .Values.sidecar.extraPorts }}
+          - name: {{ $name }}
+            containerPort: {{ $port }}
+          {{- end }}
           {{- if (.Values.sidecar.extraVolumeMounts) }}
           volumeMounts:
           {{- end }}
@@ -199,7 +203,7 @@ spec:
           ports:
             - name: container-port
               containerPort: {{ .Values.deployment.containerPort }}
-            {{- range $name, $port := .Values.deployment.extraContainerPort }}
+            {{- range $name, $port := .Values.deployment.extraPorts }}
             - name: {{ $name }}
               containerPort: {{ $port }}
             {{- end }}

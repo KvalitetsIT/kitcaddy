@@ -58,7 +58,7 @@ spec:
           ports:
             - name: container-port
               containerPort: {{ .Values.docDeployment.containerPort }}
-            {{- range $name, $port := .Values.docDeployment.extraContainerPort }}
+            {{- range $name, $port := .Values.docDeployment.extraPorts }}
             - name: {{ $name }}
               containerPort: {{ $port }}
             {{- end }}

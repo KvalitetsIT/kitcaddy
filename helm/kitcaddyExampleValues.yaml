@@ -231,7 +231,7 @@ deployment:
     - 1234
     - testest
   configMapMountPath: /config
-  extraContainerPort:
+  extraPorts:
     http: 999
   extraVolumeMounts:
     test123:
@@ -286,7 +286,7 @@ deployment:
 docDeployment:
   enabled: true
   containerPort: 8080
-  extraContainerPort:
+  extraPorts:
     http: 8080
   readinessProbe:
     httpGet:
