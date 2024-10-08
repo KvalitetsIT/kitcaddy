@@ -231,6 +231,8 @@ deployment:
     - 1234
     - testest
   configMapMountPath: /config
+  extraContainerPort:
+    http: 999
   extraVolumeMounts:
     test123:
       mountPath: /123

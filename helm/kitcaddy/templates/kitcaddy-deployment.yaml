@@ -199,6 +199,10 @@ spec:
           ports:
             - name: container-port
               containerPort: {{ .Values.deployment.containerPort }}
+            {{- range $name, $port := .Values.deployment.extraContainerPort }}
+            - name: {{ $name }}
+              containerPort: {{ $port }}
+            {{- end }}
           volumeMounts:
             - mountPath: /tmp
               name: tmp
