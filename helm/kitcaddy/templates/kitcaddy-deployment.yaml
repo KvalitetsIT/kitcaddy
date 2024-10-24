@@ -100,6 +100,10 @@ spec:
           - name: {{ $name }}
             containerPort: {{ $port }}
           {{- end }}
+          {{- range .Values.kitcaddy.extraPortsList }}
+          - containerPort: {{ .port }}
+            name: {{ .name }}
+          {{- end }}
           {{- if (.Values.sidecar.extraVolumeMounts) }}
           volumeMounts:
           {{- end }}
@@ -146,6 +150,10 @@ spec:
             {{- range $key, $value := .Values.kitcaddy.extraPorts }}
             - containerPort: {{ $value }}
               name: {{ $key }}
+            {{- end }}
+            {{- range .Values.kitcaddy.extraPortsList }}
+            - containerPort: {{ .port }}
+              name: {{ .name }}
             {{- end }}
           resources:
             {{- toYaml .Values.kitcaddy.resources | nindent 12 }}
@@ -206,6 +214,10 @@ spec:
             {{- range $name, $port := .Values.deployment.extraPorts }}
             - name: {{ $name }}
               containerPort: {{ $port }}
+            {{- end }}
+            {{- range .Values.kitcaddy.extraPortsList }}
+            - containerPort: {{ .port }}
+              name: {{ .name }}
             {{- end }}
           volumeMounts:
             - mountPath: /tmp
