@@ -72,10 +72,4 @@ spec:
           {{- end }}
           resources:
             {{- toYaml .Values.docDeployment.resources | nindent 12 }}
-          volumeMounts:
-            - name: kit-volume
-              mountPath: /kit
-      volumes:
-        - name: kit-volume
-          emptyDir: {}
 {{- end -}}
