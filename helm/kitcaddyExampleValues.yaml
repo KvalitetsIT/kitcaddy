@@ -198,6 +198,7 @@ kitcaddy:
           upstream:
             host: localhost
             port: 8080
+            xForwardedProto: "https"
             clientTls:
               insecureSkipVerify: true
               clientCertificateFile: WSC_CLIENT_CERTIFICATE_FILE
