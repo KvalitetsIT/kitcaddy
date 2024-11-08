@@ -177,12 +177,17 @@
         "dial": "{{ .upstream.host }}:{{ .upstream.port }}"
       }
     ]
-    {{- if (.wsc) }}
+    {{- if or (.wsc) .upstream.xForwardedProto }}
     ,
     "headers": {
       "request": {
         "set": {
+          {{- if .upstream.xForwardedProto }}
+          "X-Forwarded-Proto": ["{{ .upstream.xForwardedProto }}"],
+          {{- end }}
+          {{- if (.wsc) }}
           "Host": ["{{ .upstream.host }}:{{ .upstream.port }}"]
+          {{- end }}
         }
       }
     }
