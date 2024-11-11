@@ -183,8 +183,11 @@
       "request": {
         "set": {
           {{- if .upstream.xForwardedProto }}
-          "X-Forwarded-Proto": ["{{ .upstream.xForwardedProto }}"],
+          "X-Forwarded-Proto": ["{{ .upstream.xForwardedProto }}"]
           {{- end }}
+          {{- if and .wsc .upstream.xForwardedProto }}
+          ,
+          {{end}}
           {{- if (.wsc) }}
           "Host": ["{{ .upstream.host }}:{{ .upstream.port }}"]
           {{- end }}
