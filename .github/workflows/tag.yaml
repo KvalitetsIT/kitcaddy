@@ -7,11 +7,11 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     steps:
       # Checkout source code
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Get github tag
         id: tag
@@ -21,7 +21,7 @@ jobs:
 
       # Login to docker hub using secrets in GitHub.
       - name: Login to docker
-        uses: docker/login-action@v1
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_HUB_USER }}
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
