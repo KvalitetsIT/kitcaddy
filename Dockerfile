@@ -1,5 +1,5 @@
 #FROM golang:1.16.9 as builder
-FROM golang:1.22.3-alpine as builder
+FROM golang:1.24.3-alpine as builder
 #non-root
 RUN addgroup --gid 11000 appuser && \
     adduser -G appuser --uid 11000 appuser -D
