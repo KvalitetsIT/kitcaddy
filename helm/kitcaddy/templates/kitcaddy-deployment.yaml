@@ -209,7 +209,7 @@ spec:
             {{- end }}
             {{- end }}
           ports:
-            - name: {{ .Values.docDeployment.containerPortName | default "container-port" }}
+            - name: {{ .Values.deployment.containerPortName | default "container-port" }}
               containerPort: {{ .Values.deployment.containerPort }}
             {{- range $name, $port := .Values.deployment.extraPorts }}
             - name: {{ $name }}
