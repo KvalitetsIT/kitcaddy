@@ -56,7 +56,7 @@ spec:
           env:
             {{- toYaml .Values.docDeployment.env | nindent 12 }}
           ports:
-            - name: container-port
+            - name: {{ .Values.docDeployment.containerPortName | default "container-port" }}
               containerPort: {{ .Values.docDeployment.containerPort }}
             {{- range $name, $port := .Values.docDeployment.extraPorts }}
             - name: {{ $name }}

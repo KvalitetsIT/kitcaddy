@@ -146,7 +146,7 @@ spec:
           image: "{{ .Values.kitcaddy.image.repository }}:{{ .Values.kitcaddy.image.tag | default .Chart.AppVersion }}"
           ports:
             - containerPort: 80
-              name: proxy-port
+              name: {{ .Values.kitcaddy.containerPortName | default "proxy-port" }}
             {{- range $key, $value := .Values.kitcaddy.extraPorts }}
             - containerPort: {{ $value }}
               name: {{ $key }}
@@ -209,7 +209,7 @@ spec:
             {{- end }}
             {{- end }}
           ports:
-            - name: container-port
+            - name: {{ .Values.docDeployment.containerPortName | default "container-port" }}
               containerPort: {{ .Values.deployment.containerPort }}
             {{- range $name, $port := .Values.deployment.extraPorts }}
             - name: {{ $name }}
