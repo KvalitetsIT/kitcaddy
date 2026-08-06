@@ -1,6 +1,7 @@
 package dk.kvalitetsit.kitcaddy.test;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.UUID;
 import java.util.function.Predicate;
 
@@ -14,9 +15,12 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationContext;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.session.SessionRepository;
+import org.springframework.session.web.http.SessionRepositoryFilter;
 import org.testcontainers.containers.wait.strategy.Wait;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -138,14 +142,27 @@ public class AllInOneExpiryIntegrationTest extends AbstractAllInOneIT {
 				// We remove all sessions
 				Query query = new Query();
 				DeleteResult deleteResult = wscMongoTemplate.remove(query, TestConstants.WSC_MONGO_SESSION_COLLECTION);
-				if (!deleteResult.wasAcknowledged() || deleteResult.getDeletedCount() <= 0) {
-					Assert.assertTrue("No session deleted - test broken :-(", false);
+				if (!deleteResult.wasAcknowledged() || deleteResult.getDeletedCount() <= 0) {StringBuilder sb = new StringBuilder();
+					sb.append("===== AFTER LOGIN =====");
+					sb.append(System.lineSeparator());
+					sb.append("WSC database: " + wscMongoTemplate.getDb().getName());
+					sb.append(System.lineSeparator());
+					sb.append("WSC sessions: " + wscMongoTemplate.count(new Query(), TestConstants.WSC_MONGO_SESSION_COLLECTION));
+					sb.append(System.lineSeparator());
+					sb.append("WSP database: " + wspMongoTemplate.getDb().getName());
+					sb.append(System.lineSeparator());
+					sb.append("WSP sessions: " + wspMongoTemplate.count(new Query(), TestConstants.WSP_MONGO_SESSION_COLLECTION));
+					sb.append(System.lineSeparator());
+					sb.append("WSC collections: " + wscMongoTemplate.getCollectionNames());
+					sb.append(System.lineSeparator());
+					sb.append("WSP collections: " + wspMongoTemplate.getCollectionNames());
+					Assert.assertTrue("No session deleted - test broken :-(\n" + sb.toString(), false);
 				}
 			}
 		};
 
 		// When
-		Response responseAfterExpiry = resultAfterExpiry(expiry);		
+		Response responseAfterExpiry = resultAfterExpiry(expiry);
 
 		// Then
 		JsonNode responseJsonAfterExpiryParsed = parseJsonReturned(responseAfterExpiry.getWebDriver().getPageSource());
@@ -155,6 +172,29 @@ public class AllInOneExpiryIntegrationTest extends AbstractAllInOneIT {
 		String wspAuthorizationHeaderBeforeExpiry = ((TextNode) responseAfterExpiry.getResponseBeforeExpiry().get(TestConstants.ECHO_SERVICE_HTTP_HEADER_KEY).get(TestConstants.WSP_AUTHORIZATION_HEADERNAME)).textValue();
 		String wspAuthorizationHeaderAfterExpiry = ((TextNode) responseJsonAfterExpiryParsed.get(TestConstants.ECHO_SERVICE_HTTP_HEADER_KEY).get(TestConstants.WSP_AUTHORIZATION_HEADERNAME)).textValue();
 		Assert.assertNotEquals("Expected a new session on the WSP - checking that the authorization header has changed", wspAuthorizationHeaderBeforeExpiry, wspAuthorizationHeaderAfterExpiry);
+	}
+	@Autowired
+	public ApplicationContext context;
+
+	@Test
+	public void checkSessionBeans() {
+		System.out.println("===== SESSION BEANS =====");
+
+		context.getBeansOfType(SessionRepository.class)
+				.forEach((name, bean) -> System.out.println(name + " -> " + bean.getClass().getName()));
+
+		System.out.println("===== SESSION FILTERS =====");
+
+		context.getBeansOfType(SessionRepositoryFilter.class)
+				.forEach((name, bean) -> System.out.println(name + " -> " + bean.getClass().getName()));
+
+		System.out.println("===== Others =====");
+		System.out.println("WSC database: " + wscMongoTemplate.getDb().getName());
+		System.out.println("WSC sessions: " + wscMongoTemplate.count(new Query(), TestConstants.WSC_MONGO_SESSION_COLLECTION));
+		System.out.println("WSP database: " + wspMongoTemplate.getDb().getName());
+		System.out.println("WSP sessions: " + wspMongoTemplate.count(new Query(), TestConstants.WSP_MONGO_SESSION_COLLECTION));
+		System.out.println("WSC collections: " + wscMongoTemplate.getCollectionNames());
+		System.out.println("WSP collections: " + wspMongoTemplate.getCollectionNames());
 	}
 
 	@Test
@@ -187,9 +227,11 @@ public class AllInOneExpiryIntegrationTest extends AbstractAllInOneIT {
 	}
 
 
-	private Response  resultAfterExpiry(Expiry expiry) throws JSONException  {
+	private Response resultAfterExpiry(Expiry expiry) throws JSONException  {
 		return resultAfterExpiry(expiry, true);
 	}
+	@Autowired
+	SessionRepository<?> sessionRepository;
 
 	private Response resultAfterExpiry(Expiry expiry, boolean removeKeyCloakCookiesBeforeExpiry) throws JSONException  {
 		// Perform login
@@ -201,6 +243,30 @@ public class AllInOneExpiryIntegrationTest extends AbstractAllInOneIT {
 
 		// Access protected ressource
 		JsonNode responseParsed = parseJsonReturned(resultBeforeExpiry);
+
+		String sessionId = responseParsed.get(TestConstants.ECHO_SERVICE_HTTP_HEADER_KEY).get(TestConstants.SESSION_HEADER_NAME).asText();
+		/*
+		System.out.println("===== SESSION DEBUG =====");
+		System.out.println("HTTP session ID: " + sessionId);
+		System.out.println("Browser cookies: " + webdriver.manage().getCookies());
+		System.out.println("Spring Session: " + sessionRepository.findById(sessionId));
+		System.out.println("WSC wscsessions count: " + wscMongoTemplate.count(new Query(), "wscsessions"));
+		System.out.println("WSC sessions count: " + wscMongoTemplate.count(new Query(), "sessions"));
+
+		System.out.println("===== AFTER LOGIN =====");
+		System.out.println("WSC database: " + wscMongoTemplate.getDb().getName());
+		System.out.println("WSC sessions: " + wscMongoTemplate.count(new Query(), TestConstants.WSC_MONGO_SESSION_COLLECTION));
+		System.out.println("WSP database: " + wspMongoTemplate.getDb().getName());
+		System.out.println("WSP sessions: " + wspMongoTemplate.count(new Query(), TestConstants.WSP_MONGO_SESSION_COLLECTION));
+		System.out.println("WSC collections: " + wscMongoTemplate.getCollectionNames());
+		System.out.println("WSP collections: " + wspMongoTemplate.getCollectionNames());
+
+		System.out.println("===== WSC COLLECTION CONTENTS =====");
+		System.out.println("wscsessions: " + wscMongoTemplate.findAll(org.bson.Document.class, "wscsessions"));
+		System.out.println("sessions: " + wscMongoTemplate.findAll(org.bson.Document.class, "sessions"));
+		*/
+
+
 
 		if (removeKeyCloakCookiesBeforeExpiry) {
 			// Make sure that we don't log automatically into keycloak on session expiry
