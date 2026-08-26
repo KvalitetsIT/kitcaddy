@@ -1,7 +1,8 @@
 package dk.kvalitetsit.kitcaddy.test;
 
-import org.junit.Rule;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 /**
  * 
@@ -10,6 +11,7 @@ import org.testcontainers.containers.GenericContainer;
  *    | oio idws wsc |    ->    | oio idws wsp |     ->     | echo service |
  *
  */
+@Testcontainers
 public class OioIdwsRestWscIntegrationTest extends AbstractOioIdwsRestWscIntegrationTest {
 
 	
@@ -21,10 +23,10 @@ public class OioIdwsRestWscIntegrationTest extends AbstractOioIdwsRestWscIntegra
 	private static final int WSP_SERVICE_PORT = 8443;
 	private static final String WSP_SERVICE_URL = WSP_SERVICE_HOST+":"+WSP_SERVICE_PORT;
 
-	@Rule
+	@Container
 	public GenericContainer<?> wsc = createWsc();
 
-	@Rule
+	@Container
 	public GenericContainer<?> wsp = createWsp();
 
 	public static GenericContainer<?> createWsc() {
@@ -37,6 +39,6 @@ public class OioIdwsRestWscIntegrationTest extends AbstractOioIdwsRestWscIntegra
 
 	@Override
 	public String getWscServiceUrl() {
-		return "http://"+wsc.getContainerIpAddress()+":"+wsc.getMappedPort(WSC_SERVICE_PORT);
+		return "http://"+ wsc.getHost() +":"+wsc.getMappedPort(WSC_SERVICE_PORT);
 	}
 }

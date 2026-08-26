@@ -32,19 +32,22 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-mongodb</artifactId>
 		</dependency>
+
 		<dependency>
-			<groupId>org.springframework.session</groupId>
-			<artifactId>spring-session-data-mongodb</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-testcontainers</artifactId>
 		</dependency>
+
+
 		<dependency>
-			<groupId>org.springframework.session</groupId>
-			<artifactId>spring-session-core</artifactId>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>testcontainers-junit-jupiter</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<!-- Browser UI -->
 		<dependency>
 			<groupId>org.testcontainers</groupId>
-			<artifactId>selenium</artifactId>
-			<version>1.19.8</version>
+			<artifactId>testcontainers-selenium</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

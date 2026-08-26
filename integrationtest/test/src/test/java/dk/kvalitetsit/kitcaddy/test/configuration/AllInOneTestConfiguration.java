@@ -1,5 +1,6 @@
 package dk.kvalitetsit.kitcaddy.test.configuration;
 
+import org.jspecify.annotations.NonNull;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -13,12 +14,8 @@ import com.mongodb.client.MongoClients;
 import dk.kvalitetsit.kitcaddy.AbstractIntegrationTest;
 import dk.kvalitetsit.kitcaddy.TestConstants;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
-import org.springframework.session.config.annotation.web.http.EnableSpringHttpSession;
-import org.springframework.session.data.mongo.config.annotation.web.http.EnableMongoHttpSession;
 
 @Configuration
-@EnableMongoHttpSession
-@EnableSpringHttpSession
 public class AllInOneTestConfiguration extends AbstractMongoClientConfiguration {
 
 	@Bean
@@ -44,6 +41,6 @@ public class AllInOneTestConfiguration extends AbstractMongoClientConfiguration 
 
 	@Bean
 	public MongoTemplate wspMongoTemplate(MappingMongoConverter converter) {
-		return new MongoTemplate( new SimpleMongoClientDatabaseFactory(mongoClient(), TestConstants.WSP_MONGO_DATABASE), converter);
+		return new MongoTemplate(new SimpleMongoClientDatabaseFactory(mongoClient(), TestConstants.WSP_MONGO_DATABASE), converter);
 	}
 }
