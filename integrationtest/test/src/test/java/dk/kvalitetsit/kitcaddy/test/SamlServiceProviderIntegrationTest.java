@@ -7,11 +7,10 @@ import java.util.Base64;
 import java.util.UUID;
 
 import org.json.JSONException;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.openqa.selenium.Cookie;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -20,27 +19,32 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.testcontainers.containers.BindMode;
-import org.testcontainers.containers.BrowserWebDriverContainer;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.selenium.BrowserWebDriverContainer;
 import org.testcontainers.containers.GenericContainer;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.TextNode;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import dk.kvalitetsit.kitcaddy.AbstractBrowserBasedIntegrationTest;
 import dk.kvalitetsit.kitcaddy.TestConstants;
+import org.testcontainers.junit.jupiter.Container;
+import tools.jackson.databind.node.StringNode;
 
 /**
  * 
  *    This testsetup
- * 
+ *
  *    | Webbrowser |    ->    | SAML-SP |    ->    | echoservice | 
  *    
  *                      ->    | otherSAML-SP |    ->    | echoservice | 
  *
  */
+@Testcontainers
 public class SamlServiceProviderIntegrationTest extends AbstractBrowserBasedIntegrationTest {
 
 	public static final String 	SAML_SP_HOST 	= "uiservice";
@@ -55,28 +59,28 @@ public class SamlServiceProviderIntegrationTest extends AbstractBrowserBasedInte
 	public static final int 	ENCRYPTED_SAML_SP_PORT 	= 8787;
 	public static final String 	ENCRYPTED_SP_URL 	= ENCRYPTED_SAML_SP_HOST+":"+ENCRYPTED_SAML_SP_PORT;
 
-	@Rule
-	public BrowserWebDriverContainer<?> chrome = createChrome();
+	@Container
+	public BrowserWebDriverContainer chrome = createChrome();
 
 	public GenericContainer<?> samlContainer;
 	public GenericContainer<?> otherSamlContainer;
 	public GenericContainer<?> encryptedSamlContainer;
 	
-	@After
+	@AfterEach
 	public void tearDown() {
 		if (samlContainer != null) {
 			samlContainer.stop();
 		}
 	}
 
-	@After
+	@AfterEach
 	public void tearDownOther() {
 		if (otherSamlContainer != null) {
 			otherSamlContainer.stop();
 		}
 	}
 
-	@After
+	@AfterEach
 	public void tearDownEncrypted() {
 		if (encryptedSamlContainer != null) {
 			encryptedSamlContainer.stop();
@@ -84,7 +88,7 @@ public class SamlServiceProviderIntegrationTest extends AbstractBrowserBasedInte
 	}
 
 	@Test
-	public void testGetSpMetadata() throws IOException {
+	public void testGetSpMetadata() {
 
 		// Given
 		samlContainer = getKitCaddyContainer(SAML_SP_HOST, SAML_SP_PORT, getDockerNetwork(), "samlserviceprovider/saml.config");
@@ -95,42 +99,42 @@ public class SamlServiceProviderIntegrationTest extends AbstractBrowserBasedInte
 		ResponseEntity<String> metadataResponse = restTemplate.getForEntity(metadataUrl, String.class);
 
 		// Then
-		Assert.assertNotNull(metadataResponse);
+		assertNotNull(metadataResponse);
 	}
 
 	@Test
-	public void testAccessProtectedRessouceCorrectUsernamePassword() throws JSONException, JsonMappingException, JsonProcessingException {
+	public void testAccessProtectedRessouceCorrectUsernamePassword() throws JSONException, JacksonException {
 
 		// Given
 		samlContainer = getKitCaddyContainer(SAML_SP_HOST, SAML_SP_PORT, getDockerNetwork(), "samlserviceprovider/saml.config");
 		samlContainer.start();
-		String username = "testabc"+UUID.randomUUID().toString();
+		String username = "testabc"+ UUID.randomUUID();
 		String password = "secret1234";
 		addUserToKeycloak(username, password);
-		RemoteWebDriver webdriver = chrome.getWebDriver();
+		RemoteWebDriver webdriver = new RemoteWebDriver(chrome.getSeleniumAddress(), new ChromeOptions());
 
 		// When
 		String result = doLoginFlow(webdriver, "http://"+SAML_SP_URL+"/echo/test", username, password);
 
 		// Then
-		Assert.assertTrue("Expected to find the start of JSON data", result.indexOf("{") >= 0 );
-		Assert.assertTrue("Expected to find the end of JSON data", result.lastIndexOf("}") >= 0 );
+		assertTrue(result.indexOf("{") >= 0, "Expected to find the start of JSON data");
+		assertTrue(result.lastIndexOf("}") >= 0, "Expected to find the end of JSON data");
 		String jsonReturned = result.substring(result.indexOf("{"), result.lastIndexOf("}") + 1);
-		JsonNode responseParsed = new ObjectMapper().readValue(jsonReturned, JsonNode.class);
-		Assert.assertNotNull(responseParsed);
+		JsonNode responseParsed = new ObjectMapper().readValue(jsonReturned, StringNode.class);
+		assertNotNull(responseParsed);
 	}
 
 	@Test
-	public void testGetSessionDataOnUrlRessouceCorrectUsernamePassword() throws JSONException, JsonMappingException, JsonProcessingException, RestClientException, URISyntaxException {
+	public void testGetSessionDataOnUrlRessouceCorrectUsernamePassword() throws JSONException, JacksonException, RestClientException, URISyntaxException {
 
 		// Given
 		samlContainer = getKitCaddyContainer(SAML_SP_HOST, SAML_SP_PORT, getDockerNetwork(), "samlserviceprovider/saml.config");
 		samlContainer.start();
-		String username = "testabc"+UUID.randomUUID().toString();
+		String username = "testabc"+UUID.randomUUID();
 		String password = "secret1234";
 		addUserToKeycloak(username, password);
-		RemoteWebDriver webdriver = chrome.getWebDriver();
-		String result = doLoginFlow(webdriver, "http://"+SAML_SP_URL+"/echo/test", username, password);
+		RemoteWebDriver webdriver = new RemoteWebDriver(chrome.getSeleniumAddress(), new ChromeOptions());
+		//String result = doLoginFlow(webdriver, "http://"+SAML_SP_URL+"/echo/test", username, password);
 		Cookie cookie = webdriver.manage().getCookieNamed(TestConstants.SESSION_HEADER_NAME);
 		String sessionId = cookie.getValue();
 
@@ -138,29 +142,29 @@ public class SamlServiceProviderIntegrationTest extends AbstractBrowserBasedInte
 		HttpHeaders headers = new HttpHeaders();
 		headers.add(TestConstants.SESSION_HEADER_NAME, sessionId);
 		RestTemplate rt = new RestTemplate();
-		HttpEntity<Void> requestEntity = new HttpEntity<Void>(headers);
+		HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
 		ResponseEntity<String> response = rt.exchange(new URI(getSpServiceUrl(samlContainer)+"/getsessiondata"), HttpMethod.GET, requestEntity, String.class);
 		
 		// Then
-		Assert.assertNotNull(response);
-		JsonNode responseParsed = new ObjectMapper().readValue(response.getBody(), JsonNode.class);
-		Assert.assertNotNull(responseParsed);
-		String authenticationTokenValue = ((TextNode) responseParsed.get(TestConstants.SESSION_DATA_KEY_AUTHENTICATION_TOKEN)).textValue();
-		Assert.assertNotNull(authenticationTokenValue);
+		assertNotNull(response);
+		JsonNode responseParsed = new ObjectMapper().readValue(response.getBody(), StringNode.class);
+		assertNotNull(responseParsed);
+		String authenticationTokenValue = responseParsed.get(TestConstants.SESSION_DATA_KEY_AUTHENTICATION_TOKEN).stringValue();
+		assertNotNull(authenticationTokenValue);
 		String decodedAuthenticationToken = new String(Base64.getDecoder().decode(authenticationTokenValue.getBytes()));
-		Assert.assertNotNull(decodedAuthenticationToken);
+		assertNotNull(decodedAuthenticationToken);
 	}
 
 	@Test
-	public void testLogout() throws JSONException, JsonMappingException, JsonProcessingException {
+	public void testLogout() throws JSONException, JacksonException {
 
 		// Given
 		samlContainer = getKitCaddyContainer(SAML_SP_HOST, SAML_SP_PORT, getDockerNetwork(), "samlserviceprovider/saml.config");
 		samlContainer.start();
-		String username = "testabc"+UUID.randomUUID().toString();
+		String username = "testabc"+ UUID.randomUUID();
 		String password = "secret1234";
 		addUserToKeycloak(username, password);
-		RemoteWebDriver webdriver = chrome.getWebDriver();
+		RemoteWebDriver webdriver = new RemoteWebDriver(chrome.getSeleniumAddress(), new ChromeOptions());
 		String logoutUrl = "http://"+SAML_SP_URL+"/saml/logout";
 
 		// When
@@ -169,25 +173,27 @@ public class SamlServiceProviderIntegrationTest extends AbstractBrowserBasedInte
 		String afterLogoutResultTitle = webdriver.getTitle();
 
 		// Then
-		Assert.assertTrue("Expected to find the start of JSON data", afterLoginResult.indexOf("{") >= 0 );
-		Assert.assertTrue("Expected to find the end of JSON data", afterLoginResult.lastIndexOf("}") >= 0 );
+		assertTrue(afterLoginResult.indexOf("{") >= 0, "Expected to find the start of JSON data");
+		assertTrue(afterLoginResult.lastIndexOf("}") >= 0, "Expected to find the end of JSON data");
 		String jsonReturned = afterLoginResult.substring(afterLoginResult.indexOf("{"), afterLoginResult.lastIndexOf("}") + 1);
-		JsonNode responseParsed = new ObjectMapper().readValue(jsonReturned, JsonNode.class);
-		Assert.assertNotNull(responseParsed);
-		Assert.assertEquals("Expected to be returned to the external url of the service...which again should redirect us to the login page", "Sign in to test", afterLogoutResultTitle);
+		JsonNode responseParsed = new ObjectMapper().readValue(jsonReturned, StringNode.class);
+		assertNotNull(responseParsed);
+		assertEquals("Sign in to test", afterLogoutResultTitle, "Expected to be returned to the external url of the service...which again should redirect us to the login page");
 	}
 
 	@Test
-	public void testLogoutWithLandingPage() throws JSONException, IOException {
+	public void testLogoutWithLandingPage() throws JSONException {
 
 		// Given
 		samlContainer = getKitCaddyContainer(SAML_SP_HOST, SAML_SP_PORT, getDockerNetwork(), "samlserviceprovider/saml-logoutlandingpage.config");
 		samlContainer.withClasspathResourceMapping("samlserviceprovider/pretty-logoutpage.html", "/htmls/pretty-logoutpage.html", BindMode.READ_ONLY);
 		samlContainer.start();
-		String username = "testabc"+UUID.randomUUID().toString();
+		String username = "testabc"+ UUID.randomUUID();
 		String password = "secret1234";
 		addUserToKeycloak(username, password);
-		RemoteWebDriver webdriver = chrome.getWebDriver();
+
+		RemoteWebDriver webdriver = new RemoteWebDriver(chrome.getSeleniumAddress(), new ChromeOptions());
+
 		String logoutUrl = "http://"+SAML_SP_URL+"/saml/logout";
 
 		// When
@@ -196,11 +202,12 @@ public class SamlServiceProviderIntegrationTest extends AbstractBrowserBasedInte
 		String afterLogoutResult = webdriver.getPageSource();
 
 		// Then
-		Assert.assertTrue("Expected to be redirected to the pretty logout page", afterLogoutResult.contains("Congratulations with your logout (123456789)!"));
+		assertNotNull(afterLogoutResult, "Expected to be redirected to the pretty logout page");
+		assertTrue(afterLogoutResult.contains("Congratulations with your logout (123456789)!"), "Expected to be redirected to the pretty logout page");
 	}
 
 	@Test
-	public void testSLOWithLandingPage() throws JSONException, IOException {
+	public void testSLOWithLandingPage() throws JSONException {
 
 		// Given
 		samlContainer = getKitCaddyContainer(SAML_SP_HOST, SAML_SP_PORT, getDockerNetwork(), "samlserviceprovider/saml-logoutlandingpage.config");
@@ -211,10 +218,10 @@ public class SamlServiceProviderIntegrationTest extends AbstractBrowserBasedInte
 		otherSamlContainer.withClasspathResourceMapping("samlserviceprovider/pretty-logoutpage.html", "/htmls/pretty-logoutpage.html", BindMode.READ_ONLY);
 		otherSamlContainer.start();
 
-		String username = "testabc"+UUID.randomUUID().toString();
+		String username = "testabc"+ UUID.randomUUID();
 		String password = "secret1234";
 		addUserToKeycloak(username, password);
-		RemoteWebDriver webdriver = chrome.getWebDriver();
+		RemoteWebDriver webdriver = new RemoteWebDriver(chrome.getSeleniumAddress(), new ChromeOptions());
 		String otherUrl = "http://"+OTHER_SAML_SP_URL+"/echo/test";
 		String logoutUrl = "http://"+SAML_SP_URL+"/saml/logout";
 
@@ -231,60 +238,60 @@ public class SamlServiceProviderIntegrationTest extends AbstractBrowserBasedInte
 		String otherAfterSlo = webdriver.getPageSource();
 
 		// Then
-		Assert.assertTrue("Expected to be redirected to the pretty logout page", afterLogoutResult.contains("Congratulations with your logout (123456789)!"));
-		Assert.assertTrue("Single Logon to other app failed", afterSingleSignOnHopefully.contains("\"host\": \"other:8787\""));
-		Assert.assertTrue("SLO failed for othercontainer", otherAfterSlo.contains("<title>Sign in to test</title>"));
+		assertTrue(afterLogoutResult.contains("Congratulations with your logout (123456789)!"), "Expected to be redirected to the pretty logout page");
+		assertTrue(afterSingleSignOnHopefully.contains("\"host\": \"other:8787\""), "Single Logon to other app failed");
+		assertTrue(otherAfterSlo.contains("<title>Sign in to test</title>"), "SLO failed for othercontainer");
 	}
 
 	@Test
-	public void testLoginWithEncryptedAssertion() throws JSONException, IOException {
+	public void testLoginWithEncryptedAssertion() throws JSONException {
 
 		// Given
 		encryptedSamlContainer = getKitCaddyContainer(ENCRYPTED_SAML_SP_HOST, ENCRYPTED_SAML_SP_PORT, getDockerNetwork(), "samlserviceprovider/saml-encrypted.config");
 		encryptedSamlContainer.withClasspathResourceMapping("samlserviceprovider/pretty-logoutpage.html", "/htmls/pretty-logoutpage.html", BindMode.READ_ONLY);
 		encryptedSamlContainer.start();
 
-		String username = "testabc"+UUID.randomUUID().toString();
+		String username = "testabc"+ UUID.randomUUID();
 		String password = "secret1234";
 		addUserToKeycloak(username, password);
-		RemoteWebDriver webdriver = chrome.getWebDriver();
+		RemoteWebDriver webdriver = new RemoteWebDriver(chrome.getSeleniumAddress(), new ChromeOptions());
 
 		// When
 		String result = doLoginFlow(webdriver, "http://"+ENCRYPTED_SP_URL+"/echo/test", username, password);
 
 		// Then
-		Assert.assertTrue("Expected to find the start of JSON data", result.indexOf("{") >= 0 );
-		Assert.assertTrue("Expected to find the end of JSON data", result.lastIndexOf("}") >= 0 );
+		assertTrue(result.indexOf("{") >= 0, "Expected to find the start of JSON data");
+		assertTrue(result.lastIndexOf("}") >= 0, "Expected to find the end of JSON data");
 		String jsonReturned = result.substring(result.indexOf("{"), result.lastIndexOf("}") + 1);
-		JsonNode responseParsed = new ObjectMapper().readValue(jsonReturned, JsonNode.class);
-		Assert.assertNotNull(responseParsed);
-		
+		JsonNode responseParsed = new ObjectMapper().readValue(jsonReturned, StringNode.class);
+		assertNotNull(responseParsed);
+
 		JsonNode headerJson = responseParsed.get("headers");
-		Assert.assertNotNull(headerJson);
-	
+		assertNotNull(headerJson);
+
 		JsonNode sessionDataHeaderJson = headerJson.get("sessiondataheader");
-		Assert.assertNotNull(sessionDataHeaderJson);
+		assertNotNull(sessionDataHeaderJson);
 		
-		String sessionDataHeaderContent = sessionDataHeaderJson.asText();
-		Assert.assertNotNull(sessionDataHeaderContent);
+		String sessionDataHeaderContent = sessionDataHeaderJson.asString();
+		assertNotNull(sessionDataHeaderContent);
 		
 		String decodedData = new String(Base64.getDecoder().decode(sessionDataHeaderContent));
-		JsonNode decodedDataJson = new ObjectMapper().readValue(decodedData, JsonNode.class);
-		Assert.assertNotNull(decodedDataJson);
+		JsonNode decodedDataJson = new ObjectMapper().readValue(decodedData, StringNode.class);
+		assertNotNull(decodedDataJson);
 		
 		JsonNode authenticationTokenJson = decodedDataJson.get("Authenticationtoken");
-		Assert.assertNotNull(authenticationTokenJson);
-		String authenticationToken = authenticationTokenJson.asText();		
+		assertNotNull(authenticationTokenJson);
+		String authenticationToken = authenticationTokenJson.asString();
 		String decodedAuthenticationToken = new String(Base64.getDecoder().decode(authenticationToken));
-		Assert.assertNotNull(decodedAuthenticationToken);
-		Assert.assertTrue(decodedAuthenticationToken.startsWith("<saml:Assertion"));
-		Assert.assertTrue(decodedAuthenticationToken.contains(username));
+		assertNotNull(decodedAuthenticationToken);
+		assertTrue(decodedAuthenticationToken.startsWith("<saml:Assertion"));
+		assertTrue(decodedAuthenticationToken.contains(username));
 	}
 
 	
 	
 	@Test
-	public void testSLOWithLandingPageLogoutInitiatedByOther() throws JSONException, IOException {
+	public void testSLOWithLandingPageLogoutInitiatedByOther() throws JSONException {
 
 		// Given
 		samlContainer = getKitCaddyContainer(SAML_SP_HOST, SAML_SP_PORT, getDockerNetwork(), "samlserviceprovider/saml-logoutlandingpage.config");
@@ -295,10 +302,10 @@ public class SamlServiceProviderIntegrationTest extends AbstractBrowserBasedInte
 		otherSamlContainer.withClasspathResourceMapping("samlserviceprovider/pretty-logoutpage.html", "/htmls/pretty-logoutpage.html", BindMode.READ_ONLY);
 		otherSamlContainer.start();
 
-		String username = "testslocba"+UUID.randomUUID().toString();
+		String username = "testslocba"+ UUID.randomUUID();
 		String password = "secret1234";
 		addUserToKeycloak(username, password);
-		RemoteWebDriver webdriver = chrome.getWebDriver();
+		RemoteWebDriver webdriver = new RemoteWebDriver(chrome.getSeleniumAddress(), new ChromeOptions());
 		String otherUrl = "http://"+OTHER_SAML_SP_URL+"/echo/test";
 		String logoutUrl = "http://"+OTHER_SAML_SP_URL+"/saml/logout";
 		String testUrl = "http://"+SAML_SP_URL+"/echo/test";
@@ -316,12 +323,12 @@ public class SamlServiceProviderIntegrationTest extends AbstractBrowserBasedInte
 		String otherAfterSlo = webdriver.getPageSource();
 
 		// Then
-		Assert.assertTrue("Expected to be redirected to login page", afterLogoutResult.contains("<title>Sign in to test</title>"));
-		Assert.assertTrue("Single Logon to other app failed", afterSingleSignOnHopefully.contains("\"host\": \"other:8787\""));
-		Assert.assertTrue("SLO failed for saml container", otherAfterSlo.contains("<title>Sign in to test</title>"));
+		assertTrue(afterLogoutResult.contains("<title>Sign in to test</title>"), "Expected to be redirected to login page");
+		assertTrue(afterSingleSignOnHopefully.contains("\"host\": \"other:8787\""), "Single Logon to other app failed");
+		assertTrue(otherAfterSlo.contains("<title>Sign in to test</title>"), "SLO failed for saml container");
 	}
 
 	public String getSpServiceUrl(GenericContainer<?> samlContainer) {
-		return "http://"+samlContainer.getContainerIpAddress()+":"+samlContainer.getMappedPort(SAML_SP_PORT);
+		return "http://"+ samlContainer.getHost() +":"+samlContainer.getMappedPort(SAML_SP_PORT);
 	}
 }

@@ -1,14 +1,15 @@
 package dk.kvalitetsit.kitcaddy;
 
-import org.junit.Rule;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
-import org.testcontainers.containers.BrowserWebDriverContainer;
+import org.testcontainers.selenium.BrowserWebDriverContainer;
 import org.testcontainers.containers.GenericContainer;
 
 import dk.kvalitetsit.kitcaddy.test.configuration.AllInOneTestConfiguration;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 /**
  * 
@@ -17,7 +18,8 @@ import dk.kvalitetsit.kitcaddy.test.configuration.AllInOneTestConfiguration;
  *    | Webbrowser |    ->    | SAML-SP |   ->   | wsc | ->   | wsp | -> | echoservice | 
  *
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@Testcontainers
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes=AllInOneTestConfiguration.class, loader=AnnotationConfigContextLoader.class)
 public abstract class AbstractAllInOneIT extends AbstractBrowserBasedIntegrationTest {
 
@@ -33,16 +35,16 @@ public abstract class AbstractAllInOneIT extends AbstractBrowserBasedIntegration
 	private static final int WSP_SERVICE_PORT = 8443;
 	private static final String WSP_SERVICE_URL = WSP_SERVICE_HOST+":"+WSP_SERVICE_PORT;
 
-	@Rule
-	public BrowserWebDriverContainer<?> chrome = createChrome();
+	@Container
+	public BrowserWebDriverContainer chrome = createChrome();
 
-	@Rule
+	@Container
 	public GenericContainer<?> samlSp = createSamlSp();
 
-	@Rule
+	@Container
 	public GenericContainer<?> wsc = createWsc();
 
-	@Rule
+	@Container
 	public GenericContainer<?> wsp = createWsp();
 
 	public static GenericContainer<?> createWsc() {
@@ -54,10 +56,10 @@ public abstract class AbstractAllInOneIT extends AbstractBrowserBasedIntegration
 	}
 
 	public static GenericContainer<?> createSamlSp() {
-		return 	getKitCaddyContainer(SAML_SP_HOST, SAML_SP_PORT, getDockerNetwork(), "samlserviceprovider/saml.config");
+		return getKitCaddyContainer(SAML_SP_HOST, SAML_SP_PORT, getDockerNetwork(), "samlserviceprovider/saml.config");
 	}
 
 	public String getSpServiceUrl() {
-		return "http://"+samlSp.getContainerIpAddress()+":"+samlSp.getMappedPort(SAML_SP_PORT);
+		return "http://"+ samlSp.getHost() +":"+samlSp.getMappedPort(SAML_SP_PORT);
 	}
 }
