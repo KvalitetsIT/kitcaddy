@@ -28,6 +28,7 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import dk.kvalitetsit.kitcaddy.AbstractBrowserBasedIntegrationTest;
@@ -134,8 +135,11 @@ public class SamlServiceProviderIntegrationTest extends AbstractBrowserBasedInte
 		String password = "secret1234";
 		addUserToKeycloak(username, password);
 		RemoteWebDriver webdriver = new RemoteWebDriver(chrome.getSeleniumAddress(), new ChromeOptions());
-		//String result = doLoginFlow(webdriver, "http://"+SAML_SP_URL+"/echo/test", username, password);
+
+		// We don't care about the return value, we only care about the cookie
+		doLoginFlow(webdriver, "http://"+SAML_SP_URL+"/echo/test", username, password);
 		Cookie cookie = webdriver.manage().getCookieNamed(TestConstants.SESSION_HEADER_NAME);
+		assertNotNull(cookie);
 		String sessionId = cookie.getValue();
 
 		// When
