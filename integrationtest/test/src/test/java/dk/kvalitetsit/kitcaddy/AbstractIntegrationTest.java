@@ -3,16 +3,17 @@ package dk.kvalitetsit.kitcaddy;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.PosixFilePermission;
 import java.time.Duration;
+import java.util.Set;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.BeforeClass;
-import org.junit.rules.TemporaryFolder;
-import org.openqa.selenium.chrome.ChromeOptions;
+import org.junit.jupiter.api.BeforeAll;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
@@ -23,12 +24,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import org.testcontainers.containers.*;
+
+import org.testcontainers.selenium.BrowserWebDriverContainer;
+import org.testcontainers.containers.Network;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
 import dk.kvalitetsit.kitcaddy.keycloak.Credential;
 import dk.kvalitetsit.kitcaddy.keycloak.User;
+import org.testcontainers.utility.MountableFile;
 
 public class AbstractIntegrationTest {
 
@@ -45,20 +51,21 @@ public class AbstractIntegrationTest {
 	public static String mongoHost;
 	
 	protected static GenericContainer<?> mongoContainer;
+	protected static GenericContainer<?> stsBackend;
 	
 	protected static Network getDockerNetwork() {
 		return n;
 	}
 
-	protected static BrowserWebDriverContainer<?> createChrome() {
-		return (BrowserWebDriverContainer<?>) new BrowserWebDriverContainer<>().withCapabilities(new ChromeOptions()).withNetwork(n);
+	protected static BrowserWebDriverContainer createChrome() {
+		return new BrowserWebDriverContainer("selenium/standalone-chrome:4.35.0").withNetwork(n);
 	}
 
-	protected final static String getKitCaddyVersionUnderTest() {
+	protected static String getKitCaddyVersionUnderTest() {
 		return "dev";//"1.3.19";
 	}
 
-	@BeforeClass
+    @BeforeAll
 	public static void setupTestEnvironment() throws UnsupportedOperationException, IOException, InterruptedException {
 
 		if (n == null) {
@@ -76,13 +83,13 @@ public class AbstractIntegrationTest {
 					.withNetworkAliases(mongoAlias);
 			mongoContainer.start();
 			mongoPort = mongoContainer.getMappedPort(27017);
-			mongoHost = mongoContainer.getContainerIpAddress();
+			mongoHost = mongoContainer.getHost();
 
 			// Start Keycloack service
 			File keycloakCertificate = getKeycloakContainer(n);
 
 			// Start STS
-			GenericContainer<?> stsBackend = new GenericContainer<>("kvalitetsit/sts:1.0.34")
+			stsBackend = new GenericContainer<>("kvalitetsit/sts:1.0.34")
 					.withEnv("LOG_lEVEL", "INFO")
 
 					.withEnv("STS_ISSUER", "sts")
@@ -99,7 +106,7 @@ public class AbstractIntegrationTest {
 					.withEnv("STS_KEY", "/certificates/sts.pem")
 
 					// Trust
-					.withFileSystemBind(keycloakCertificate.getAbsolutePath(), "/trust/keycloak.cer")
+					.withCopyFileToContainer(MountableFile.forHostPath(keycloakCertificate.toPath()), "/trust/keycloak.cer")
 					.withEnv("STS_TRUST_CA_PATH", "/trust/*")
 
 					// Clients
@@ -125,8 +132,7 @@ public class AbstractIntegrationTest {
 	}
 
 	public static GenericContainer<?> getKitCaddyContainer(String alias, int port, Network n, String config) {
-		GenericContainer kitCaddy = getKitCaddyContainer("kvalitetsit/kitcaddy:"+getKitCaddyVersionUnderTest(), alias, port, n, config);
-		return kitCaddy;
+        return getKitCaddyContainer("kvalitetsit/kitcaddy:"+getKitCaddyVersionUnderTest(), alias, port, n, config);
 	}
 
 	private static GenericContainer<?> getKitCaddyContainer(String image, String alias, int port, Network n, String config) {
@@ -169,7 +175,7 @@ public class AbstractIntegrationTest {
 		keycloackContainer.start();
 		logContainerOutput(keycloackContainer, keycloakLogger);
 		keycloakPort = keycloackContainer.getMappedPort(8080);
-		keycloackHost = keycloackContainer.getContainerIpAddress();
+		keycloackHost = keycloackContainer.getHost();
 
 		// Find the IDP certificate from keycloak and save it to temporary file for use in trust
 		RestTemplate restTemplate = new RestTemplate();
@@ -182,16 +188,17 @@ public class AbstractIntegrationTest {
 		int endIndex = metadata.indexOf(TAG_CERTIFICATE_END);
 		String certificateContent = metadata.substring(startIndex + TAG_CERTIFICATE_START.length(), endIndex);
 
-		TemporaryFolder folder= new TemporaryFolder(); // It's a junit thing
-		folder.create();
-		File createdFile= folder.newFile("keycloak-idp.cer");
-		BufferedWriter writer = new BufferedWriter(new FileWriter(createdFile));
-		writer.append("-----BEGIN CERTIFICATE-----\n");
-		writer.append(certificateContent);
-		writer.append("-----END CERTIFICATE-----\n");
-		writer.close();
-
-		return createdFile;
+		Path tempFile = Files.createTempFile("keycloak-idp", ".cer");
+		try (BufferedWriter writer = Files.newBufferedWriter(tempFile)) {
+			writer.write("-----BEGIN CERTIFICATE-----\n");
+			writer.write(certificateContent);
+			writer.write("-----END CERTIFICATE-----\n");
+		}
+		// sets
+		Files.setPosixFilePermissions(tempFile,
+				Set.of(PosixFilePermission.OWNER_READ, PosixFilePermission.OWNER_WRITE,
+					   PosixFilePermission.GROUP_READ, PosixFilePermission.OTHERS_READ));
+		return tempFile.toFile();
 	}
 
 
@@ -244,8 +251,7 @@ public class AbstractIntegrationTest {
 		ResponseEntity<String> response = restTemplate.postForEntity(appendToKeycloakHostAndPort("/realms/master/protocol/openid-connect/token"), request, String.class);
 		String authBody = response.getBody();
 		JSONObject authJson = new JSONObject(authBody);
-		String accessToken = authJson.getString("access_token");
-		return accessToken;
+        return authJson.getString("access_token");
 	}
 
 	public static String appendToKeycloakHostAndPort(String url) {
@@ -269,7 +275,7 @@ public class AbstractIntegrationTest {
 	 
 	    buffer.flush();
 	    byte[] byteArray = buffer.toByteArray();
-	         
+
 	    String text = new String(byteArray);
 	    return text;
 	}

@@ -1,9 +1,10 @@
 package dk.kvalitetsit.kitcaddy.test;
 
-import org.junit.Rule;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 /**
  * 
@@ -12,7 +13,7 @@ import org.testcontainers.containers.wait.strategy.Wait;
  *    | oio idws wsc |    ->  | frontend (SSL-termination) | -- clientcert in 'forwarded-from-nginx' header ->   | oio idws wsp |     ->     | echo service |
  *
  */
-
+@Testcontainers
 public class OioIdwsRestWscFrontendIntegrationTest extends AbstractOioIdwsRestWscIntegrationTest {
 
 
@@ -29,13 +30,13 @@ public class OioIdwsRestWscFrontendIntegrationTest extends AbstractOioIdwsRestWs
 
 	
 	
-	@Rule
+	@Container
 	public GenericContainer<?> wsc = createWsc();
 
-	@Rule
+	@Container
 	public GenericContainer<?> wsp = createWsp();
 
-	@Rule
+	@Container
 	public GenericContainer<?> nginx = createNginx();
 
 	public static GenericContainer<?> createWsc() {
@@ -53,7 +54,7 @@ public class OioIdwsRestWscFrontendIntegrationTest extends AbstractOioIdwsRestWs
 				.withClasspathResourceMapping("frontend/frontend.cer", "/cert/frontend.cer", BindMode.READ_ONLY)
 				.withClasspathResourceMapping("frontend/frontend.pem", "/cert/frontend.pem", BindMode.READ_ONLY)
 				.withClasspathResourceMapping("frontend/nginx.conf", "/etc/nginx/nginx.conf", BindMode.READ_ONLY)
-				.waitingFor(Wait.forListeningPort())	
+				.waitingFor(Wait.forListeningPort())
 
 				.withNetworkAliases(NGINX_SERVICE_HOST);
 
@@ -62,7 +63,7 @@ public class OioIdwsRestWscFrontendIntegrationTest extends AbstractOioIdwsRestWs
 
 	@Override
 	public String getWscServiceUrl() {
-		return "http://"+wsc.getContainerIpAddress()+":"+wsc.getMappedPort(WSC_SERVICE_PORT);
+		return "http://"+ wsc.getHost() +":"+wsc.getMappedPort(WSC_SERVICE_PORT);
 	}
 
 }

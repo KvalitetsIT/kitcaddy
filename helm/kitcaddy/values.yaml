@@ -15,6 +15,7 @@ netpol:
   enabled: true
 
 kitcaddy:
+  defaultContainerEnabled: true
   startupProbe:
     httpGet:
       path: /metrics
@@ -55,6 +56,7 @@ kitcaddy:
 deployment:
   enabled: true
   containerPort: 8080
+  defaultContainerEnabled: true
 
   securityContext:
     readOnlyRootFilesystem: true
@@ -86,6 +88,7 @@ sidecar:
 
 docDeployment:
   enabled: false
+  defaultContainerEnabled: true
   containerPort: 8080
   securityContext:
     readOnlyRootFilesystem: true

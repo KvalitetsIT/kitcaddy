@@ -2,31 +2,29 @@ package dk.kvalitetsit.kitcaddy.test;
 
 import java.io.IOException;
 import java.util.UUID;
-import java.util.function.Predicate;
 
 import org.json.JSONException;
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.testcontainers.containers.wait.strategy.Wait;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.TextNode;
 import com.mongodb.client.result.DeleteResult;
 
 import dk.kvalitetsit.kitcaddy.AbstractAllInOneIT;
 import dk.kvalitetsit.kitcaddy.TestConstants;
+import org.testcontainers.containers.output.Slf4jLogConsumer;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class AllInOneExpiryIntegrationTest extends AbstractAllInOneIT {
 
@@ -46,44 +44,37 @@ public class AllInOneExpiryIntegrationTest extends AbstractAllInOneIT {
 
 	@Test
 	public void testSamlSpSessionExpiryTriggersNewLogin() throws JSONException  {
-
 		// Given
-		Expiry expiry = new Expiry() {
-			@Override
-			public void doExpiry(JsonNode resultBeforeExpiry) {
-				String samlSessionId = resultBeforeExpiry.get(TestConstants.ECHO_SERVICE_HTTP_HEADER_KEY).get(TestConstants.SESSION_HEADER_NAME).asText();
-				Assert.assertNotNull("Expected a session Id", samlSessionId);
-				Query query = new Query();
-				query.addCriteria(Criteria.where(TestConstants.SP_MONGO_SESSION_ID_COLUMN).is(samlSessionId));;
-				DeleteResult deleteResult = spMongoTemplate.remove(query, TestConstants.SP_MONGO_SESSION_COLLECTION);
-				if (!deleteResult.wasAcknowledged() || deleteResult.getDeletedCount() <= 0) {
-					Assert.assertTrue("No session deleted - test broken :-(", false);
-				}
-			}
-		};
+		Expiry expiry = resultBeforeExpiry -> {
+            String samlSessionId = resultBeforeExpiry.get(TestConstants.ECHO_SERVICE_HTTP_HEADER_KEY).get(TestConstants.SESSION_HEADER_NAME).asString();
+            assertNotNull(samlSessionId, "Expected a session Id");
+            Query query = new Query();
+            query.addCriteria(Criteria.where(TestConstants.SP_MONGO_SESSION_ID_COLUMN).is(samlSessionId));
+            DeleteResult deleteResult = spMongoTemplate.remove(query, TestConstants.SP_MONGO_SESSION_COLLECTION);
+            if (!deleteResult.wasAcknowledged() || deleteResult.getDeletedCount() <= 0) {
+                fail("No session deleted - test broken :-(");
+            }
+        };
 
 		// When
 		Response responseAfterExpiry = resultAfterExpiry(expiry);
 
 		// Then
 		String title = responseAfterExpiry.getWebDriver().getTitle();
-		Assert.assertEquals("Expected the login page of keycloak after expiry of saml session", "Sign in to test", title);
+		assertEquals("Sign in to test", title, "Expected the login page of keycloak after expiry of saml session");
 	}
 
 	@Test
-	@Ignore
+	@Disabled
 	public void testMongoRestartIsHandledTransparently() throws JSONException, InterruptedException  {
 		// Denne test virker, når jeg debugger den
 		
 		// Given
-		Expiry expiry = new Expiry() {
-			@Override
-			public void doExpiry(JsonNode resultBeforeExpiry) {
-				// This will also remove all data in mongo
-				mongoContainer.stop();
-				mongoContainer.start();
-			}
-		};
+		Expiry expiry = resultBeforeExpiry -> {
+            // This will also remove all data in mongo
+            mongoContainer.stop();
+            mongoContainer.start();
+        };
 
 		// When
 		Response responseAfterExpiry = resultAfterExpiry(expiry, false); // Do not remove keycloak sessions as we want to "autologin"		
@@ -91,40 +82,38 @@ public class AllInOneExpiryIntegrationTest extends AbstractAllInOneIT {
 		
 		// Then
 		JsonNode responseJsonAfterExpiryParsed = parseJsonReturned(responseAfterExpiry.getWebDriver().getPageSource());
-		Assert.assertNotNull("Expected a json response", responseJsonAfterExpiryParsed);
+		assertNotNull(responseJsonAfterExpiryParsed, "Expected a json response");
 
 
-		String wspAuthorizationHeaderBeforeExpiry = ((TextNode) responseAfterExpiry.getResponseBeforeExpiry().get(TestConstants.ECHO_SERVICE_HTTP_HEADER_KEY).get(TestConstants.WSP_AUTHORIZATION_HEADERNAME)).textValue();
-		String wspAuthorizationHeaderAfterExpiry = ((TextNode) responseJsonAfterExpiryParsed.get(TestConstants.ECHO_SERVICE_HTTP_HEADER_KEY).get(TestConstants.WSP_AUTHORIZATION_HEADERNAME)).textValue();
-		Assert.assertNotEquals("Expected a new session on the WSP - checking that the authorization header has changed", wspAuthorizationHeaderBeforeExpiry, wspAuthorizationHeaderAfterExpiry);
+		String wspAuthorizationHeaderBeforeExpiry = responseAfterExpiry.getResponseBeforeExpiry().get(TestConstants.ECHO_SERVICE_HTTP_HEADER_KEY).get(TestConstants.WSP_AUTHORIZATION_HEADERNAME).stringValue();
+		String wspAuthorizationHeaderAfterExpiry = responseJsonAfterExpiryParsed.get(TestConstants.ECHO_SERVICE_HTTP_HEADER_KEY).get(TestConstants.WSP_AUTHORIZATION_HEADERNAME).stringValue();
+		assertNotEquals(wspAuthorizationHeaderBeforeExpiry, wspAuthorizationHeaderAfterExpiry, "Expected a new session on the WSP - checking that the authorization header has changed");
 	}
 
 	@Test
 	public void testMongoConnectionExpiryIsHandledTransparently() throws JSONException  {
 
+		samlSp.withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger("saml-sp")));
 		// Given
-		Expiry expiry = new Expiry() {
-			@Override
-			public void doExpiry(JsonNode resultBeforeExpiry) {
-				try {
-					mongoContainer.execInContainer("mongo < /scripts/killallconnections.js");
-				} catch (UnsupportedOperationException | IOException | InterruptedException e) {
-					throw new RuntimeException(e);
-				}
-			}
-		};
+		Expiry expiry = resultBeforeExpiry -> {
+            try {
+                mongoContainer.execInContainer("mongo < /scripts/killallconnections.js");
+            } catch (UnsupportedOperationException | IOException | InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        };
 
 		// When
 		Response responseAfterExpiry = resultAfterExpiry(expiry);		
 
 		// Then
 		JsonNode responseJsonAfterExpiryParsed = parseJsonReturned(responseAfterExpiry.getWebDriver().getPageSource());
-		Assert.assertNotNull("Expected a json response", responseJsonAfterExpiryParsed);
+		assertNotNull(responseJsonAfterExpiryParsed, "Expected a json response");
 
 
-		String wspAuthorizationHeaderBeforeExpiry = ((TextNode) responseAfterExpiry.getResponseBeforeExpiry().get(TestConstants.ECHO_SERVICE_HTTP_HEADER_KEY).get(TestConstants.WSP_AUTHORIZATION_HEADERNAME)).textValue();
-		String wspAuthorizationHeaderAfterExpiry = ((TextNode) responseJsonAfterExpiryParsed.get(TestConstants.ECHO_SERVICE_HTTP_HEADER_KEY).get(TestConstants.WSP_AUTHORIZATION_HEADERNAME)).textValue();
-		Assert.assertEquals("Expected the same session on the WSP - checking that the authorization header are the same", wspAuthorizationHeaderBeforeExpiry, wspAuthorizationHeaderAfterExpiry);
+		String wspAuthorizationHeaderBeforeExpiry = responseAfterExpiry.getResponseBeforeExpiry().get(TestConstants.ECHO_SERVICE_HTTP_HEADER_KEY).get(TestConstants.WSP_AUTHORIZATION_HEADERNAME).stringValue();
+		String wspAuthorizationHeaderAfterExpiry = responseJsonAfterExpiryParsed.get(TestConstants.ECHO_SERVICE_HTTP_HEADER_KEY).get(TestConstants.WSP_AUTHORIZATION_HEADERNAME).stringValue();
+		assertEquals(wspAuthorizationHeaderBeforeExpiry, wspAuthorizationHeaderAfterExpiry, "Expected the same session on the WSP - checking that the authorization header are the same");
 	}
 
 
@@ -132,46 +121,40 @@ public class AllInOneExpiryIntegrationTest extends AbstractAllInOneIT {
 	public void testWscSessionExpiryIsHandledTransparently() throws JSONException {
 
 		// Given
-		Expiry expiry = new Expiry() {
-			@Override
-			public void doExpiry(JsonNode resultBeforeExpiry) {
-				// We remove all sessions
-				Query query = new Query();
-				DeleteResult deleteResult = wscMongoTemplate.remove(query, TestConstants.WSC_MONGO_SESSION_COLLECTION);
-				if (!deleteResult.wasAcknowledged() || deleteResult.getDeletedCount() <= 0) {
-					Assert.assertTrue("No session deleted - test broken :-(", false);
-				}
-			}
-		};
+		Expiry expiry = resultBeforeExpiry -> {
+            // We remove all sessions
+            Query query = new Query();
+            DeleteResult deleteResult = wscMongoTemplate.remove(query, TestConstants.WSC_MONGO_SESSION_COLLECTION);
+            if (!deleteResult.wasAcknowledged() || deleteResult.getDeletedCount() <= 0) {
+                fail("No session deleted - test broken :-(");
+            }
+        };
 
 		// When
-		Response responseAfterExpiry = resultAfterExpiry(expiry);		
+		Response responseAfterExpiry = resultAfterExpiry(expiry);
 
 		// Then
 		JsonNode responseJsonAfterExpiryParsed = parseJsonReturned(responseAfterExpiry.getWebDriver().getPageSource());
-		Assert.assertNotNull("Expected a json response", responseJsonAfterExpiryParsed);
+		assertNotNull(responseJsonAfterExpiryParsed, "Expected a json response");
 
 
-		String wspAuthorizationHeaderBeforeExpiry = ((TextNode) responseAfterExpiry.getResponseBeforeExpiry().get(TestConstants.ECHO_SERVICE_HTTP_HEADER_KEY).get(TestConstants.WSP_AUTHORIZATION_HEADERNAME)).textValue();
-		String wspAuthorizationHeaderAfterExpiry = ((TextNode) responseJsonAfterExpiryParsed.get(TestConstants.ECHO_SERVICE_HTTP_HEADER_KEY).get(TestConstants.WSP_AUTHORIZATION_HEADERNAME)).textValue();
-		Assert.assertNotEquals("Expected a new session on the WSP - checking that the authorization header has changed", wspAuthorizationHeaderBeforeExpiry, wspAuthorizationHeaderAfterExpiry);
+		String wspAuthorizationHeaderBeforeExpiry = responseAfterExpiry.getResponseBeforeExpiry().get(TestConstants.ECHO_SERVICE_HTTP_HEADER_KEY).get(TestConstants.WSP_AUTHORIZATION_HEADERNAME).stringValue();
+		String wspAuthorizationHeaderAfterExpiry = responseJsonAfterExpiryParsed.get(TestConstants.ECHO_SERVICE_HTTP_HEADER_KEY).get(TestConstants.WSP_AUTHORIZATION_HEADERNAME).stringValue();
+		assertNotEquals("Expected a new session on the WSP - checking that the authorization header has changed", wspAuthorizationHeaderBeforeExpiry, wspAuthorizationHeaderAfterExpiry);
 	}
 
 	@Test
 	public void testWspSessionExpiryIsHandledTransparently() throws JSONException {
 
 		// Given
-		Expiry expiry = new Expiry() {
-			@Override
-			public void doExpiry(JsonNode resultBeforeExpiry) {
-				// We remove all sessions
-				Query query = new Query();
-				DeleteResult deleteResult = wspMongoTemplate.remove(query, TestConstants.WSP_MONGO_SESSION_COLLECTION);
-				if (!deleteResult.wasAcknowledged() || deleteResult.getDeletedCount() <= 0) {
-					Assert.assertTrue("No session deleted - test broken :-(", false);
-				}
-			}
-		};
+		Expiry expiry = resultBeforeExpiry -> {
+            // We remove all sessions
+            Query query = new Query();
+            DeleteResult deleteResult = wspMongoTemplate.remove(query, TestConstants.WSP_MONGO_SESSION_COLLECTION);
+            if (!deleteResult.wasAcknowledged() || deleteResult.getDeletedCount() <= 0) {
+                fail("No session deleted - test broken :-(");
+            }
+        };
 
 		// When
 		Response responseAfterExpiry = resultAfterExpiry(expiry);		
@@ -179,15 +162,15 @@ public class AllInOneExpiryIntegrationTest extends AbstractAllInOneIT {
 		// Then
 		String responseAfterExpiryBody = responseAfterExpiry.getWebDriver().getPageSource();
 		JsonNode responseJsonAfterExpiryParsed = parseJsonReturned(responseAfterExpiryBody);
-		Assert.assertNotNull("Expected a json response", responseJsonAfterExpiryParsed);
+		assertNotNull(responseJsonAfterExpiryParsed, "Expected a json response");
 
-		String wspAuthorizationHeaderBeforeExpiry = ((TextNode) responseAfterExpiry.getResponseBeforeExpiry().get(TestConstants.ECHO_SERVICE_HTTP_HEADER_KEY).get(TestConstants.WSP_AUTHORIZATION_HEADERNAME)).textValue();
-		String wspAuthorizationHeaderAfterExpiry = ((TextNode) responseJsonAfterExpiryParsed.get(TestConstants.ECHO_SERVICE_HTTP_HEADER_KEY).get(TestConstants.WSP_AUTHORIZATION_HEADERNAME)).textValue();
-		Assert.assertNotEquals("Expected a new session on the WSP - checking that the authorization header has changed", wspAuthorizationHeaderBeforeExpiry, wspAuthorizationHeaderAfterExpiry);
+		String wspAuthorizationHeaderBeforeExpiry = responseAfterExpiry.getResponseBeforeExpiry().get(TestConstants.ECHO_SERVICE_HTTP_HEADER_KEY).get(TestConstants.WSP_AUTHORIZATION_HEADERNAME).stringValue();
+		String wspAuthorizationHeaderAfterExpiry = responseJsonAfterExpiryParsed.get(TestConstants.ECHO_SERVICE_HTTP_HEADER_KEY).get(TestConstants.WSP_AUTHORIZATION_HEADERNAME).stringValue();
+		assertNotEquals(wspAuthorizationHeaderBeforeExpiry, wspAuthorizationHeaderAfterExpiry, "Expected a new session on the WSP - checking that the authorization header has changed");
 	}
 
 
-	private Response  resultAfterExpiry(Expiry expiry) throws JSONException  {
+	private Response resultAfterExpiry(Expiry expiry) throws JSONException  {
 		return resultAfterExpiry(expiry, true);
 	}
 
@@ -196,7 +179,9 @@ public class AllInOneExpiryIntegrationTest extends AbstractAllInOneIT {
 		String username = UUID.randomUUID().toString();
 		String password = "secret1234";
 		addUserToKeycloak(username, password);
-		RemoteWebDriver webdriver = chrome.getWebDriver();
+
+		RemoteWebDriver webdriver = new RemoteWebDriver(chrome.getSeleniumAddress(), new ChromeOptions());
+
 		String resultBeforeExpiry = doLoginFlow(webdriver, TEST_URL, username, password);
 
 		// Access protected ressource
@@ -227,9 +212,8 @@ public class AllInOneExpiryIntegrationTest extends AbstractAllInOneIT {
 
 		String jsonReturned = result.substring(result.indexOf("{"), result.lastIndexOf("}") + 1);
 		try {
-			JsonNode responseParsed = new ObjectMapper().readValue(jsonReturned, JsonNode.class);
-			return responseParsed;
-		} catch (JsonProcessingException e) {
+            return new ObjectMapper().readValue(jsonReturned, JsonNode.class);
+		} catch (JacksonException e) {
 				System.out.println("Not parsed exception: "+result);
 			return null;
 		}
@@ -257,6 +241,6 @@ public class AllInOneExpiryIntegrationTest extends AbstractAllInOneIT {
 	}
 
 	private interface Expiry {
-		public void doExpiry(JsonNode resultBeforeExpiry);
+		void doExpiry(JsonNode resultBeforeExpiry);
 	}
 }
