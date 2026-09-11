@@ -1,5 +1,4 @@
-#FROM golang:1.16.9 AS builder
-FROM golang:1.25.8-alpine@sha256:8e02eb337d9e0ea459e041f1ee5eece41cbb61f1d83e7d883a3e2fb4862063fa AS builder
+FROM golang:1.26.6-alpine@sha256:3889b425f035be855a72fb4755265311293b6d414521f0a519d819df32222d83 AS builder
 
 #non-root
 RUN addgroup --gid 11000 appuser && \
