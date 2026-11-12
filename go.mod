@@ -25,7 +25,7 @@ require (
 	github.com/BurntSushi/toml v1.6.0 // indirect
 	github.com/DeRuina/timberjack v1.4.2 // indirect
 	github.com/KimMachineGun/automemlimit v0.7.5 // indirect
-	github.com/KvalitetsIT/gostsclient v1.0.2-0.20261112093437-9d794a75ef35 // indirect
+	github.com/KvalitetsIT/gostsclient v1.0.2 // indirect
 	github.com/Masterminds/goutils v1.1.1 // indirect
 	github.com/Masterminds/semver/v3 v3.4.0 // indirect
 	github.com/Masterminds/sprig/v3 v3.3.0 // indirect
