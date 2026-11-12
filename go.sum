@@ -115,8 +115,9 @@ github.com/KvalitetsIT/gosecurityprotocol v0.0.0-20200416184625-51822bff6698/go.
 github.com/KvalitetsIT/gosecurityprotocol v1.0.1/go.mod h1:nIQah+qvF+MIXY+c3JYnB4EsbuiVAgenyTbKo0arb0A=
 github.com/KvalitetsIT/gosecurityprotocol v1.0.2 h1:acC3ZygWJbJGUmyCR4bsAOw0DxxmOUDGFf7yWNvf3og=
 github.com/KvalitetsIT/gosecurityprotocol v1.0.2/go.mod h1:AP/iGpIBTyIDjz9+G8OduNENIAOl1Tz78Xk2f/Nag2E=
-github.com/KvalitetsIT/gostsclient v1.0.1 h1:QaalwctZaubPkmWcw0Zi0E68MaAWicz5reRWOiMFvbU=
 github.com/KvalitetsIT/gostsclient v1.0.1/go.mod h1:lvSPoxbDI5pbxphc8cr9ec9KD+oDCd5DAv14UWPdxJE=
+github.com/KvalitetsIT/gostsclient v1.0.2 h1:/R0VRdZMEHlzHlTolVMNR+E4je+NQZO3eiaUTaIL9fE=
+github.com/KvalitetsIT/gostsclient v1.0.2/go.mod h1:lvSPoxbDI5pbxphc8cr9ec9KD+oDCd5DAv14UWPdxJE=
 github.com/KvalitetsIT/goxmldsig v0.0.0-20240710093049-ea14fa9b0ce2 h1:S23IX05bNMG5uyAvCz0hBUbpM80iYc03P7iIOQd9vPQ=
 github.com/KvalitetsIT/goxmldsig v0.0.0-20240710093049-ea14fa9b0ce2/go.mod h1:+VfJCKZf6TjfXGPGFbztDnpXMfM/zHwJ2TkDsD5F82I=
 github.com/Masterminds/glide v0.13.2/go.mod h1:STyF5vcenH/rUqTEv+/hBXlSTo7KYwg2oc2f4tzPWic=
